@@ -14,8 +14,8 @@ install(FILES sample_wire.h     DESTINATION include/mytrim)
 # build the test trim programs
 set(PROGRAMS mytrim_clusters mytrim_solid mytrim_uo2 mytrim_wire)
 foreach(program ${PROGRAMS})
-  add_executable(${program} ${program}.cpp)
-  target_link_libraries(firstpass ${R250C_LIB} mytrim m)
+  add_executable(${program} ${program}.cc)
+  target_link_libraries(${program} ${R250C_LIB} mytrim m)
 endforeach(program)
   
 
