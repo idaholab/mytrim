@@ -43,6 +43,8 @@
 #include "invert.h"
 #include <r250.h>
 
+#include "functions.h"
+
 int main(int argc, char *argv[])
 {
   char fname[200];

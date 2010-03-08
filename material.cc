@@ -3,6 +3,8 @@
 #include "material.h"
 #include "simconf.h"
 
+#include "functions.h"
+
 void materialBase::prepare()
 {
   float tt = 0.0;

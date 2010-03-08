@@ -7,14 +7,6 @@
 #include "ion.h"
 #include "element.h"
 
-void v_cross( const float *a1, const float *a2, float *b );
-void v_scale( float *a1, float b ); // in=place scale
-float v_dot( const float *a1, const float *a2 );
-void v_norm( float *a1, float b = 1.0 ); // in-place normalize to 1 (or b)
-
-inline float sqr( float a ) { return a*a; }
-inline float cub( float a ) { return a*a*a; }
-
 using namespace std;
 
 struct materialBase {

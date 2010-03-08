@@ -9,9 +9,10 @@
 
 using namespace std;
 
-enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades
 
 struct sampleBase {
+  enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades
+
   vector<materialBase*> material;
   float w[3]; // simulation volume
   sampleBoundary bc[3]; // boundary conditions

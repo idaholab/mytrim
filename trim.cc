@@ -5,26 +5,11 @@
 #include "simconf.h"
 #include <r250.h>
 
-// all energies are in eV
-void v_cross( const float *a1, const float *a2, float *b )
-{
-  for( int i = 0; i < 3; i++ ) b[i] = a1[(i+1)%3] * a2[(i+2)%3] - a1[(i+2)%3] * a2[(i+1)%3]; 
-}
-void v_scale( float *a1, float b ) // in=place scale
-{
-  for( int i = 0; i < 3; i++ ) a1[i] = a1[i] * b; 
-}
-float v_dot( const float *a1, const float *a2 )
-{
-  float b = 0.0;
-  for( int i = 0; i < 3; i++ ) b += a1[i] * a2[i];
-  return b;
-}
-void v_norm( float *a1, float b ) // in-place normalize to b ( = 1.0 default )
-{
-  v_scale( a1, b / sqrtf( v_dot( a1, a1) ) );
-}
+#include "functions.h"
 
+//
+// all energies are in eV
+//
 
 // does a single ion cascade
 void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
@@ -208,7 +193,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     // end cascade if a CUT boundary is crossed
     terminate = false;
     for( int i = 0; i < 3; i++ ) 
-      if( sample->bc[i] == CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) ) terminate = true;
+      if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) ) terminate = true;
     
     // if recoil energy > 100.0 eV, put the recoil on the stack
     if( spawnRecoil() && !terminate )

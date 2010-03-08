@@ -4,6 +4,7 @@
 #include "sample_clusters.h"
 #include <r250.h>
 
+#include "functions.h"
 
 sampleClusters::sampleClusters( float x, float y, float z )  : sampleBase( x, y, z)
 { 

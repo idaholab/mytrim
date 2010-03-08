@@ -33,6 +33,11 @@ void simconfType::read_snuc()
 
   snprintf( fname, 500, "%s/SNUC03.dat", getenv("HOME") );
   FILE *sf = fopen( fname, "rt" );
+  if( sf == 0 )
+  {
+    fprintf( stderr, "unable to open %s\n", fname );
+    exit(1);
+  }
   for( int i = 0; i < 92; i++ )
     for( int j = i; j < 92; j++ )
     {
@@ -71,3 +76,4 @@ void simconfType::read_scoef()
     fscanf( sf, "%*d %f\n", &scoef[i].lfctr );
   fclose( sf );
 }
+

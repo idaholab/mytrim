@@ -43,6 +43,8 @@
 #include "invert.h"
 #include <r250.h>
 
+#include "functions.h"
+
 int main(int argc, char *argv[])
 {
   char fname[200];
@@ -228,7 +230,7 @@ int main(int argc, char *argv[])
           for( int i = 0; i < 3; i++ ) 
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
-            if( sample->bc[i] == PBC ) dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
+            if( sample->bc[i] == sampleBase::PBC ) dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
 	    pos1[i] = pka->pos[i] + dif[i];
 	    //printf( "%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i] );
           }
