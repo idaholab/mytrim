@@ -2,7 +2,7 @@
 #include "malloc.h"
 
 #include "sample_clusters.h"
-#include "r250c/r250.h"
+#include <r250.h>
 
 
 sampleClusters::sampleClusters( float x, float y, float z )  : sampleBase( x, y, z)

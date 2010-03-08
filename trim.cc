@@ -3,7 +3,7 @@
 
 #include "trim.h"
 #include "simconf.h"
-#include "r250c/r250.h"
+#include <r250.h>
 
 // all energies are in eV
 void v_cross( const float *a1, const float *a2, float *b )

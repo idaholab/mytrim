@@ -2,7 +2,6 @@
 #include "malloc.h"
 
 #include "sample_wire.h"
-#include "r250c/r250.h"
 
 
 sampleWire::sampleWire( float x, float y, float z )  : sampleBase( x, y, z)

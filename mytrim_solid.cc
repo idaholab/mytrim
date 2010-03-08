@@ -27,14 +27,14 @@
 #include <stdlib.h>
 #include <queue>
 
-#include "simconf.h"
-#include "element.h"
-#include "material.h"
-#include "sample_solid.h"
-#include "ion.h"
-#include "trim.h"
-#include "invert.h"
-#include "r250c/r250.h"
+#include <mytrim/simconf.h>
+#include <mytrim/element.h>
+#include <mytrim/material.h>
+#include <mytrim/sample_solid.h>
+#include <mytrim/ion.h>
+#include <mytrim/trim.h>
+#include <mytrim/invert.h>
+#include <r250.h>
 
 int main(int argc, char *argv[])
 {
