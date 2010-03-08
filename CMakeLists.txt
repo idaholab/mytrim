@@ -6,7 +6,7 @@ find_library(R250C_LIB NAMES r250c PATHS /opt/lib)
 # build the mytrim library
 add_library(mytrim invert.cc element.cc material.cc sample.cc ion.cc trim.cc simconf.cc sample_clusters.cc sample_solid.cc sample_wire.cc)
 install(TARGETS mytrim ARCHIVE DESTINATION lib)
-install(FILES simconf.h element.h material.h ion.h trim.h invert.h sample.h sample_solid.h sample_wire.h DESTINATION include/mytrim)
+install(FILES simconf.h element.h material.h ion.h trim.h invert.h sample.h DESTINATION include/mytrim)
 install(FILES sample_clusters.h DESTINATION include/mytrim)
 install(FILES sample_solid.h    DESTINATION include/mytrim)
 install(FILES sample_wire.h     DESTINATION include/mytrim)

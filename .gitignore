@@ -1,0 +1,12 @@
+*.int 
+*.net 
+*.vac 
+*.Erec 
+*.clcoor 
+*.dist 
+*.phon 
+*~ 
+*.o 
+*.orig 
+*.ps 
+*.pl

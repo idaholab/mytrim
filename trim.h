@@ -35,12 +35,12 @@ protected:
 
 
 //
-// Only follow the primary recoils
+// store a history of all recoils
 //
 class trimHistory : public trimBase {
 public:
   trimHistory( sampleBase *sample_ ) : trimBase( sample_ ) {};
-  vector<double>[3] pos_hist;
+  vector<double> pos_hist[3];
 protected:
   virtual bool spawnRecoil() 
   { 
@@ -123,7 +123,7 @@ protected:
   FILE *phonfile;
   virtual bool spawnRecoil() 
   { 
-    if( recoil->e > 10.0 ) retur0n true;
+    if( recoil->e > 10.0 ) return true;
     else
     {
       fprintf( phonfile, "%f %f %f %f %d %d %e\n", recoil->e, recoil->pos[0], recoil->pos[1], recoil->pos[2], pka->z1, pka->id, pka->t );  
