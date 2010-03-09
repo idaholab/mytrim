@@ -14,7 +14,7 @@ install(FILES simconf.h element.h material.h ion.h trim.h invert.h sample.h DEST
 install(FILES sample_clusters.h DESTINATION include/mytrim)
 install(FILES sample_solid.h    DESTINATION include/mytrim)
 install(FILES sample_wire.h     DESTINATION include/mytrim)
-install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat DESTINATION ${DATA_INSTALL})
+install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat DESTINATION ${DATA_DIR})
 
 # build the test trim programs
 set(PROGRAMS mytrim_clusters mytrim_solid mytrim_uo2 mytrim_wire)
