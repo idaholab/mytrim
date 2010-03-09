@@ -4,12 +4,17 @@ project(mytrim)
 find_library(R250C_LIB NAMES r250c PATHS /opt/lib)
 
 # build the mytrim library
+# put install prefix somehow into config file
+set( DATA_INSTALL /share/mytrim)
+set( DATA_DIR ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL} )
+configure_file( ${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_SOURCE_DIR}/config.h )
 add_library(mytrim invert.cc element.cc material.cc sample.cc ion.cc trim.cc simconf.cc sample_clusters.cc sample_solid.cc sample_wire.cc)
 install(TARGETS mytrim ARCHIVE DESTINATION lib)
 install(FILES simconf.h element.h material.h ion.h trim.h invert.h sample.h DESTINATION include/mytrim)
 install(FILES sample_clusters.h DESTINATION include/mytrim)
 install(FILES sample_solid.h    DESTINATION include/mytrim)
 install(FILES sample_wire.h     DESTINATION include/mytrim)
+install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat DESTINATION ${DATA_INSTALL})
 
 # build the test trim programs
 set(PROGRAMS mytrim_clusters mytrim_solid mytrim_uo2 mytrim_wire)

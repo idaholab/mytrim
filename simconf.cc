@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "config.h"
 #include "simconf.h"
 
 simconfType *simconf;
@@ -31,7 +32,8 @@ void simconfType::read_snuc()
 {
   char buf[200], fname[500];
 
-  snprintf( fname, 500, "%s/SNUC03.dat", getenv("HOME") );
+  //snprintf( fname, 500, "%s/SNUC03.dat", getenv("HOME") );
+  snprintf( fname, 500, "%s/SNUC03.dat", DATA_DIR );
   FILE *sf = fopen( fname, "rt" );
   if( sf == 0 )
   {
@@ -54,7 +56,8 @@ void simconfType::read_scoef()
   char buf[2001], fname[500];
   FILE *sf;
 
-  snprintf( fname, 500, "%s/SCOEF.95A", getenv("HOME") );
+  //snprintf( fname, 500, "%s/SCOEF.95A", getenv("HOME") );
+  snprintf( fname, 500, "%s/SCOEF.95A", DATA_DIR );
   sf = fopen( fname, "rt" );
   fgets( buf, 2000, sf ); // header
   fgets( buf, 2000, sf ); // header
@@ -69,7 +72,8 @@ void simconfType::read_scoef()
   }
   fclose( sf );
 
-  snprintf( fname, 500, "%s/SLFCTR.dat", getenv("HOME") );
+  //snprintf( fname, 500, "%s/SLFCTR.dat", getenv("HOME") );
+  snprintf( fname, 500, "%s/SLFCTR.dat", DATA_DIR );
   sf = fopen( fname, "rt" );
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
