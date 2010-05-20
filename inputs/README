@@ -1,0 +1,3 @@
+grep RP sio_on_si_recoilpos.dat | cut -d' ' -f2 | ./histo.pl > sio_on_si_recoilpos.histo
+grep RP ag_on_cu_recoilpos.dat | cut -d' ' -f2 | ./histo.pl > ag_on_cu_recoilpos.histo 
+
