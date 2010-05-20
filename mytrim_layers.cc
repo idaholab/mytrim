@@ -26,18 +26,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <queue>
+#include <iostream>
+#include <string>
+#include <limits>
+using namespace std;
 
-/*#include <mytrim/simconf.h>
-#include <mytrim/element.h>
-#include <mytrim/material.h>
-#include <mytrim/sample_solid.h>
-#include <mytrim/ion.h>
-#include <mytrim/trim.h>
-#include <mytrim/invert.h>*/
 #include "simconf.h"
 #include "element.h"
 #include "material.h"
-#include "sample_solid.h"
+#include "sample_layers.h"
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
@@ -48,9 +45,9 @@
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 4 ) // 2
+  if( argc != 2 ) // 2
   {
-    fprintf( stderr, "syntax:\nmytrim_layers basename r Cbfactor\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n" );
+    cerr << "syntax:\nmytrim_layers basename" << endl;
     return 1;
   }
 
@@ -68,41 +65,40 @@ int main(int argc, char *argv[])
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid( 200.0, 200.0, 200.0 );
+  double sx, sy, sz;
+  cin >> sx >> sy >> sz;
+  cin.ignore( numeric_limits<streamsize>::max(), '\n' );
+  cout << "SS " << sx << ' ' << sy << ' ' << sz << endl;
 
+  sampleLayers *sample = new sampleLayers( sx, sy, sz );
   trimBase *trim = new trimBase( sample );
-
-
-  //float r = 10.0;
-  float r = atof( argv[2] ); //10.0;
-  float Cbf = atof( argv[3] );
-
-
-  // float atp = 0.1; // 10at% Mo 90at%Cu
-  float v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  float v_cl = 4.0/3.0 * M_PI * cub(r); 
-  int n_cl; // = atp * scoef[29-1].atrho * v_sam / ( v_cl * ( ( 1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho ) );
-
-  n_cl = 1;//v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
-
-  materialBase *material;
-  elementBase *element;
 
   // Read Materials description from stdin
   int nlayer;
   double lthick, lrho, nelem;
   string lename;
   cin >> nlayer;
+  cin.ignore( numeric_limits<streamsize>::max(), '\n' );
+  cout << "n_layers=" << nlayer << endl;
 
+  materialBase *material;
+  elementBase *element;
   for( int i = 0; i < nlayer; i++ )
   {
     cin >> lename >> lthick >> lrho >> nelem;
+    cin.ignore( numeric_limits<streamsize>::max(), '\n');
+    cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho=" 
+         << lrho << "g/ccm  n_elements=" << nelem << endl;
+
     material = new materialBase( lrho ); // rho
 
     for( int j = 0; j < nelem; j++ )
     {
       element = new elementBase;
-      cin >> lename >> element->z >> element->m >> element->t = 1.0;
+      cin >> lename >> element->z >> element->m >> element->t;
+      cin.ignore( numeric_limits<streamsize>::max(), '\n');
+      cout << "  Element: " << lename << "  Z=" << element->z 
+           << "  m=" << element->m << "  fraction=" << element->t << endl;
       material->element.push_back( element );
     }
 
@@ -122,8 +118,8 @@ int main(int argc, char *argv[])
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  float A1, A2, Etot, E1, E2;
-  int Z1, Z2;
+  float A = 74.0, E = 1.0e5;
+  int Z = 36;
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -136,8 +132,8 @@ int main(int argc, char *argv[])
   ionBase *ff1, *ff2, *pka;
   int id = 1;
 
-  // 5 fission events
-  for( int n = 0; n < 10; n++ ) // 10 ff
+  // 1000 PKA
+  for( int n = 0; n < 1000; n++ )
   {
     if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -147,58 +143,21 @@ int main(int argc, char *argv[])
     ff1->md = 0;
     ff1->id = simconf->id++;
 
-    // generate fission fragment data
-    A1 = m->x( dr250() );
-//A1 = 131;
+    ff1->z1 = Z;
+    ff1->m1 = A;
+    ff1->e  = E;
 
-    A2 = 235.0 - A1;
-    Etot = e->x( dr250() );
-    E1 = Etot * A2 / ( A1 + A2 );
-//E1 = 100;
+    ff1->dir[0] = 1;
+    ff1->dir[1] = 0;
+    ff1->dir[2] = 0;
 
-    E2 = Etot - E1;
-    Z1 = round( ( A1 * 92.0 ) / 235.0 );
-//Z1 = 54;
-
-    Z2 = 92 - Z1;
-
-/*    ff1->z1 = Z1;
-    ff1->m1 = A1;
-    ff1->e  = E1 * 1.0e6;*/
-    
-    ff1->z1 = 53;
-    ff1->m1 = 127;
-    ff1->e  = 70.0 * 1.0e6;
-
-    do
-    { 
-      for( int i = 0; i < 3; i++ ) ff1->dir[i] = dr250() - 0.5;
-      norm = v_dot( ff1->dir, ff1->dir );
-    }
-    while( norm <= 0.0001 );
-    v_scale( ff1->dir, 1.0 / sqrtf( norm ) );
-
-    for( int i = 0; i < 3; i++ ) ff1->pos[i] = dr250() * sample->w[i];
+    ff1->pos[0] = 0;
+    ff1->pos[1] = sample->w[1] / 2.0;
+    ff1->pos[2] = sample->w[2] / 2.0;
 
     ff1->set_ef();
     recoils.push( ff1 );
 
-/*
-    ff2 = new ionBase( *ff1 ); // copy constructor
-    //ff1->id = simconf->id++;
-
-    // reverse direction
-    for( int i = 0; i < 3; i++ ) ff2->dir[i] *= -1.0;
-
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
-    ff2->e  = E2 * 1.0e6;
-
-    ff2->set_ef();
-    recoils.push( ff2 );
-
-    fprintf( stderr, "A1=%f Z1=%d (%f MeV)\tA2=%f Z2=%d (%f MeV)\n", A1, Z1, E1, A2, Z2, E2 );
-*/
     while( !recoils.empty() )
     {
       pka = recoils.front();
@@ -207,21 +166,9 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if( pka->z1 == 54  )
-      {
-	// mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
-	if( pka->e > 200 && pka->e < 12000 && pka->md == 0 ) pka->md = 1;
-
-        if( pka->gen > 0 )
-        {
-          // output energy and recoil generation
-          fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
-        }
-
-      }
+      fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
 
       // follow this ion's trajectory and store recoils
-
       trim->trim( pka, recoils );
 
       // do ion analysis/processing AFTER the cascade here
