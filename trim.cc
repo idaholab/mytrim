@@ -41,7 +41,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
   do // cycle for each collision
   {
     r2 = dr250();
-    hh = dr250();
+    hh = dr250(); // selects element inside material to scatter from
 
     ic++;
     material = sample->lookupMaterial( pka->pos );
@@ -57,7 +57,12 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // correct for maximum available range in current material
     range = sample->rangeMaterial( pka->pos, pka->dir );
-    ls = fmin( ls, range );
+    if( range < ls )
+    {
+      ls = range;
+      // correct pmax to correspond with new ls
+      material->pmax = 1.0 / sqrtf(  M_PI * ls * material->arho );
+    }
 
     p = material->pmax * sqrtf( r2 );
 

@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
   int id = 1;
 
   // 1000 PKA
-  for( int n = 0; n < 1000; n++ )
+  for( int n = 0; n < 100000; n++ )
   {
     if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -173,11 +173,11 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing AFTER the cascade here
 
-      // pka is Xe
-      if( pka->z1 == 54  ) 
+      // pka is O or Ag
+      if( pka->z1 == 8 || pka->z1 == 47 ) 
       {
         // output
-        //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
+        printf( "RP %f\n", pka->pos[0] );
       }
 
       // done with this recoil

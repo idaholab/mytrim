@@ -26,7 +26,7 @@ float sampleLayers::rangeMaterial( float* pos, float* dir )
   {
     range = ( 100.0 - pos[0] ) / dir[0];
     if( range > 0 )
-      return range;
+      return range + 0.0001 / dir[0]; // make it end up _just_ in the next material
   }
 
   return 100000.0;
