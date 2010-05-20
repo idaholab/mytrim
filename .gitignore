@@ -1,3 +1,7 @@
+mybuild
+fptrim
+rndtest*
+runs
 config.h
 *.int 
 *.net 

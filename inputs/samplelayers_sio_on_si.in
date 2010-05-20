@@ -1,0 +1,8 @@
+200 200 200     # System size x,y,z in ang
+2               # Number of Layers
+SiO2 100 2.0 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Si 14 28 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+Si 100 2.3290 1    # Layer2_title thickness[ang] density[g/ccm] number of elements
+Si 14 28 1.0    # Element1_name Z mass stoichiometry
+
