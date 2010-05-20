@@ -19,6 +19,7 @@ struct sampleBase {
 
   void averages( const ionBase *pka );
   virtual materialBase* lookupMaterial( float* pos ) = 0;
+  virtual float rangeMaterial( float* pos, float* dir ) { return 100000.0; };
 
   sampleBase( float x = 10000.0, float y = 10000.0, float z = 10000.0 );
 };

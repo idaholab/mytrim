@@ -10,6 +10,7 @@ struct sampleLayers : sampleBase {
 
   sampleLayers( float x, float y, float z ): sampleBase( x, y, z) {};
   virtual materialBase* lookupMaterial( float* pos );
+  virtual float rangeMaterial( float* pos, float* dir );
 };
 
 #endif

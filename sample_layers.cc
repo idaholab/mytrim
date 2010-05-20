@@ -16,3 +16,18 @@ materialBase*  sampleLayers::lookupMaterial( float* pos )
   else
     return material[i];
 }
+
+float sampleLayers::rangeMaterial( float* pos, float* dir )
+{
+  // assume dir is a normalized vector
+  float range;
+
+  if( dir[0] != 0.0 ) 
+  {
+    range = ( 100.0 - pos[0] ) / dir[0];
+    if( range > 0 )
+      return range;
+  }
+
+  return 100000.0;
+}

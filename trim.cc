@@ -33,6 +33,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
   float rdir[3], perp[3], norm, psi;
 
   float p1, p2;
+  float range;
   bool terminate;
 //if( simconf->fullTraj )
   r1 = dr250();
@@ -54,10 +55,14 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     if( ic == 1 ) ls = r1 * fmin( ls, simconf->cw );
 
+    // correct for maximum available range in current material
+    range = sample->rangeMaterial( pka->pos, pka->dir );
+    ls = fmin( ls, range );
+
     p = material->pmax * sqrtf( r2 );
-    
+
     // if(hh>1.0 || r2>1.0 ) { fprintf(stderr,"weird random number!\n");}
-    
+
     // which atom in the material will be hit
     for( nn = 0; nn < material->element.size(); nn++ )
     {
@@ -75,7 +80,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     see = material->getrstop( pka );
     //if( pka.e < e0kev ) see = material->se[0] * sqrtf( pka.e / e0kev );
     dee = ls * see;
-    
+
     if( eps > 10.0 )
     {
       // use rutherford scattering
@@ -95,7 +100,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
         rr = -2.7 * logf( eps * rr );
         if( rr >= b ) r = rr;
       }
-      
+
       do
       {
         // universal potential
@@ -105,21 +110,21 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
         ex4 = 0.028171 * exp( -0.20162 * r );
         v = ( ex1 + ex2 + ex3 + ex4 ) / r;
         v1 = -( v + 3.1998 *ex1 + 0.94229 * ex2 + 0.4029 * ex3 + 0.20162 * ex4 ) / r;
-        
+
         fr = b*b / r + v * r / eps -r;
         fr1 = - b*b / ( r*r ) + ( v + v1 * r ) / eps - 1.0;
         q = fr / fr1;
         r -= q;
       } while( fabs( q / r ) > 0.001 ); // [TRI03110]
-      
+
       roc = -2.0 * ( eps - v ) / v1;
       sqe = sqrtf( eps );
-      
+
       // 5-parameter magic scattering calculation (universal pot.)
       cc = ( 0.011615 + sqe ) / ( 0.0071222 + sqe );
       aa = 2.0 * eps * ( 1.0 + ( 0.99229 / sqe ) ) * pow( b, cc ); 
       ff = ( sqrtf( aa*aa + 1.0 ) - aa ) * ( ( 9.3066 + eps ) / ( 14.813 + eps ) );
-      
+
       delta = ( r - b ) * aa * ff / ( ff + 1.0 );
       co = ( b + delta + roc ) / ( r + roc );
       c2 = co*co;
@@ -128,17 +133,20 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       ct = 2.0 * c2 - 1.0;
       st = sqrtf( 1.0 - ct*ct );
     } // end non-rutherford scattering
-    
+
     // energy transferred to recoil atom
     den = material->element[nn]->ec * s2 * pka->e;
 
     // advance clock pathlength/velocity
-    pka->t += 10.1811859 * ( ls - simconf->tau ) / sqrt( 2.0 * pka->e / pka->m1 ); 
+    pka->t += 10.1811859 * ( ls - simconf->tau ) / sqrt( 2.0 * pka->e / pka->m1 );
     // time in fs! m in u, l in Ang, e in eV 
     // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
-//printf( "se %d  %f [eV]  %f [keV/nm]  %f [nm]\n", pka->id, pka->e, see/100.0, pl/10.0 );
+    //printf( "se %d  %f [eV]  %f [keV/nm]  %f [nm]\n", pka->id, pka->e, see/100.0, pl/10.0 );
+
     pka->e -= dee; // electronic energy loss
-    if( pka->e < 0.0 && den > 100.0 ) fprintf( stderr, " electronic energy loss stopped the ion. Broken recoil!!\n" );
+    if( pka->e < 0.0 && den > 100.0 ) 
+      fprintf( stderr, " electronic energy loss stopped the ion. Broken recoil!!\n" );
+
     p1 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum before collision
     pka->e -= den; if( pka->e < 0.0 ) pka->e = 0.0;
     p2 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum after collision 
