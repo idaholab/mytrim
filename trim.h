@@ -20,7 +20,7 @@ protected:
   materialBase *material;
 
   // by default only follow recoils with E > 100eV
-  virtual bool spawnRecoil() { return recoil->e > 200.0; };
+  virtual bool spawnRecoil() { return recoil->e > 12.0; };
 };
 
 //
@@ -47,7 +47,7 @@ protected:
     pos_hist[0].push_back(pka->pos[0]);
     pos_hist[1].push_back(pka->pos[1]);
     pos_hist[2].push_back(pka->pos[2]);
-    return recoil->e > 200.0;
+    return recoil->e > 10.0;
   };
 };
 

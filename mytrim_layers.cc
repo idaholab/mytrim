@@ -132,8 +132,11 @@ int main(int argc, char *argv[])
   ionBase *ff1, *ff2, *pka;
   int id = 1;
 
-  // 1000 PKA
-  for( int n = 0; n < 100000; n++ )
+  int nrec = 0;
+  double sum_r2, opos[3];
+
+  // 100000 PKA
+  for( int n = 0; n < 1000; n++ )
   {
     if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -168,16 +171,25 @@ int main(int argc, char *argv[])
 
       fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
 
+      for( int i = 0; i < 3; i++ )
+        opos[i] = pka->pos[i];
+
       // follow this ion's trajectory and store recoils
       trim->trim( pka, recoils );
 
       // do ion analysis/processing AFTER the cascade here
+      if( pka->z1 != Z )
+      {
+        for( int i = 0; i < 3; i++ )
+          sum_r2 += sqr( opos[i] - pka->pos[i] );
+        nrec++;
+      }
 
       // pka is O or Ag
       if( pka->z1 == 8 || pka->z1 == 47 ) 
       {
         // output
-        printf( "RP %f\n", pka->pos[0] );
+        //printf( "RP %f\n", pka->pos[0] );
       }
 
       // done with this recoil
@@ -190,5 +202,6 @@ int main(int argc, char *argv[])
   fclose( rdist );
   fclose( erec );
 
+  cout << "n=" << nrec << " sum_r2=" << sum_r2 << endl;
   return EXIT_SUCCESS;
 }

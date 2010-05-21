@@ -6,6 +6,8 @@
 #include <r250.h>
 
 #include "functions.h"
+#include <iostream>
+using namespace std;
 
 //
 // all energies are in eV
@@ -47,26 +49,34 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     material = sample->lookupMaterial( pka->pos );
     if( material == 0 ) break;
 
-    eps =  pka->e * material->f;
     // setup max. impact parameter
-    eeg = sqrtf( eps * material->epsdg );
+    eps =  pka->e * material->f;
+    eeg = sqrtf( eps * material->epsdg ); // [TRI02450]
     material->pmax = material->a / ( eeg + sqrtf( eeg ) + 0.125 * pow( eeg, 0.1 ) );
-    ls = 1.0 / ( M_PI * pow( material->pmax, 2.0 ) * material->arho );
 
+    ls = 1.0 / ( M_PI * pow( material->pmax, 2.0 ) * material->arho );
     if( ic == 1 ) ls = r1 * fmin( ls, simconf->cw );
 
     // correct for maximum available range in current material
+    #ifdef RANGECORRECT
     range = sample->rangeMaterial( pka->pos, pka->dir );
     if( range < ls )
     {
+/*       cout << "range=" << range << " ls=" << ls 
+            << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << endl;
+      cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << endl;
+      cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << endl;
+      cout << "CC " << endl;*/
+
       ls = range;
+
       // correct pmax to correspond with new ls
       material->pmax = 1.0 / sqrtf(  M_PI * ls * material->arho );
     }
+    #endif
 
+    // choose impact parameter
     p = material->pmax * sqrtf( r2 );
-
-    // if(hh>1.0 || r2>1.0 ) { fprintf(stderr,"weird random number!\n");}
 
     // which atom in the material will be hit
     for( nn = 0; nn < material->element.size(); nn++ )

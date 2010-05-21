@@ -1,0 +1,7 @@
+1000 200 200     # System size x,y,z in ang
+2               # Number of Layers
+Ag 100 10.49 1  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Ag 47 108 1.0   # Element1_name Z mass stoichiometry
+Si 900 2.3290 1    # Layer2_title thickness[ang] density[g/ccm] number of elements
+Si 14 28 1.0    # Element1_name Z mass stoichiometry
+

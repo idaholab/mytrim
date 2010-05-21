@@ -1,4 +1,5 @@
 #include "sample_layers.h"
+#include <cmath>
 
 materialBase*  sampleLayers::lookupMaterial( float* pos )
 {
@@ -25,8 +26,10 @@ float sampleLayers::rangeMaterial( float* pos, float* dir )
   if( dir[0] != 0.0 ) 
   {
     range = ( 100.0 - pos[0] ) / dir[0];
-    if( range > 0 )
-      return range + 0.0001 / dir[0]; // make it end up _just_ in the next material
+    if( range > 0.0 )
+    {
+      return range + fabs( 1.0e-10 / dir[0] ); // make it end up _just_ in the next material
+    }
   }
 
   return 100000.0;
