@@ -71,7 +71,8 @@ int main(int argc, char *argv[])
   cout << "SS " << sx << ' ' << sy << ' ' << sz << endl;
 
   sampleLayers *sample = new sampleLayers( sx, sy, sz );
-  trimBase *trim = new trimBase( sample );
+  //trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimRecoils( sample );
 
   // Read Materials description from stdin
   int nlayer;
@@ -133,9 +134,9 @@ int main(int argc, char *argv[])
   int id = 1;
 
   // 1000 PKA
-  for( int n = 0; n < 100000; n++ )
+  for( int n = 0; n < 10000000; n++ )
   {
-    if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+    if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
@@ -166,7 +167,7 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
+      //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
 
       // follow this ion's trajectory and store recoils
       trim->trim( pka, recoils );
