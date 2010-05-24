@@ -24,13 +24,23 @@ protected:
 };
 
 //
-// Only follow the primary recoils
+// Only follow the primary knock ons
 //
 class trimPrimaries : public trimBase {
 public:
   trimPrimaries( sampleBase *sample_ ) : trimBase( sample_ ) {};
 protected:
   virtual bool spawnRecoil() { return false; };
+};
+
+//
+// Only follow the first generation of recoils
+//
+class trimRecoils : public trimBase {
+  public:
+    trimRecoils( sampleBase *sample_ ) : trimBase( sample_ ) {};
+  protected:
+    virtual bool spawnRecoil() { return recoil->gen <= 1; };
 };
 
 
