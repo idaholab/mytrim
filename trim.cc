@@ -173,16 +173,14 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // find new position, save old direction to recoil
     v_norm( pka->dir );
-    recoil = new ionBase;
+    recoil = pka->spawnRecoil();
     for( int i = 0; i < 3; i++ ) 
     {
-      recoil->pos[i] = pka->pos[i]; 
       // used to assign the new position to the recoil, but
       // we have to make sure the recoil starts in the appropriate material!
       pka->pos[i] += pka->dir[i] * ( ls - simconf->tau );
       recoil->dir[i] = pka->dir[i] * p1;
     }
-    recoil->t = pka->t;
     recoil->e = den;
     // displacement energy...
 /*    if( recoil->z1 == 54 )  
@@ -212,18 +210,18 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       pka->dir[i] += perp[i] * sin( psi );
       recoil->dir[i] -= pka->dir[i] * p2;
     }
-    
+
     // end cascade if a CUT boundary is crossed
     terminate = false;
     for( int i = 0; i < 3; i++ ) 
-      if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) ) terminate = true;
-    
+      if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) ) 
+        terminate = true;
+
     // if recoil energy > 100.0 eV, put the recoil on the stack
     if( spawnRecoil() && !terminate )
     {
       v_norm( recoil->dir );
       recoil->tag = material->tag;
-      recoil->gen = pka->gen + 1;
       if( pka->md > 0 ) 
         recoil->md = pka->md +1;
       else 

@@ -13,6 +13,11 @@ struct ionBase {
   float ef;
 
   ionBase();
+  ionBase( ionBase* parent );
+  virtual ~ionBase() {};
+
+  virtual ionBase* spawnRecoil();
+
   void set_ef();
 };
 
