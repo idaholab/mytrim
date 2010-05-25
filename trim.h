@@ -40,7 +40,7 @@ class trimRecoils : public trimBase {
   public:
     trimRecoils( sampleBase *sample_ ) : trimBase( sample_ ) {};
   protected:
-    virtual bool spawnRecoil() { return recoil->gen <= 1; };
+    virtual bool spawnRecoil() { return ( recoil->gen <= 1 ); };
 };
 
 

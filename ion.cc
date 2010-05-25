@@ -13,7 +13,7 @@ void ionBase::set_ef()
   ef = fmax( 5.0, 0.00001 * e ); // final energy
 }
 
-ionBase::ionBase( ionBase *parent )
+void ionBase::parent( ionBase *parent )
 {
   ef = 5.0; // final energy
 
@@ -26,5 +26,7 @@ ionBase::ionBase( ionBase *parent )
 
 ionBase* ionBase::spawnRecoil()
 {
-  return new ionBase(this);
+  ionBase *recoil = new ionBase;
+  recoil->parent(this);
+  return recoil;
 }

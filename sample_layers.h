@@ -1,5 +1,5 @@
-#ifndef SAMPLE_SOLID_H
-#define SAMPLE_SOLID_H 1
+#ifndef SAMPLE_LAYERS_H
+#define SAMPLE_LAYERS_H 1
 
 #include "sample.h"
 #include <vector>

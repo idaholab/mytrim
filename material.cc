@@ -24,7 +24,7 @@ void materialBase::prepare()
     az += float( element[i]->z ) * element[i]->t;
   }
 
-  arho = rho * 0.6022 / am;
+  arho = rho * 0.6022 / am; //[TRI00310] atoms/Ang^3
 }
 
 // make sure layers are prepare'd first!

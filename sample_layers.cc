@@ -13,7 +13,7 @@ materialBase*  sampleLayers::lookupMaterial( float* pos )
   }
 
   if( i >= material.size() )
-    return material[ material.size() - 1 ];
+    return material[ material.size() - 1 ]; // or 0, but we leave that to be determined by bc[] == CUT
   else
     return material[i];
 }

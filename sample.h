@@ -17,7 +17,7 @@ struct sampleBase {
   float w[3]; // simulation volume
   sampleBoundary bc[3]; // boundary conditions
 
-  void averages( const ionBase *pka );
+  virtual void averages( const ionBase *pka );
   virtual materialBase* lookupMaterial( float* pos ) = 0;
   virtual float rangeMaterial( float* pos, float* dir ) { return 100000.0; };
 

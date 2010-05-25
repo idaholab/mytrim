@@ -37,7 +37,6 @@ using namespace std;
 #include "sample_layers.h"
 #include "ion.h"
 #include "trim.h"
-#include "invert.h"
 #include <r250.h>
 
 #include "functions.h"
@@ -70,9 +69,8 @@ int main(int argc, char *argv[])
   cin.ignore( numeric_limits<streamsize>::max(), '\n' );
   cout << "SS " << sx << ' ' << sy << ' ' << sz << endl;
 
-  sampleLayers *sample = new sampleLayers( sx, sy, sz );
-  //trimBase *trim = new trimBase( sample );
-  trimBase *trim = new trimRecoils( sample );
+  sampleDynamic *sample = new sampleDynamic( sx, sy, sz );
+  trimBase *trim = new trimBase( sample );
 
   // Read Materials description from stdin
   int nlayer;
@@ -84,6 +82,7 @@ int main(int argc, char *argv[])
 
   materialBase *material;
   elementBase *element;
+
   for( int i = 0; i < nlayer; i++ )
   {
     cin >> lename >> lthick >> lrho >> nelem;
@@ -116,9 +115,6 @@ int main(int argc, char *argv[])
   int jumps;
   float dif[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
-
   float A = 74.0, E = 1.0e5;
   int Z = 36;
 
@@ -132,12 +128,13 @@ int main(int argc, char *argv[])
 
   ionBase *ff1, *ff2, *pka;
   int id = 1;
+  int layer1, layer2;
 
   int nrec = 0;
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 1000000; n++ )
+  for( int n = 0; n < 100; n++ )
   {
     if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -168,31 +165,45 @@ int main(int argc, char *argv[])
       recoils.pop();
       sample->averages( pka );
 
+      //
       // do ion analysis/processing BEFORE the cascade here
+      //
+
+      // get layer of origin
+      layer1 = sample->lookupLayer(pka->pos);
 
       //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
+      //for( int i = 0; i < 3; i++ )
+      // opos[i] = pka->pos[i];
 
-      for( int i = 0; i < 3; i++ )
-        opos[i] = pka->pos[i];
-
+      //
       // follow this ion's trajectory and store recoils
-      if( pka->z1 == 8 || pka->z1 == 47 || pka->z1 == Z )
-        trim->trim( pka, recoils );
+      //
+      trim->trim( pka, recoils );
 
+
+      //
       // do ion analysis/processing AFTER the cascade here
-      if( pka->z1 != Z )
+      //
+
+      // potentially move atom between layers
+      layer2 = sample->lookupLayer(pka->pos);
+      if( layer2 != layer1 || pka->gen == 0 )
       {
-        for( int i = 0; i < 3; i++ )
-          sum_r2 += sqr( opos[i] - pka->pos[i] );
-        nrec++;
+        // add to destination layer
+        sample->addAtomsToLayer( layer2, 1, pka->z1 );
+
+        // remove from source layer
+        if( pka->gen > 0 )
+          sample->addAtomsToLayer( layer1, -1, pka->z1 );
       }
 
-      // pka is O or Ag
-      if( pka->z1 == 8 || pka->z1 == 47 ) 
-      {
-        // output
-        printf( "RP %f %d %d\n", pka->pos[0], n,  pka->gen);
-      }
+      //   // pka is O or Ag
+      //   if( pka->z1 == 8 || pka->z1 == 47 ) 
+      //   {
+      //     // output
+      //     printf( "RP %f %d %d\n", pka->pos[0], n,  pka->gen);
+      //   }
 
       // done with this recoil
       delete pka;
