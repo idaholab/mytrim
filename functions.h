@@ -1,6 +1,8 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
+#include <cmath>
+
 inline void v_cross( const float *a1, const float *a2, float *b )
 {
     for( int i = 0; i < 3; i++ ) b[i] = a1[(i+1)%3] * a2[(i+2)%3] - a1[(i+2)%3] * a2[(i+1)%3];

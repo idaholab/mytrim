@@ -64,7 +64,7 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   }
 
   // this many atoms in layer
-  int na = material[layer]->arho * simconf->ss[1] * simconf->ss[2] * layerThickness[layer];
+  int na = material[layer]->arho * w[1] * w[2] * layerThickness[layer];
 
   // change layer content by n atoms of volume X, try to keep density consistent...
   layerThickness[layer] += na/n * 1.0/simconf->scoef[Z-1].atrho;

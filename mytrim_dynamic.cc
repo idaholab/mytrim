@@ -34,7 +34,7 @@ using namespace std;
 #include "simconf.h"
 #include "element.h"
 #include "material.h"
-#include "sample_layers.h"
+#include "sample_dynamic.h"
 #include "ion.h"
 #include "trim.h"
 #include <r250.h>
@@ -215,6 +215,6 @@ int main(int argc, char *argv[])
   fclose( rdist );
   fclose( erec );
 
-  cout << "n=" << nrec << " sum_r2=" << sum_r2 << endl;
+  //cout << "n=" << nrec << " sum_r2=" << sum_r2 << endl;
   return EXIT_SUCCESS;
 }
