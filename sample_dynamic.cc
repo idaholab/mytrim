@@ -63,11 +63,24 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
     material[layer]->element.push_back(element);
   }
 
-  // this many atoms in layer
-  int na = material[layer]->arho * simconf->ss[1] * simconf->ss[2] * layerThickness[layer];
+  // mass of layer (g/cm^3 * Ang^3 = 10^-24 g)
+  double ml = material[layer]->rho * w[1] * w[2] * layerThickness[layer];
+  int nl    = material[layer]->arho * w[1] * w[2] * layerThickness[layer];
 
-  // change layer content by n atoms of volume X, try to keep density consistent...
-  layerThickness[layer] += na/n * 1.0/simconf->scoef[Z-1].atrho;
+  // mass change of layer ( g/mole = g/(0.6022*10^24))
+  double ma = 0.6022 * material[layer]->element[i]->m * double(n);
+
+  // keep density consistent...
+  layerThickness[layer] += ma / ( material[layer]->rho * w[1] * w[2] );
+
+  // change stoichiometry (arho 1/ang^3 * ang^3 )
+  for( i = 0; i < material[layer]->element.size(); i++ )
+  {
+    if( material[layer]->element[i]->z == Z )
+      material[layer]->element[i]->t = ( material[layer]->element[i]->t * nl + n ) / ( nl + n );
+    else
+      material[layer]->element[i]->t = ( material[layer]->element[i]->t * nl ) / ( nl + n );
+  }
 
   // mark as dirty, just in case, and re-prepare to update averages
   layerUpdated[i] = false;
