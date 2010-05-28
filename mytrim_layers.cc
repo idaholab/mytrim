@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  float A = 74.0, E = 1.0e5;
-  int Z = 36;
+  //float A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  float A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );

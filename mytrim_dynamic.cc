@@ -34,7 +34,7 @@ using namespace std;
 #include "simconf.h"
 #include "element.h"
 #include "material.h"
-#include "sample_layers.h"
+#include "sample_dynamic.h"
 #include "ion.h"
 #include "trim.h"
 #include <r250.h>
@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
   int jumps;
   float dif[3];
 
-  float A = 74.0, E = 1.0e5;
-  int Z = 36;
+  //float A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  float A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
