@@ -1,7 +1,7 @@
-1000 200 200     # System size x,y,z in ang
+2500 200 200     # System size x,y,z in ang
 2               # Number of Layers
 Cu 500 8.94 1   # Layer2_title thickness[ang] density[g/ccm] number of elements
 Cu 29 63.7 1.0  # Element1_name Z mass stoichiometry
-Al 500 2.7 1  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Al 2000 2.7 1  # Layer1_title thickness[ang] density[g/ccm] number of elements
 Al 13 27 1.0   # Element1_name Z mass stoichiometry
 

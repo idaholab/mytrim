@@ -55,6 +55,8 @@ void materialBase::average( const ionBase *pka )
     element[i]->fi = element[i]->ai * element[i]->m / 
                      ( float(pka->z1) * float(element[i]->z) * 14.4 * ( pka->m1 + element[i]->m ) );
   }
+
+  dirty = false;
 }
 
 // make sure layers are prepare'd and averaged first!

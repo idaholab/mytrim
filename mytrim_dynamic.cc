@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   float dif[3];
 
   //float A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  float A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
+  float A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -134,9 +134,9 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 100; n++ )
+  for( int n = 0; n < 10000; n++ )
   {
-    if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+    if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
@@ -181,22 +181,26 @@ int main(int argc, char *argv[])
       //
       trim->trim( pka, recoils );
 
-
+      if( pka->gen == 0 )
+      {
+        printf( "RP %f\n", pka->pos[0] );
+      }
       //
       // do ion analysis/processing AFTER the cascade here
       //
 
       // potentially move atom between layers
-      layer2 = sample->lookupLayer(pka->pos);
-      if( layer2 != layer1 || pka->gen == 0 )
-      {
-        // add to destination layer
-        sample->addAtomsToLayer( layer2, 1, pka->z1 );
-
-        // remove from source layer
-        if( pka->gen > 0 )
-          sample->addAtomsToLayer( layer1, -1, pka->z1 );
-      }
+//       layer2 = sample->lookupLayer(pka->pos);
+//       if( layer2 != layer1 || pka->gen == 0 )
+//       {
+//         // add to destination layer
+//         if( pka->pos[0] > 0 )
+//           sample->addAtomsToLayer( layer2, 1, pka->z1 );
+// 
+//         // remove from source layer
+//         if( pka->gen > 0 )
+//           sample->addAtomsToLayer( layer1, -1, pka->z1 );
+//       }
 
       //   // pka is O or Ag
       //   if( pka->z1 == 8 || pka->z1 == 47 ) 
@@ -214,6 +218,16 @@ int main(int argc, char *argv[])
   }
   fclose( rdist );
   fclose( erec );
+
+  for( int i = 0; i < sample->material.size(); i++ )
+  {
+    cout << sample->layerThickness[i] << ' ';
+    for( int j = 0; j < sample->material[i]->element.size(); j++ )
+    {
+      cout << sample->material[i]->element[j]->z << ':' << sample->material[i]->element[j]->t << ' '; 
+    }
+    cout << endl;
+  }
 
   cout << "n=" << nrec << " sum_r2=" << sum_r2 << endl;
   return EXIT_SUCCESS;

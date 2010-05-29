@@ -1,3 +1,11 @@
 grep RP sio_on_si_recoilpos.dat | cut -d' ' -f2 | ./histo.pl > sio_on_si_recoilpos.histo
 grep RP ag_on_cu_recoilpos.dat | cut -d' ' -f2 | ./histo.pl > ag_on_cu_recoilpos.histo 
 
+tail -n 21 out |head -n 20 | sed 's/:/ /g' | awk 'BEGIN {pos=0}{ print pos, $7; pos = pos + $1;  }' > out.dat
+
+6.52 g/cm^3 (20nm)^2*1nm = 20^2*1 * 10^-21 cm^3
+2.6079999999999999e-18g per layer
+ZrO2 = 122g/mol
+
+12873 ZrO2 per layer
+
