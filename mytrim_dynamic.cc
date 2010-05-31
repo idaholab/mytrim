@@ -181,16 +181,18 @@ int main(int argc, char *argv[])
       //
       trim->trim( pka, recoils );
 
-      if( pka->gen == 0 )
+/*      if( pka->gen == 0 )
       {
         printf( "RP %f\n", pka->pos[0] );
-      }
+      }*/
       //
       // do ion analysis/processing AFTER the cascade here
       //
 
       // potentially move atom between layers
-//       layer2 = sample->lookupLayer(pka->pos);
+      layer2 = sample->lookupLayer(pka->pos);
+      if( pka->gen == 0 )
+        sample->addAtomsToLayer( layer2, 1, pka->z1 );
 //       if( layer2 != layer1 || pka->gen == 0 )
 //       {
 //         // add to destination layer

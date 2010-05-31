@@ -9,3 +9,5 @@ ZrO2 = 122g/mol
 
 12873 ZrO2 per layer
 
+pl 'out.dat2' with lp, 'outstatic.histo' u 1:($2/38619) w lp
+
