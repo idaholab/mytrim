@@ -1,3 +1,4 @@
+*~
 mybuild
 fptrim
 rndtest*
@@ -10,7 +11,6 @@ config.h
 *.clcoor 
 *.dist 
 *.phon 
-*~ 
 *.o 
 *.orig 
 *.ps 

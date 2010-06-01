@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  float A = 74.0, E = 1.0e5;
-  int Z = 36;
+  //float A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  float A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 1000000; n++ )
+  for( int n = 0; n < 100000; n++ )
   {
     if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
         opos[i] = pka->pos[i];
 
       // follow this ion's trajectory and store recoils
-      if( pka->z1 == 8 || pka->z1 == 47 || pka->z1 == Z )
+      if( pka->z1 == 29 || pka->z1 == Z )
         trim->trim( pka, recoils );
 
       // do ion analysis/processing AFTER the cascade here
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
       }
 
       // pka is O or Ag
-      if( pka->z1 == 8 || pka->z1 == 47 ) 
+      if( pka->z1 == 29 && pka->pos[0] >= 500.0 ) 
       {
         // output
         printf( "RP %f %d %d\n", pka->pos[0], n,  pka->gen);

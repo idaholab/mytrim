@@ -18,11 +18,12 @@ struct materialBase {
   float fd, kd, pmax;
 
   int tag;
+  bool dirty;
 
   vector<elementBase*> element;
 
   //layerType() { semax = 0.0; sem = 0.0; sez = 0; }
-  materialBase( float _rho ) : rho(_rho) {};
+  materialBase( float _rho ) : rho(_rho) { dirty = true; };
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
