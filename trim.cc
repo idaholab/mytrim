@@ -9,6 +9,7 @@
 #include <iostream>
 using namespace std;
 
+#define RANGECORRECT2
 //
 // all energies are in eV
 //
@@ -49,6 +50,9 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     material = sample->lookupMaterial( pka->pos );
     if( material == 0 ) break;
 
+    // normalize direction vector
+    v_norm( pka->dir );
+
     // setup max. impact parameter
     eps =  pka->e * material->f;
     eeg = sqrtf( eps * material->epsdg ); // [TRI02450]
@@ -57,7 +61,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     ls = 1.0 / ( M_PI * pow( material->pmax, 2.0 ) * material->arho );
     if( ic == 1 ) ls = r1 * fmin( ls, simconf->cw );
 
-    // correct for maximum available range in current material
+    // correct for maximum available range in current material by increasing maximum impact parameter
     #ifdef RANGECORRECT
     range = sample->rangeMaterial( pka->pos, pka->dir );
     if( range < ls )
@@ -72,6 +76,28 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
       // correct pmax to correspond with new ls
       material->pmax = 1.0 / sqrtf(  M_PI * ls * material->arho );
+    }
+    #endif
+
+    // correct for maximum available range in current material by dropping recoils randomly (faster)
+    #ifdef RANGECORRECT2
+    range = sample->rangeMaterial( pka->pos, pka->dir );
+    if( range < ls )
+    {
+      // skip this recoil, just advance the ion
+      if( range/ls < dr250() )
+      {
+        // electronic stopping
+        pka->e -= range * material->getrstop( pka );
+
+        // free flight
+        for( int i = 0; i < 3; i++ )
+          pka->pos[i] += pka->dir[i] * range;
+
+        // start over
+        continue;
+      }
+      ls = range;
     }
     #endif
 
@@ -172,7 +198,6 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     pl += ls - simconf->tau;
 
     // find new position, save old direction to recoil
-    v_norm( pka->dir );
     recoil = pka->spawnRecoil();
     for( int i = 0; i < 3; i++ ) 
     {
@@ -182,7 +207,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       recoil->dir[i] = pka->dir[i] * p1;
     }
     recoil->e = den;
-    // displacement energy...
+    // displacement energy
 /*    if( recoil->z1 == 54 )  
       recoil->e -= 5.0; 
     else 
