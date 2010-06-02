@@ -23,31 +23,44 @@ materialBase*  sampleLayers::lookupMaterial( float* pos )
   return material[lookupLayer(pos)];
 }
 
+
 float sampleLayers::rangeMaterial( float* pos, float* dir )
 {
   // assume dir is a normalized vector
-  float range;
-  return 100000.0;
-  
-  double d = 0.0;
+  float range, d = 0.0;
   int i;
+  const float unrestricted = 1.0e6;
+
+  // parallel to layer interfaces
+  if( dir[0] == 0.0 ) return unrestricted;
+
+  float epsilon = fabs( 1.0e-10 / dir[0] );
+
+  // outside film
+  if( pos[0] < 0.0 )
+  {
+    if( dir[0] < 0.0 ) 
+      return unrestricted;
+    else
+      return -pos[0]/dir[0] + epsilon;
+  }
+
+  // find layer
   for( i = 0; i < layerThickness.size(); i++ )
   {
-    d += layerThickness[i];
-    if( pos[0] < d ) break;
-  }
-
-  if( i >= material.size() )
-    i = material.size() - 1 ; // or 0, but we leave that to be determined by bc[] == CUT
-
-  if( dir[0] != 0.0 ) 
-  {
-    range = ( 500.0 - pos[0] ) / dir[0];
-    if( range > 0.0 )
+    if( pos[0] >= d && pos[0] < d + layerThickness[i] )
     {
-      return range + fabs( 1.0e-10 / dir[0] ); // make it end up _just_ in the next material
+      if( dir[0] < 0 )
+        return (d-pos[0])/dir[0] + epsilon;
+      else
+        return (d+layerThickness[i]-pos[0])/dir[0] + epsilon;
     }
+    d += layerThickness[i];
   }
 
-  return 100000.0;
+  // not returned yet, means we are beyond the last layer
+  if( dir[0] > 0.0 ) 
+    return unrestricted;
+  else
+    return (d-pos[0])/dir[0] + epsilon;
 }
