@@ -70,6 +70,9 @@ int main(int argc, char *argv[])
   cin.ignore( numeric_limits<streamsize>::max(), '\n' );
   cout << "SS " << sx << ' ' << sy << ' ' << sz << endl;
 
+  const int nmax = 10000;
+  cout << "NN " << nmax << " PKAs" << endl;
+
   sampleLayers *sample = new sampleLayers( sx, sy, sz );
   //trimBase *trim = new trimBase( sample );
   trimBase *trim = new trimRecoils( sample );
@@ -137,9 +140,9 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 100000; n++ )
+  for( int n = 0; n < nmax; n++ )
   {
-    if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+    if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
@@ -176,8 +179,9 @@ int main(int argc, char *argv[])
         opos[i] = pka->pos[i];
 
       // follow this ion's trajectory and store recoils
-      if( pka->z1 == 29 || pka->z1 == Z )
-        trim->trim( pka, recoils );
+      //if( pka->z1 == 29 || pka->z1 == Z )
+      //if( pka->z1 == 29 || pka->z1 == Z )
+      trim->trim( pka, recoils );
 
       // do ion analysis/processing AFTER the cascade here
       if( pka->z1 != Z )
@@ -188,7 +192,8 @@ int main(int argc, char *argv[])
       }
 
       // pka is O or Ag
-      if( pka->z1 == 29 && pka->pos[0] >= 500.0 ) 
+      //if( pka->z1 == 29 && pka->pos[0] >= 500.0 ) 
+      if( pka->z1 == 29 )
       {
         // output
         printf( "RP %f %d %d\n", pka->pos[0], n,  pka->gen);

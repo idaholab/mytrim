@@ -9,7 +9,8 @@
 #include <iostream>
 using namespace std;
 
-#define RANGECORRECT2
+//#define RANGECORRECT2
+
 //
 // all energies are in eV
 //
@@ -162,8 +163,8 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       sqe = sqrtf( eps );
 
       // 5-parameter magic scattering calculation (universal pot.)
-      cc = ( 0.011615 + sqe ) / ( 0.0071222 + sqe );
-      aa = 2.0 * eps * ( 1.0 + ( 0.99229 / sqe ) ) * pow( b, cc ); 
+      cc = ( 0.011615 + sqe ) / ( 0.0071222 + sqe );               // 2-87 beta
+      aa = 2.0 * eps * ( 1.0 + ( 0.99229 / sqe ) ) * pow( b, cc ); // 2-87 A
       ff = ( sqrtf( aa*aa + 1.0 ) - aa ) * ( ( 9.3066 + eps ) / ( 14.813 + eps ) );
 
       delta = ( r - b ) * aa * ff / ( ff + 1.0 );
