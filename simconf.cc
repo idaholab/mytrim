@@ -21,7 +21,11 @@ simconfType::simconfType( float _alfa )
   // output full trajectories
   fullTraj = false;
 
+  // set global ion id to zero (will be incremented for each new projectile)
   id = 0;
+
+  // initialize global statistics
+  vacancies_created = 0;
 
   // read data tables
   read_snuc();

@@ -208,11 +208,14 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       recoil->dir[i] = pka->dir[i] * p1;
     }
     recoil->e = den;
-    // displacement energy
-/*    if( recoil->z1 == 54 )  
-      recoil->e -= 5.0; 
-    else 
-      recoil->e -= 25.0;*/
+
+    // if recoil exceeds displacement energy assume a vacancy was created
+    if( recoil->e > material->element[nn]->Edisp )
+      simconf->vacancies_created++;
+
+    // recoil loses the lattice binding energy
+    recoil->e -= material->element[nn]->Elbind;
+
     recoil->m1 = material->element[nn]->m;
     recoil->z1 = material->element[nn]->z;
 

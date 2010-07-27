@@ -18,6 +18,9 @@ struct simconfType {
 
   bool fullTraj;
 
+  // statistics of the simulation run
+  int vacancies_created;
+
   simconfType( float _alfa = 0.0 );
 private:
   void read_scoef();
