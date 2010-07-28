@@ -20,7 +20,7 @@ protected:
   materialBase *material;
   elementBase *element;
 
-  // by default only follow recoils with E > 100eV
+  // by default only follow recoils with E > 12eV
   virtual bool spawnRecoil() { return recoil->e > 12.0; };
   virtual void vacancyCreation();
 };

@@ -88,11 +88,10 @@ int main(int argc, char *argv[])
 
   n_cl = v_sam * 1.5e-7 * Cbf ; // Allen08 1.5e-4/nm^3
   //fprintf( stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0 );
-  fprintf( stderr, "adding %d clusters...\n", n_cl );
 
   // cluster surfaces must be at least 25.0 Ang apart
+  fprintf( stderr, "adding %d clusters...\n", n_cl );
   sample->addRandomClusters( n_cl, r, 15.0 );
-  //sample->addCluster( 100.0, 100.0, 100.0, 10.0 );
 
   // write cluster coords with tag numbers
   snprintf( fname, 199, "%s.clcoor", argv[1] );
@@ -108,7 +107,7 @@ int main(int argc, char *argv[])
   elementBase *element;
 
   // Fe
-  material = new materialBase( 6.98 ); // rho
+  material = new materialBase( 7.87 ); // rho
   element = new elementBase;
   element->z = 26; // Fe
   element->m = 56.0;
@@ -182,7 +181,8 @@ int main(int argc, char *argv[])
   ionBase *ff1, *pka;
   int id = 1;
 
-  float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  //float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  float A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
   // 100 ions
   for( int n = 0; n < 100; n++ )
@@ -302,7 +302,24 @@ int main(int argc, char *argv[])
   fclose( rdist );
   fclose( erec );
 
+  // output full damage data
   printf( "%d vacancies per 100 ions = %d vac/ion\n", simconf->vacancies_created, simconf->vacancies_created/100 );
+
+  // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
+  // just for the PKA
+  double Zatoms = 26.0, Matoms = 56.0;
+  double Epka = 5.0e6;
+  double ed = 0.0115 * pow( Zatoms, -7.0/3.0) * Epka;
+  double g = 3.4008 * pow( ed, 1.0/6.0 ) + 0.40244 * pow( ed, 3.0/4.0 ) + ed;
+  double kd = 0.1337 * pow( Zatoms, 2.0/3.0 ) / pow( Matoms, 0.5); //Z,M
+  double Ev = Epka / ( 1.0 + kd * g );
+  double Ed = 40.0;
+  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+          100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed) );
+
+  // do Kinchin-Pease for all primary recoils
+  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+          simconf->KP_vacancies, simconf->KP_vacancies / 100.0 );
 
   return EXIT_SUCCESS;
 }

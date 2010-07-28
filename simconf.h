@@ -20,6 +20,7 @@ struct simconfType {
 
   // statistics of the simulation run
   int vacancies_created;
+  double KP_vacancies;
 
   simconfType( float _alfa = 0.0 );
 private:

@@ -277,8 +277,20 @@ void trimBase::vacancyCreation()
 {
   // both energies of the two ions in the colission have to exceed Edisp
   if( fmin( recoil->e, pka->e ) > element->Edisp )
-  //if( recoil->e > element->Edisp )
+  {
     simconf->vacancies_created++;
+    //printf( "vactag %d\n", material->tag );
+    
+    if( recoil->gen == 1 )
+    {
+      // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
+      double ed = 0.0115 * pow( material->az, -7.0/3.0) * recoil->e;
+      double g = 3.4008 * pow( ed, 1.0/6.0 ) + 0.40244 * pow( ed, 3.0/4.0 ) + ed;
+      double kd = 0.1337 * pow( material->az, 2.0/3.0 ) / pow( material->am, 0.5); //Z,M
+      double Ev = recoil->e / ( 1.0 + kd * g );
+      simconf->KP_vacancies += 0.8 * Ev / ( 2.0 * element->Edisp ); // should be something like material->Edisp (average?)
+    }
+  }
 };
 
 

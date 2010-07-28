@@ -26,6 +26,7 @@ simconfType::simconfType( float _alfa )
 
   // initialize global statistics
   vacancies_created = 0;
+  KP_vacancies = 0.0;
 
   // read data tables
   read_snuc();
