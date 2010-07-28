@@ -111,9 +111,11 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       hh -= material->element[nn]->t;
       if( hh <= 0 ) break;
     }
+    element = material->element[nn];
+
     // epsilon and reduced impact parameter b
-    eps = material->element[nn]->fi * pka->e;
-    b = p / material->element[nn]->ai;
+    eps = element->fi * pka->e;
+    b = p / element->ai;
 
     ////ie = int( pka.e / e0kev - 0.5 ); // was +0.5 for fortran indices
     //ie = int( pka.e / material->semax - 0.5 ); // was +0.5 for fortran indices
@@ -177,7 +179,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     } // end non-rutherford scattering
 
     // energy transferred to recoil atom
-    den = material->element[nn]->ec * s2 * pka->e;
+    den = element->ec * s2 * pka->e;
 
     // advance clock pathlength/velocity
     pka->t += 10.1811859 * ( ls - simconf->tau ) / sqrt( 2.0 * pka->e / pka->m1 );
@@ -209,20 +211,15 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     }
     recoil->e = den;
 
-    // if recoil exceeds displacement energy assume a vacancy was created
-    if( recoil->e > material->element[nn]->Edisp )
-      simconf->vacancies_created++;
-
     // recoil loses the lattice binding energy
-    recoil->e -= material->element[nn]->Elbind;
-
-    recoil->m1 = material->element[nn]->m;
-    recoil->z1 = material->element[nn]->z;
+    recoil->e -= element->Elbind;
+    recoil->m1 = element->m;
+    recoil->z1 = element->z;
 
     // create a random vector perpendicular to pka.dir
     // there is a cleverer way by using the azimuthal angle of scatter...
     do
-    { 
+    {
       for( int i = 0; i < 3; i++ ) rdir[i] = dr250() - 0.5;
       v_cross( pka->dir, rdir, perp );
       norm = sqrtf( v_dot( perp, perp) );
@@ -230,7 +227,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     while( norm == 0.0 );
     v_scale( perp, 1.0 / norm );
 
-    psi = atan( st / ( ct + material->element[nn]->my ) );
+    psi = atan( st / ( ct + element->my ) );
     v_scale( pka->dir, cos( psi ) );
 
     // calculate new direction, subtract from old dir (stored in recoil)
@@ -246,18 +243,23 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) ) 
         terminate = true;
 
-    // if recoil energy > 100.0 eV, put the recoil on the stack
+    // put the recoil on the stack
     if( spawnRecoil() && !terminate )
     {
       v_norm( recoil->dir );
       recoil->tag = material->tag;
+
       if( pka->md > 0 ) 
         recoil->md = pka->md +1;
       else 
         recoil->md = 0;
+
       recoil->id = simconf->id++;
       recoils.push( recoil );
       if( simconf->fullTraj ) printf( "spawn %d %d\n", recoil->id, pka->id );
+
+      // if recoil exceeds displacement energy assume a vacancy was created
+      vacancyCreation();
     }
     else delete recoil;
 
@@ -270,6 +272,14 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
   if( simconf->fullTraj )
    if(pka->z1 == 54 && pka->gen > 0 ) printf( "\n" );
 }
+
+void trimBase::vacancyCreation()
+{
+  // both energies of the two ions in the colission have to exceed Edisp
+  if( fmin( recoil->e, pka->e ) > element->Edisp )
+  //if( recoil->e > element->Edisp )
+    simconf->vacancies_created++;
+};
 
 
 /*

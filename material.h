@@ -23,7 +23,7 @@ struct materialBase {
   vector<elementBase*> element;
 
   //layerType() { semax = 0.0; sem = 0.0; sez = 0; }
-  materialBase( float _rho ) : rho(_rho) { dirty = true; };
+  materialBase( float _rho ) : rho(_rho), tag(-1) { dirty = true; };
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();

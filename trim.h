@@ -18,9 +18,11 @@ protected:
   sampleBase *sample;
   ionBase *pka, *recoil;
   materialBase *material;
+  elementBase *element;
 
   // by default only follow recoils with E > 100eV
   virtual bool spawnRecoil() { return recoil->e > 12.0; };
+  virtual void vacancyCreation();
 };
 
 //
