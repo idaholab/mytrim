@@ -126,8 +126,8 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 16; // O 
-  element->m = 32.0;
+  element->z = 8; // O 
+  element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
   material->prepare();
@@ -148,8 +148,8 @@ int main(int argc, char *argv[])
   element->Edisp = 57.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 16; // O 
-  element->m = 32.0;
+  element->z = 8; // O 
+  element->m = 16.0;
   element->t = 7.0;
   element->Edisp = 57.0;
   material->element.push_back( element );
@@ -181,8 +181,8 @@ int main(int argc, char *argv[])
   ionBase *ff1, *pka;
   int id = 1;
 
-  //float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
-  float A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
+  float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  //float A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
   // 100 ions
   for( int n = 0; n < 100; n++ )
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing BEFORE the cascade here
       fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
 
-      if( pka->z1 ==  16 || pka->z1 == 22 || pka->z1 == 39 )
+      if( pka->z1 ==  8 || pka->z1 == 22 || pka->z1 == 39 )
       {
         if( pka->gen > 0 )
         {
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
-      if( pka->z1 == 16 || pka->z1 == 22 || pka->z1 == 39 )
+      if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf( "%d vacancies per 100 ions = %d vac/ion\n", simconf->vacancies_created, simconf->vacancies_created/100 );
-
+/*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
   // just for the PKA
   double Zatoms = 26.0, Matoms = 56.0;
@@ -320,6 +320,6 @@ int main(int argc, char *argv[])
   // do Kinchin-Pease for all primary recoils
   printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
           simconf->KP_vacancies, simconf->KP_vacancies / 100.0 );
-
+*/
   return EXIT_SUCCESS;
 }
