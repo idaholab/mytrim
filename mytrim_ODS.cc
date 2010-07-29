@@ -61,7 +61,8 @@ int main(int argc, char *argv[])
   //simconf->tmin = 0.2;
 
   // initialize sample structure []
-  sampleClusters *sample = new sampleClusters( 50000.0, 400.0, 400.0 );
+  //sampleClusters *sample = new sampleClusters( 50000.0, 400.0, 400.0 );
+  sampleClusters *sample = new sampleClusters( 500.0, 1000.0, 1000.0 );
 
   // initialize trim engine for the sample
   snprintf( fname, 199, "%s.phon", argv[1] );
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
 
   materialBase *material;
   elementBase *element;
-
+/*
   // Fe
   material = new materialBase( 7.87 ); // rho
   element = new elementBase;
@@ -113,6 +114,22 @@ int main(int argc, char *argv[])
   element->m = 56.0;
   element->t = 1.0;
   element->Edisp = 40.0;
+  material->element.push_back( element );
+  material->prepare(); // all materials added
+  sample->material.push_back( material ); // add material to sample
+*/
+
+  // ZrO2
+  material = new materialBase( 5.68 ); // rho
+  element = new elementBase;
+  element->z = 40; // Zr
+  element->m = 91.0;
+  element->t = 1.0;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = 8; // O 
+  element->m = 16.0;
+  element->t = 2.0;
   material->element.push_back( element );
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
@@ -133,6 +150,7 @@ int main(int argc, char *argv[])
   material->prepare();
   sample->material.push_back( material ); // add material to sample
 */
+/*
    // Y2Ti2O7 precipitate
   material = new materialBase( 4.6 ); // rho between 4.23 and 5.01
   element = new elementBase;
@@ -155,6 +173,17 @@ int main(int argc, char *argv[])
   material->element.push_back( element );
   material->prepare();
   sample->material.push_back( material ); // add material to sample
+*/
+  // xe bubble
+  material = new materialBase( 3.5 ); // rho
+  element = new elementBase;
+  element->z = 54; // Xe 
+  element->m = 132.0;
+  element->t = 1.0;
+  material->element.push_back( element );
+  material->prepare();
+  sample->material.push_back( material ); // add material to sample
+
 
   // create a FIFO for recoils
   queue<ionBase*> recoils;
@@ -181,11 +210,12 @@ int main(int argc, char *argv[])
   ionBase *ff1, *pka;
   int id = 1;
 
-  float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  float A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
+  //float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
   //float A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
-  // 100 ions
-  for( int n = 0; n < 100; n++ )
+  // 1000 ions
+  for( int n = 0; n < 10000; n++ )
   {
     if( n % 10 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -217,9 +247,12 @@ int main(int argc, char *argv[])
       sample->averages( pka );
 
       // do ion analysis/processing BEFORE the cascade here
-      fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
+      //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
 
-      if( pka->z1 ==  8 || pka->z1 == 22 || pka->z1 == 39 )
+      // pka is O or Ti
+      //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
+      // pka is Xe
+      if( pka->z1 == 54 )
       {
         if( pka->gen > 0 )
         {
@@ -251,7 +284,9 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
-      if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
+      //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
+      // pka is Xe
+      if( pka->z1 == 54 )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
@@ -303,7 +338,7 @@ int main(int argc, char *argv[])
   fclose( erec );
 
   // output full damage data
-  printf( "%d vacancies per 100 ions = %d vac/ion\n", simconf->vacancies_created, simconf->vacancies_created/100 );
+  printf( "%d vacancies per 10000 ions = %d vac/ion\n", simconf->vacancies_created, simconf->vacancies_created/10000 );
 /*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
   // just for the PKA

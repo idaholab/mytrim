@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 16; // O 
-  element->m = 32.0;
+  element->z = 8; // O 
+  element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
   material->prepare(); // all materials added
