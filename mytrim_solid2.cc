@@ -30,7 +30,7 @@
 #include "simconf.h"
 #include "element.h"
 #include "material.h"
-#include "sample_clusters.h"
+#include "sample_solid.h"
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
@@ -41,9 +41,9 @@
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 4 ) // 2
+  if( argc != 2 )
   {
-    fprintf( stderr, "syntax:\nmytrim_ODS basename r Cbfactor\n\nCbfactor=1 => 1.5e-4 clusters/nm^3\n" );
+    fprintf( stderr, "syntax:\nmytrim_solid2 basename\n" );
     return 1;
   }
 
@@ -60,52 +60,25 @@ int main(int argc, char *argv[])
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
-  // initialize sample structure []
-  //sampleClusters *sample = new sampleClusters( 50000.0, 400.0, 400.0 );
-  sampleClusters *sample = new sampleClusters( 500.0, 1000.0, 1000.0 );
+  // initialize sample structure
+  sampleSolid *sample = new sampleSolid( 200.0, 200.0, 200.0 );
 
   // initialize trim engine for the sample
   snprintf( fname, 199, "%s.phon", argv[1] );
   //FILE *phon = fopen( fname, "wt" );
   //trimPhononOut *trim = new trimPhononOut( sample, phon );
-  trimBase *trim = new trimBase( sample );
-  //trimBase *trim = new trimPrimaries( sample );
+  //trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimPrimaries( sample );
 
-
-  //float r = 10.0;
-  float r = atof( argv[2] ); //10.0;
-  float Cbf = atof( argv[3] );
-
-  sample->bc[0] = sampleBase::INF; // no PBC in x (just clusterless matrix)
-  sample->initSpatialhash( int( sample->w[0] / r ) - 1,
-                           int( sample->w[1] / r ) - 1,
-                           int( sample->w[2] / r ) - 1 );
-
+  sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
 
   // float atp = 0.1; // 10at% Mo 90at%Cu
   float v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  float v_cl = 4.0/3.0 * M_PI * cub(r); 
-  int n_cl; // = atp * scoef[29-1].atrho * v_sam / ( v_cl * ( ( 1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho ) );
-
-  n_cl = v_sam * 1.5e-7 * Cbf ; // Allen08 1.5e-4/nm^3
-  //fprintf( stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0 );
-
-  // cluster surfaces must be at least 25.0 Ang apart
-  fprintf( stderr, "adding %d clusters...\n", n_cl );
-  sample->addRandomClusters( n_cl, r, 15.0 );
-
-  // write cluster coords with tag numbers
-  snprintf( fname, 199, "%s.clcoor", argv[1] );
-  FILE *ccf = fopen( fname, "wt" );
-  for( int i = 0; i < sample->cn; i++)
-    fprintf( ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i );
-  fclose( ccf );
-
-  fprintf( stderr, "sample built.\n" ); 
-  //return 0;
+  float s_sam = sample->w[1] * sample->w[2];
 
   materialBase *material;
   elementBase *element;
+
 /*
   // Fe
   material = new materialBase( 7.87 ); // rho
@@ -117,7 +90,6 @@ int main(int argc, char *argv[])
   material->element.push_back( element );
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
-*/
 
   // ZrO2
   material = new materialBase( 5.68 ); // rho
@@ -131,6 +103,27 @@ int main(int argc, char *argv[])
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
+  material->prepare(); // all materials added
+  sample->material.push_back( material ); // add material to sample
+*/
+
+  // ZrO2 Xe 0.01
+  material = new materialBase( 5.68 ); // rho
+  element = new elementBase;
+  element->z = 40; // Zr
+  element->m = 90.0;//91?
+  element->t = 1.0;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = 8; // O 
+  element->m = 16.0;
+  element->t = 2.0;
+  material->element.push_back( element );
+/*  element = new elementBase;
+  element->z = 54; // Xe 
+  element->m = 132.0;
+  element->t = 0.01;
+  material->element.push_back( element );*/
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
 
@@ -172,7 +165,7 @@ int main(int argc, char *argv[])
   material->element.push_back( element );
   material->prepare();
   sample->material.push_back( material ); // add material to sample
-*/
+
   // xe bubble
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
@@ -182,8 +175,9 @@ int main(int argc, char *argv[])
   material->element.push_back( element );
   material->prepare();
   sample->material.push_back( material ); // add material to sample
+*/
 
-  const int nstep = 1000;
+  const int nstep = 10000;
 
 
   // create a FIFO for recoils
@@ -211,11 +205,12 @@ int main(int argc, char *argv[])
   ionBase *ff1, *pka;
   int id = 1;
 
-  float A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
+  //float A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
+  float A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
   //float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
   //float A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
-  // 1000 ions
+  // main loop
   for( int n = 0; n < nstep; n++ )
   {
     if( n % 10 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
@@ -253,7 +248,9 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      if( pka->z1 == 54 )
+      float oerec = pka->e;
+
+      if( pka->z1 == 542 )
       {
         if( pka->gen > 0 )
         {
@@ -261,19 +258,10 @@ int main(int argc, char *argv[])
           //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
         }
 
-        if( pka->tag >= 0 )
+        for( int i = 0; i < 3; i++ ) 
         {
-          for( int i = 0; i < 3; i++ ) 
-          {
-            dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
-            pos2[i] = pka->pos[i];
-            if( sample->bc[i] == sampleBase::PBC ) dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
-            pos1[i] = pka->pos[i] + dif[i];
-            //printf( "%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i] );
-          }
-//printf( "\n" );
-//if(pka->z1 == 54 && pka->gen > 0 && pka->tag >= 0 ) printf( "clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id );
-	}
+          pos2[i] = pka->pos[i];
+        }
       }
 
       // follow this ion's trajectory and store recoils
@@ -281,51 +269,25 @@ int main(int argc, char *argv[])
       //pka->md = id++;
 
       trim->trim( pka, recoils );
+      fprintf( rdist, "%f 1\n", pka->pos[0] );
 
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      if( pka->z1 == 54 )
+      if( pka->z1 == 542 )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if( pka->tag >= 0 ) 
+        for( int i = 0; i < 3; i++ ) 
         {
-          for( int i = 0; i < 3; i++ ) 
-          {
-            dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
-            dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
-          }
-          fprintf( rdist, "%f %d %f %f %f %f\n", sqrt( v_dot( dif, dif ) ), pka->z1, pka->pos[0], pka->pos[1], pka->pos[2], sqrt( v_dot( dif2, dif2 ) ) );
+          dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
         }
+        fprintf( rdist, "%d %f %f %f %f %f\n", pka->z1, pos2[0], pos2[1], pos2[2], sqrt( v_dot( dif2, dif2 ) ), oerec );
 
-
-        // do a random walk
-/*        jumps = 0;
-        do
-        {
-          material = sample->lookupLayer( pka->pos );
-          if( material->tag >= 0 ) break;
-
-          do
-          { 
-            for( int i = 0; i < 3; i++ ) pka->dir[i] = dr250() - 0.5;
-            norm = v_dot( pka->dir, pka->dir );
-          }
-          while( norm <= 0.0001 );
-          v_scale( pka->dir, jmp / sqrtf( norm ) );
-
-          for( int i = 0; i < 3; i++ ) pka->pos[i] += pka->dir[i];
-          jumps++;
-        }
-        while ( pka->pos[0] > 0 && pka->pos[0] < sample->w[0] );
-
-        if( material->tag >= 0 && jumps > 0 )
-          fprintf( stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->tag, pka->tag, jumps ); */
       }
 
       // done with this recoil
@@ -340,6 +302,11 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf( "%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep );
+  double surf = sample->w[1] * sample->w[2];
+  double natom = v_sam * sample->material[0]->arho;
+  printf( "volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)",
+          v_sam, s_sam, natom, simconf->vacancies_created / ( natom * nstep/s_sam ) );
+
 /*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
   // just for the PKA

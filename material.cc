@@ -7,7 +7,7 @@
 
 void materialBase::prepare()
 {
-  float tt = 0.0;
+  double tt = 0.0;
 
   // get total stoichiometry
   for( int i = 0; i < element.size(); i++ ) tt += element[i]->t;
@@ -21,7 +21,7 @@ void materialBase::prepare()
   for( int i = 0; i < element.size(); i++ ) 
   {
     am += element[i]->m * element[i]->t;
-    az += float( element[i]->z ) * element[i]->t;
+    az += double( element[i]->z ) * element[i]->t;
   }
 
   arho = rho * 0.6022 / am; //[TRI00310] atoms/Ang^3
@@ -30,15 +30,15 @@ void materialBase::prepare()
 // make sure layers are prepare'd first!
 void materialBase::average( const ionBase *pka )
 {
-  float sbuf[1000];
+  double sbuf[1000];
   mu = pka->m1 / am;
 
   // universal or firsov screening length
-  a = .5292 * .8853 / ( pow( float(pka->z1), 0.23 ) + pow( az, 0.23 ) );
-  //a = .5292 * .8853 / pow( pow( float(pka.z1), 0.5 ) + pow( az, 0.5 ), 2.0/3.0 );
+  a = .5292 * .8853 / ( pow( double(pka->z1), 0.23 ) + pow( az, 0.23 ) );
+  //a = .5292 * .8853 / pow( pow( double(pka.z1), 0.5 ) + pow( az, 0.5 ), 2.0/3.0 );
 
   // mean flight path0
-  f = a * am / ( az * float(pka->z1) * 14.4 * ( pka->m1 + am ) );
+  f = a * am / ( az * double(pka->z1) * 14.4 * ( pka->m1 + am ) );
   //eps0 = e0 * f;
   epsdg = simconf->tmin * f * pow( 1.0 + mu, 2.0 ) / ( 4.0 * mu );
 
@@ -50,28 +50,28 @@ void materialBase::average( const ionBase *pka )
   {
     element[i]->my = pka->m1 / element[i]->m;
     element[i]->ec = 4.0 * element[i]->my / pow( 1.0 + element[i]->my, 2.0 );
-    element[i]->ai = .5292 * .8853 / ( pow( float(pka->z1), 0.23 ) + pow( element[i]->m, 0.23 ) );
-    //ai = .5292 * .8853 / pow( pow( float(pka.z1), 0.5 ) + pow( element[i].m, 0.5 ), 2.0/3.0 );
+    element[i]->ai = .5292 * .8853 / ( pow( double(pka->z1), 0.23 ) + pow( element[i]->m, 0.23 ) );
+    //ai = .5292 * .8853 / pow( pow( double(pka.z1), 0.5 ) + pow( element[i].m, 0.5 ), 2.0/3.0 );
     element[i]->fi = element[i]->ai * element[i]->m / 
-                     ( float(pka->z1) * float(element[i]->z) * 14.4 * ( pka->m1 + element[i]->m ) );
+                     ( double(pka->z1) * double(element[i]->z) * 14.4 * ( pka->m1 + element[i]->m ) );
   }
 
   dirty = false;
 }
 
 // make sure layers are prepare'd and averaged first!
-float materialBase::getrstop( const ionBase *pka )
+double materialBase::getrstop( const ionBase *pka )
 {
-  float se = 0.0;
+  double se = 0.0;
   for( int i = 0; i < element.size(); i++ ) 
     se += rstop( pka, element[i]->z ) * element[i]->t * arho;
 
   return se;
 }
 
-float materialBase::rpstop( int z2p, float e )
+double materialBase::rpstop( int z2p, double e )
 {
-  float pe, pe0, sl, sh, sp, velpwr;
+  double pe, pe0, sl, sh, sp, velpwr;
   int z2 = z2p-1;
   // velocity proportional stopping below pe0
   pe0 = 25.0;
@@ -98,21 +98,21 @@ float materialBase::rpstop( int z2p, float e )
   return sp;
 }
 
-float materialBase::rstop( const ionBase *ion, int z2 )
+double materialBase::rstop( const ionBase *ion, int z2 )
 {
-  float e, vrmin, yrmin, v, vr, yr, vmin, m1;
-  float a, b, q, q1, l, l0, l1;
-  float zeta;
+  double e, vrmin, yrmin, v, vr, yr, vmin, m1;
+  double a, b, q, q1, l, l0, l1;
+  double zeta;
   int z1 = ion->z1;
-  float fz1 = float(z1), fz2 = float(z2);
-  float eee, sp, power;
-  float se;
+  double fz1 = double(z1), fz2 = double(z2);
+  double eee, sp, power;
+  double se;
   // scoeff
 
-  float lfctr = simconf->scoef[z1-1].lfctr;
-  float mm1 = simconf->scoef[z1-1].mm1;
-  float vfermi = simconf->scoef[z2-1].vfermi;
-  float atrho = simconf->scoef[z2-1].atrho;
+  double lfctr = simconf->scoef[z1-1].lfctr;
+  double mm1 = simconf->scoef[z1-1].mm1;
+  double vfermi = simconf->scoef[z2-1].vfermi;
+  double atrho = simconf->scoef[z2-1].atrho;
   //fprintf( stderr, "lfctr=%f mm1=%f vfermi=%f atrho=%e\n", lfctr, mm1, vfermi, atrho );
 
   if( ion->m1 == 0.0 ) 

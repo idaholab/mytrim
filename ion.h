@@ -3,14 +3,14 @@
 
 struct ionBase {
   int z1;
-  float m1, e;
-  float dir[3], pos[3]; // normalized velocity vector, and position
-  float t; // internal clock
+  double m1, e;
+  double dir[3], pos[3]; // normalized velocity vector, and position
+  double t; // internal clock
 
   int tag, gen, id;
   int md; // generation after first ion falling into the MD energy gap ( 200eV - 12000eV )
 
-  float ef;
+  double ef;
 
   ionBase();
   virtual ~ionBase() {};

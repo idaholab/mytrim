@@ -10,12 +10,12 @@
 using namespace std;
 
 struct materialBase {
-  float rho;
+  double rho;
 
-  float am, az; // average mass and atomic number
-  float arho, mu;
-  float a, f, epsdg;
-  float fd, kd, pmax;
+  double am, az; // average mass and atomic number
+  double arho, mu;
+  double a, f, epsdg;
+  double fd, kd, pmax;
 
   int tag;
   bool dirty;
@@ -23,18 +23,18 @@ struct materialBase {
   vector<elementBase*> element;
 
   //layerType() { semax = 0.0; sem = 0.0; sez = 0; }
-  materialBase( float _rho ) : rho(_rho), tag(-1) { dirty = true; };
+  materialBase( double _rho ) : rho(_rho), tag(-1) { dirty = true; };
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
 
   // compute pka dependent averages 
   void average( const ionBase *pka );
-  float getrstop( const ionBase *pka );
+  double getrstop( const ionBase *pka );
 
 protected:
-  float rpstop( int z2, float e );
-  float rstop( const ionBase *ion, int z2 );
+  double rpstop( int z2, double e );
+  double rstop( const ionBase *ion, int z2 );
 };
 
 #endif

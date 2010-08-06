@@ -110,13 +110,13 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   queue<ionBase*> recoils;
 
-  float norm;
-  float jmp = 2.7; // diffusion jump distance
+  double norm;
+  double jmp = 2.7; // diffusion jump distance
   int jumps;
-  float dif[3];
+  double dif[3];
 
-  //float A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  float A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
+  //double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  double A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
   snprintf( fname, 199, "%s.dist", argv[1] );
   FILE *rdist = fopen( fname, "wt" );
 
-  float pos1[3];
+  double pos1[3];
 
   ionBase *ff1, *ff2, *pka;
   int id = 1;
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 10000; n++ )
+  for( int n = 0; n < 1; n++ )
   {
     if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -191,18 +191,18 @@ int main(int argc, char *argv[])
 
       // potentially move atom between layers
       layer2 = sample->lookupLayer(pka->pos);
-      if( pka->gen == 0 )
-        sample->addAtomsToLayer( layer2, 1, pka->z1 );
-//       if( layer2 != layer1 || pka->gen == 0 )
-//       {
-//         // add to destination layer
-//         if( pka->pos[0] > 0 )
-//           sample->addAtomsToLayer( layer2, 1, pka->z1 );
-// 
-//         // remove from source layer
-//         if( pka->gen > 0 )
-//           sample->addAtomsToLayer( layer1, -1, pka->z1 );
-//       }
+/*      if( pka->gen == 0 )
+        sample->addAtomsToLayer( layer2, 1, pka->z1 );*/
+      if( layer2 != layer1 || pka->gen == 0 )
+      {
+        // add to destination layer
+        if( pka->pos[0] > 0 )
+          sample->addAtomsToLayer( layer2, 1, pka->z1 );
+
+        // remove from source layer
+        if( pka->gen > 0 )
+          sample->addAtomsToLayer( layer1, -1, pka->z1 );
+      }
 
       //   // pka is O or Ag
       //   if( pka->z1 == 8 || pka->z1 == 47 ) 

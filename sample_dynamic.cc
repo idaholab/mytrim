@@ -32,7 +32,7 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   for( i = 0; i < material[layer]->element.size(); i++ )
   {
     if( material[layer]->element[i]->z == Z ) ne = i;
-    rnorm += material[layer]->element[i]->t / simconf->scoef[material[layer]->element[i]->z-1].rho;
+    rnorm += material[layer]->element[i]->t / simconf->scoef[material[layer]->element[i]->z-1].atrho;
   }
 
   // element not yet contained in layer
@@ -47,6 +47,8 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
 
   // mass of layer (g/cm^3 * Ang^3 = 10^-24 g)
   double ml = material[layer]->rho * w[1] * w[2] * layerThickness[layer];
+
+  // number of atoms in layer
   int nl    = material[layer]->arho * w[1] * w[2] * layerThickness[layer];
 
   // mass change of layer ( g/mole = g/(0.6022*10^24))
@@ -56,15 +58,7 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   layerThickness[layer] += ma / ( material[layer]->rho * w[1] * w[2] );
 
   // change stoichiometry (arho 1/ang^3 * ang^3 )
-  for( i = 0; i < material[layer]->element.size(); i++ )
-  {
-    if( material[layer]->element[i]->z == Z )
-      material[layer]->element[i]->t = ( material[layer]->element[i]->t * nl + n ) / ( nl + n );
-    else
-      material[layer]->element[i]->t = ( material[layer]->element[i]->t * nl ) / ( nl + n );
-
-    if( material[layer]->element[i]->t < 0.0 ) material[layer]->element[i]->t = 0.0;
-  }
+  material[layer]->element[ne]->t += double(n)/nl; // sum t will be scaled to 1.0 in material->prepare()
 
   // mark as dirty, just in case, and re-prepare to update averages
   material[layer]->dirty = true;

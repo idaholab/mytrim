@@ -19,7 +19,7 @@ install(FILES sample_dynamic.h     DESTINATION include/mytrim)
 install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat DESTINATION ${DATA_DIR})
 
 # build the test trim programs
-set(PROGRAMS mytrim_ODS mytrim_clusters mytrim_layers mytrim_solid mytrim_uo2 mytrim_wire mytrim_dynamic)
+set(PROGRAMS mytrim_ODS mytrim_clusters mytrim_layers mytrim_solid mytrim_solid2 mytrim_uo2 mytrim_wire mytrim_dynamic)
 foreach(program ${PROGRAMS})
   add_executable(${program} ${program}.cc)
   target_link_libraries(${program} ${R250C_LIB} mytrim m)

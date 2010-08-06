@@ -22,22 +22,22 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
   pka = pka_;
 
   //e = pka.e;
-  float pl = 0.0;
-  float max = 0.0;
-  float e0kev = pka->e / 1000.0;
+  double pl = 0.0;
+  double max = 0.0;
+  double e0kev = pka->e / 1000.0;
   int ic = 0;
   int nn, ie;
   double r1, r2, hh;
-  float eps, eeg, ls, p, b, r, see, dee;
-  float s2, c2, ct, st;
-  float rr, ex1, ex2, ex3, ex4, v ,v1;
-  float fr, fr1, q, roc, sqe;
-  float cc, aa, ff, co, delta;
-  float den;
-  float rdir[3], perp[3], norm, psi;
+  double eps, eeg, ls, p, b, r, see, dee;
+  double s2, c2, ct, st;
+  double rr, ex1, ex2, ex3, ex4, v ,v1;
+  double fr, fr1, q, roc, sqe;
+  double cc, aa, ff, co, delta;
+  double den;
+  double rdir[3], perp[3], norm, psi;
 
-  float p1, p2;
-  float range;
+  double p1, p2;
+  double range;
   bool terminate;
 //if( simconf->fullTraj )
   r1 = dr250();
@@ -297,14 +297,14 @@ void trimBase::vacancyCreation()
 
 
 /*
-materialBase* sampleType::lookupLayer( const float* pos ) 
+materialBase* sampleType::lookupLayer( const double* pos ) 
 { 
-  float dif[3];
+  double dif[3];
 
   dif[0] = pos[0] - 100.0;
   dif[1] = pos[1];
   dif[2] = pos[2];
-  float r2 = v_dot( dif, dif );
+  double r2 = v_dot( dif, dif );
   if( r2 < 2500.0 ) // r<50.0
     return material[1]; 
   else
