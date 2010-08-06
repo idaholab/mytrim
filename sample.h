@@ -14,14 +14,14 @@ struct sampleBase {
   enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades
 
   vector<materialBase*> material;
-  float w[3]; // simulation volume
+  double w[3]; // simulation volume
   sampleBoundary bc[3]; // boundary conditions
 
   virtual void averages( const ionBase *pka );
-  virtual materialBase* lookupMaterial( float* pos ) = 0;
-  virtual float rangeMaterial( float* pos, float* dir ) { return 100000.0; };
+  virtual materialBase* lookupMaterial( double* pos ) = 0;
+  virtual double rangeMaterial( double* pos, double* dir ) { return 100000.0; };
 
-  sampleBase( float x = 10000.0, float y = 10000.0, float z = 10000.0 );
+  sampleBase( double x = 10000.0, double y = 10000.0, double z = 10000.0 );
 };
 
 #endif

@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
 
   sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
 
-  // float atp = 0.1; // 10at% Mo 90at%Cu
-  float v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  float s_sam = sample->w[1] * sample->w[2];
+  // double atp = 0.1; // 10at% Mo 90at%Cu
+  double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
+  double s_sam = sample->w[1] * sample->w[2];
 
   materialBase *material;
   elementBase *element;
@@ -183,15 +183,15 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   queue<ionBase*> recoils;
 
-  float norm;
-  float jmp = 2.7; // diffusion jump distance
+  double norm;
+  double jmp = 2.7; // diffusion jump distance
   int jumps;
-  float dif[3], dif2[3];
+  double dif[3], dif2[3];
 
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  float A1, A2, Etot, E1, E2;
+  double A1, A2, Etot, E1, E2;
   int Z1, Z2;
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
@@ -200,15 +200,15 @@ int main(int argc, char *argv[])
   snprintf( fname, 199, "%s.dist", argv[1] );
   FILE *rdist = fopen( fname, "wt" );
 
-  float pos1[3], pos2[3];
+  double pos1[3], pos2[3];
 
   ionBase *ff1, *pka;
   int id = 1;
 
-  //float A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
-  float A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
-  //float A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
-  //float A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
+  //double A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
+  double A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
+  //double A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  //double A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
   // main loop
   for( int n = 0; n < nstep; n++ )
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      float oerec = pka->e;
+      double oerec = pka->e;
 
       if( pka->z1 == 542 )
       {

@@ -79,9 +79,9 @@ int main(int argc, char *argv[])
   //trimBase *trim = new trimPrimaries( sample );
 
 
-  //float r = 10.0;
-  float r = atof( argv[2] ); //10.0;
-  float Cbf = atof( argv[3] );
+  //double r = 10.0;
+  double r = atof( argv[2] ); //10.0;
+  double Cbf = atof( argv[3] );
 
   //sample->bc[0] = CUT; // no pbc in x dir
   sample->initSpatialhash( int( sample->w[0] / r ) - 1,
@@ -89,9 +89,9 @@ int main(int argc, char *argv[])
                            int( sample->w[2] / r ) - 1 );
 
 
-  // float atp = 0.1; // 10at% Mo 90at%Cu
-  float v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  float v_cl = 4.0/3.0 * M_PI * cub(r); 
+  // double atp = 0.1; // 10at% Mo 90at%Cu
+  double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
+  double v_cl = 4.0/3.0 * M_PI * cub(r); 
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / ( v_cl * ( ( 1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho ) );
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
@@ -145,15 +145,15 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   queue<ionBase*> recoils;
 
-  float norm;
-  float jmp = 2.7; // diffusion jump distance
+  double norm;
+  double jmp = 2.7; // diffusion jump distance
   int jumps;
-  float dif[3], dif2[3];
+  double dif[3], dif2[3];
 
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  float A1, A2, Etot, E1, E2;
+  double A1, A2, Etot, E1, E2;
   int Z1, Z2;
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
   snprintf( fname, 199, "%s.dist", argv[1] );
   FILE *rdist = fopen( fname, "wt" );
 
-  float pos1[3], pos2[3];
+  double pos1[3], pos2[3];
 
   ionBase *ff1, *ff2, *pka;
   int id = 1;

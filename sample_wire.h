@@ -4,9 +4,9 @@
 #include "sample.h"
 
 struct sampleWire : sampleBase {
-  sampleWire( float x = 10000.0, float y = 10000.0, float z = 10000.0 );
+  sampleWire( double x = 10000.0, double y = 10000.0, double z = 10000.0 );
 
-  virtual materialBase* lookupMaterial( float* pos );
+  virtual materialBase* lookupMaterial( double* pos );
 };
 
 #endif

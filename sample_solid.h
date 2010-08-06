@@ -4,8 +4,8 @@
 #include "sample.h"
 
 struct sampleSolid : sampleBase {
-  sampleSolid( float x, float y, float z ): sampleBase( x, y, z) {};
-  virtual materialBase* lookupMaterial( float* pos );
+  sampleSolid( double x, double y, double z ): sampleBase( x, y, z) {};
+  virtual materialBase* lookupMaterial( double* pos );
 };
 
 #endif

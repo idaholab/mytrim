@@ -114,16 +114,16 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   queue<ionBase*> recoils;
 
-  float norm;
-  float jmp = 2.7; // diffusion jump distance
+  double norm;
+  double jmp = 2.7; // diffusion jump distance
   int jumps;
-  float dif[3];
+  double dif[3];
 
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  //float A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  float A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
+  //double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  double A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
   snprintf( fname, 199, "%s.dist", argv[1] );
   FILE *rdist = fopen( fname, "wt" );
 
-  float pos1[3];
+  double pos1[3];
 
   ionBase *ff1, *ff2, *pka;
   int id = 1;

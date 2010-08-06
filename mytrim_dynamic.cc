@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 1; n++ )
+  for( int n = 0; n < 10000; n++ )
   {
     if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 

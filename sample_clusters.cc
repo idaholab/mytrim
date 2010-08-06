@@ -6,7 +6,7 @@
 
 #include "functions.h"
 
-sampleClusters::sampleClusters( float x, float y, float z )  : sampleBase( x, y, z)
+sampleClusters::sampleClusters( double x, double y, double z )  : sampleBase( x, y, z)
 { 
   sh = 0;
   cl = 0; cn = 0; cnm = 0;
@@ -15,7 +15,7 @@ sampleClusters::sampleClusters( float x, float y, float z )  : sampleBase( x, y,
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-materialBase* sampleClusters::lookupMaterial( float* pos ) 
+materialBase* sampleClusters::lookupMaterial( double* pos ) 
 {
   int l = lookupCluster( pos, 0.0 );
 
@@ -28,9 +28,9 @@ materialBase* sampleClusters::lookupMaterial( float* pos )
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-int sampleClusters::lookupCluster( float* pos, float dr ) 
+int sampleClusters::lookupCluster( double* pos, double dr ) 
 {
-  float dif[3], r2;
+  double dif[3], r2;
   int k[3], k1[3], k2[3], j[3], l, ks;
 
   // spatial hash center and span
@@ -105,7 +105,7 @@ void sampleClusters::initSpatialhash( int x, int y, int z )
   sd = 0.0;
   for( int i = 0; i < 3; i++ ) 
   {
-    kd[i] = w[i] / float( kn[i] );
+    kd[i] = w[i] / double( kn[i] );
     sd += kd[i];
   }
   sd = 0.5 * sqrtf( sd );
@@ -124,7 +124,7 @@ void sampleClusters::reallocClusters( int n )
     cl = (int*)realloc( cl, sizeof(int) * n );
     for( int i = 0; i < 4; i++ )
     {
-      c[i] = (float*)realloc( c[i], sizeof(float) * n );
+      c[i] = (double*)realloc( c[i], sizeof(double) * n );
     }
     for( int j = cnm; j < n; j++ ) cl[j] = -1;
     cnm = n;
@@ -138,10 +138,10 @@ void sampleClusters::clearClusters()
   for( int i = 0; i < cnm; i++ ) cl[i] = -1;
 }
 
-void sampleClusters::addCluster( float x, float y, float z, float r )
+void sampleClusters::addCluster( double x, double y, double z, double r )
 {
   int k[3], i, l;
-  float cb[4];
+  double cb[4];
 
   if( cn >= cnm ) reallocClusters( cnm + cnm/10 + 10 ); // get 10% more slots plus 10
   c[0][cn] = x; c[1][cn] = y; c[2][cn] = z; c[3][cn] = r;
@@ -168,9 +168,9 @@ void sampleClusters::addCluster( float x, float y, float z, float r )
 }
 
 // add non-overlapping clusters with a minimum surface-surface separation of dr
-void sampleClusters::addRandomClusters( int n, float r, float dr )
+void sampleClusters::addRandomClusters( int n, double r, double dr )
 {
-  float npos[3];
+  double npos[3];
 
   reallocClusters( n + n/10 ); //allocate 10% more for ghost bubbles (get more later if needed)
 

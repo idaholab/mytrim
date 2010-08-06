@@ -54,11 +54,11 @@ int main(int argc, char *argv[])
     return 1;
   }
   
-  float epka  = atof(argv[2]);
-  float theta = atof(argv[3]) * M_PI/180.0; // 0 = perpendicular to wire
+  double epka  = atof(argv[2]);
+  double theta = atof(argv[3]) * M_PI/180.0; // 0 = perpendicular to wire
   int numpka  = atoi(argv[4]);
   int   zpka  = atoi(argv[5]);
-  float mpka  = atof(argv[6]);
+  double mpka  = atof(argv[6]);
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen( "/dev/random", "r" );
@@ -99,10 +99,10 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   queue<ionBase*> recoils;
 
-  float norm;
-  float jmp = 2.7; // diffusion jump distance
+  double norm;
+  double jmp = 2.7; // diffusion jump distance
   int jumps;
-  float dif[3];
+  double dif[3];
 
   //snprintf( fname, 199, "%s.Erec", argv[1] );
   //FILE *erec = fopen( fname, "wt" );

@@ -8,10 +8,10 @@ using namespace std;
 struct sampleLayers : sampleBase {
   vector<double> layerThickness;
 
-  sampleLayers( float x, float y, float z ): sampleBase( x, y, z) {};
-  virtual int lookupLayer( float* pos );
-  virtual materialBase* lookupMaterial( float* pos );
-  virtual float rangeMaterial( float* pos, float* dir );
+  sampleLayers( double x, double y, double z ): sampleBase( x, y, z) {};
+  virtual int lookupLayer( double* pos );
+  virtual materialBase* lookupMaterial( double* pos );
+  virtual double rangeMaterial( double* pos, double* dir );
 };
 
 #endif

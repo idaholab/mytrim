@@ -7,7 +7,7 @@
 
 simconfType *simconf;
 
-simconfType::simconfType( float _alfa )
+simconfType::simconfType( double _alfa )
 {
   ed = 25.0; // displacement energy
   alfa = _alfa; // angle of incidence (degrees)
@@ -48,7 +48,7 @@ void simconfType::read_snuc()
   for( int i = 0; i < 92; i++ )
     for( int j = i; j < 92; j++ )
     {
-      fscanf( sf, "%*d %*d %f %f %f %f\n",
+      fscanf( sf, "%*d %*d %lf %lf %lf %f\n",
         &snuc[j][i][0], &snuc[j][i][1], &snuc[j][i][2], &snuc[j][i][3] );
       for( int n = 0; n < 4; n++ )
         snuc[i][j][n] = snuc[j][i][n];
@@ -68,7 +68,7 @@ void simconfType::read_scoef()
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
   {
-    fscanf( sf, "%*d %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f\n",
+    fscanf( sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
       &scoef[i].mm1, &scoef[i].m1, &scoef[i].mnat,
       &scoef[i].rho, &scoef[i].atrho, &scoef[i].vfermi, &scoef[i].heat,
       &pcoef[i][0], &pcoef[i][1], &pcoef[i][2], &pcoef[i][3],
@@ -82,7 +82,7 @@ void simconfType::read_scoef()
   sf = fopen( fname, "rt" );
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
-    fscanf( sf, "%*d %f\n", &scoef[i].lfctr );
+    fscanf( sf, "%*d %lf\n", &scoef[i].lfctr );
   fclose( sf );
 }
 

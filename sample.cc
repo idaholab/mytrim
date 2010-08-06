@@ -1,6 +1,6 @@
 #include "sample.h"
 
-sampleBase::sampleBase( float x, float y, float z ) 
+sampleBase::sampleBase( double x, double y, double z ) 
 {
   w[0] = x; w[1] = y; w[2] = z;
   for( int i = 0; i < 3; i++ ) bc[i] = PBC;

@@ -6,11 +6,11 @@
 class inverter
 {
 protected :
-  float maxx, maxf, tol;
+  double maxx, maxf, tol;
 
 public :
-  virtual float f( float x ) = 0;
-  float x( float f );
+  virtual double f( double x ) = 0;
+  double x( double f );
 
   inverter() { maxx = 0.0; }
 };
@@ -19,16 +19,16 @@ public :
 class massInverter : public inverter
 {
 public:
-  virtual float f( float x );
+  virtual double f( double x );
 
   massInverter() { maxx = 235.0; tol = 1e-7; maxf = f( maxx ); }
 };
 
 class energyInverter : public inverter
 {
- float A;
+ double A;
 public:
-  virtual float f( float x );
+  virtual double f( double x );
 
   energyInverter() { maxx = 186.98; tol = 1e-7; maxf = f( maxx ); }
 };

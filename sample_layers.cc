@@ -1,7 +1,7 @@
 #include "sample_layers.h"
 #include <cmath>
 
-int sampleLayers::lookupLayer( float* pos )
+int sampleLayers::lookupLayer( double* pos )
 {
   int i;
   double d = 0.0;
@@ -18,23 +18,23 @@ int sampleLayers::lookupLayer( float* pos )
   return i;
 }
 
-materialBase*  sampleLayers::lookupMaterial( float* pos )
+materialBase*  sampleLayers::lookupMaterial( double* pos )
 {
   return material[lookupLayer(pos)];
 }
 
 
-float sampleLayers::rangeMaterial( float* pos, float* dir )
+double sampleLayers::rangeMaterial( double* pos, double* dir )
 {
   // assume dir is a normalized vector
-  float range, d = 0.0;
+  double range, d = 0.0;
   int i;
-  const float unrestricted = 1.0e6;
+  const double unrestricted = 1.0e6;
 
   // parallel to layer interfaces
   if( dir[0] == 0.0 ) return unrestricted;
 
-  float epsilon = fabs( 1.0e-10 / dir[0] );
+  double epsilon = fabs( 1.0e-10 / dir[0] );
 
   // outside film
   if( pos[0] < 0.0 )

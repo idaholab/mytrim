@@ -13,7 +13,7 @@ void sampleDynamic::averages( const ionBase *_pka )
   while( i > 0 ) material[--i]->dirty = true;
 }
 
-materialBase*  sampleDynamic::lookupMaterial( float* pos )
+materialBase*  sampleDynamic::lookupMaterial( double* pos )
 {
   materialBase* m = material[lookupLayer(pos)];
 
