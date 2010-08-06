@@ -1,6 +1,7 @@
 #include "sample_dynamic.h"
 #include "simconf.h"
 #include "element.h"
+#include <iostream>
 #include <cmath>
 
 void sampleDynamic::averages( const ionBase *_pka )
@@ -46,7 +47,7 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   }
 
   // mass of layer (g/cm^3 * Ang^3 = 10^-24 g)
-  double ml = material[layer]->rho * w[1] * w[2] * layerThickness[layer];
+  //double ml = material[layer]->rho * w[1] * w[2] * layerThickness[layer];
 
   // number of atoms in layer
   int nl    = material[layer]->arho * w[1] * w[2] * layerThickness[layer];

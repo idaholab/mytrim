@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   double dif[3];
 
   //double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  double A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
+  double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 10000; n++ )
+  for( int n = 0; n < 35000; n++ )
   {
     if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 
     ff1->z1 = Z;
     ff1->m1 = A;
-    ff1->e  = E;
+    ff1->e  = E * (3-((n*3)/35000));
 
     ff1->dir[0] = 1;
     ff1->dir[1] = 0;
@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
       layer2 = sample->lookupLayer(pka->pos);
 /*      if( pka->gen == 0 )
         sample->addAtomsToLayer( layer2, 1, pka->z1 );*/
-      if( layer2 != layer1 || pka->gen == 0 )
+      if( layer2 != layer1 || pka->pos[0] < 0.0 || pka->gen == 0 )
       {
         // add to destination layer
         if( pka->pos[0] > 0 )
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
     cout << sample->layerThickness[i] << ' ';
     for( int j = 0; j < sample->material[i]->element.size(); j++ )
     {
-      cout << sample->material[i]->element[j]->z << ':' << sample->material[i]->element[j]->t << ' '; 
+      cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' '; 
     }
     cout << endl;
   }

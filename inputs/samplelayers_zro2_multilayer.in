@@ -1,5 +1,95 @@
-200 200 200     # System size x,y,z in ang
-20              # Number of Layers
+500 100 100     # System size x,y,z in ang
+50              # Number of Layers
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
+ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
+Zr 40 90 1.0    # Element1_name Z mass stoichiometry
+O 8 16 2.0      # Element2_name Z mass stoichiometry
 ZrO2 10 6.52 2  # Layer1_title thickness[ang] density[g/ccm] number of elements
 Zr 40 90 1.0    # Element1_name Z mass stoichiometry
 O 8 16 2.0      # Element2_name Z mass stoichiometry
