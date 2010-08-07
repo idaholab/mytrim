@@ -48,7 +48,7 @@ void simconfType::read_snuc()
   for( int i = 0; i < 92; i++ )
     for( int j = i; j < 92; j++ )
     {
-      fscanf( sf, "%*d %*d %lf %lf %lf %f\n",
+      fscanf( sf, "%*d %*d %lf %lf %lf %lf\n",
         &snuc[j][i][0], &snuc[j][i][1], &snuc[j][i][2], &snuc[j][i][3] );
       for( int n = 0; n < 4; n++ )
         snuc[i][j][n] = snuc[j][i][n];

@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
   int seed;
   fread( &seed, sizeof(int), 1, urand );
   fclose( urand );
+  seed = 1;
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
@@ -197,11 +198,19 @@ int main(int argc, char *argv[])
       {
         // add to destination layer
         if( pka->pos[0] > 0 )
+        {
+          cout << "Add to destination..." << endl;
           sample->addAtomsToLayer( layer2, 1, pka->z1 );
+          cout << "done." << endl;
+        }
 
         // remove from source layer
         if( pka->gen > 0 )
+        {
+          cout << "Remove from source..." << endl;
           sample->addAtomsToLayer( layer1, -1, pka->z1 );
+          cout << "done." << endl;
+        }
       }
 
       //   // pka is O or Ag
