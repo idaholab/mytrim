@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
            << "  m=" << element->m << "  fraction=" << element->t << endl;
       material->element.push_back( element );
     }
+    cout << material << endl;
 
     material->prepare(); // all elements added
     sample->material.push_back( material ); // add material to sample
@@ -164,6 +165,8 @@ int main(int argc, char *argv[])
     {
       pka = recoils.front();
       recoils.pop();
+
+      cout << "averages" << endl;
       sample->averages( pka );
 
       //
@@ -171,6 +174,7 @@ int main(int argc, char *argv[])
       //
 
       // get layer of origin
+      cout << "Lookup layer" << endl;
       layer1 = sample->lookupLayer(pka->pos);
 
       //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
@@ -180,7 +184,9 @@ int main(int argc, char *argv[])
       //
       // follow this ion's trajectory and store recoils
       //
+      cout << "done " << layer1 << endl;
       trim->trim( pka, recoils );
+      cout << "done trim" << endl;
 
 /*      if( pka->gen == 0 )
       {
@@ -198,19 +204,11 @@ int main(int argc, char *argv[])
       {
         // add to destination layer
         if( pka->pos[0] > 0 )
-        {
-          cout << "Add to destination..." << endl;
           sample->addAtomsToLayer( layer2, 1, pka->z1 );
-          cout << "done." << endl;
-        }
 
         // remove from source layer
         if( pka->gen > 0 )
-        {
-          cout << "Remove from source..." << endl;
           sample->addAtomsToLayer( layer1, -1, pka->z1 );
-          cout << "done." << endl;
-        }
       }
 
       //   // pka is O or Ag

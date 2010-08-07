@@ -1,9 +1,11 @@
-#include "math.h"
-
 #include "material.h"
 #include "simconf.h"
 
 #include "functions.h"
+
+#include <cmath>
+#include <iostream>
+using namespace std;
 
 void materialBase::prepare()
 {
@@ -24,13 +26,18 @@ void materialBase::prepare()
     az += double( element[i]->z ) * element[i]->t;
   }
 
+  if( am == 0.0 )
+  {
+    cout << "material=" << this << " am==0 e.size=" << element.size() << endl;
+    for( int i = 0; i < element.size(); i++ ) 
+      cout << i << ". m=" << element[i]->m << " t=" <<  element[i]->t << endl;
+  }
   arho = rho * 0.6022 / am; //[TRI00310] atoms/Ang^3
 }
 
 // make sure layers are prepare'd first!
 void materialBase::average( const ionBase *pka )
 {
-  double sbuf[1000];
   mu = pka->m1 / am;
 
   // universal or firsov screening length

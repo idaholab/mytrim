@@ -16,11 +16,17 @@ void sampleDynamic::averages( const ionBase *_pka )
 
 materialBase*  sampleDynamic::lookupMaterial( double* pos )
 {
+  //cout << "lookuplayer" << endl;
   materialBase* m = material[lookupLayer(pos)];
+  //cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << endl;
 
   // on-demand update
-  if( m->dirty ) m->average( pka );
-
+  if( m->dirty )
+  {
+    //cout << "on demand aver" << endl;
+    m->average( pka );
+    //cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << endl;
+  }
   return m;
 }
 
