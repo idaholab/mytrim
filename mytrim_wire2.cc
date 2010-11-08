@@ -32,6 +32,7 @@
 #include "element.h"
 #include "material.h"
 #include "sample_wire.h"
+#include "sample_burried_wire.h"
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
@@ -57,6 +58,7 @@ int main(int argc, char *argv[])
   double mpka  = atof(argv[6]);
   double diameter  = 10.0*atof(argv[7]);
   double length  = 10000.0;
+  bool burried = false;
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen( "/dev/random", "r" );
@@ -69,9 +71,15 @@ int main(int argc, char *argv[])
   simconf = new simconfType;
 
   // initialize sample structure
-  sampleWire *sample = new sampleWire( diameter, diameter, length );
-  sample->bc[2] = sampleWire::CUT;
-
+  sampleWire *sample;
+  if( burried )
+    sample = new sampleBurriedWire( diameter, diameter, length );
+  else
+  {
+    sample = new sampleWire( diameter, diameter, length );
+    sample->bc[2] = sampleWire::CUT;
+  }
+  
   // initialize trim engine for the sample
 /*  const int z1 = 31;
   const int z2 = 33;
@@ -84,9 +92,24 @@ int main(int argc, char *argv[])
   // Si
   material = new materialBase( 2.329 ); // rho
   element = new elementBase;
-  element->z = 14; // As
+  element->z = 14; // Si
   element->m = 28.0;
   element->t = 1.0;
+  material->element.push_back( element );
+  material->prepare(); // all materials added
+  sample->material.push_back( material ); // add material to sample
+
+  // SiO2 (material[1] for the cover layer in SampleBurriedWire)
+  material = new materialBase( 2.634 ); // rho
+  element = new elementBase;
+  element->z = 14; // Si
+  element->m = 28.0;
+  element->t = 1.0;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = 8; // O
+  element->m = 16.0;
+  element->t = 2.0;
   material->element.push_back( element );
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
