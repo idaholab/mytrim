@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   double mpka  = atof(argv[6]);
   double diameter  = 10.0*atof(argv[7]);
   double length  = 10000.0;
-  bool burried = false;
+  bool burried = true;
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen( "/dev/random", "r" );
@@ -156,42 +156,53 @@ int main(int argc, char *argv[])
 
     v_norm( pka->dir );
 
-    if( theta == 0.0 )
+    if( burried )
     {
-      // 0 degrees => start on top of wire!
-      pka->pos[2] = 0;
-      do
-      {
-        pka->pos[0] = dr250() * sample->w[0];
-        pka->pos[1] = dr250() * sample->w[1];
-      } while( sample->lookupMaterial(pka->pos ) == 0 );
+      // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
+      // TODO: take theta into account!
+      pka->pos[0] = dr250() * ( 2.0*length + sample->w[0] ) - ( length + 0.5 * sample->w[0] ) ;
+      pka->pos[1] = dr250() * ( 2.0*length + sample->w[1] ) - ( length + 0.5 * sample->w[1] ) ;
+      pka->pos[2] = -250.0; // overcoat thickness
     }
     else
     {
-      // start on side _or_ top!
-      double vpos[3], t;
-      do
+      if( theta == 0.0 )
       {
+        // 0 degrees => start on top of wire!
+        pka->pos[2] = 0;
         do
         {
-          vpos[0] = dr250() * sample->w[0];
-          vpos[1] = 0.0;
-          vpos[2] = ( dr250() * ( length + cot(theta)*diameter ) ) - cot(theta)*diameter;
+          pka->pos[0] = dr250() * sample->w[0];
+          pka->pos[1] = dr250() * sample->w[1];
+        } while( sample->lookupMaterial(pka->pos ) == 0 );
+      }
+      else
+      {
+        // start on side _or_ top!
+        double vpos[3], t;
+        do
+        {
+          do
+          {
+            vpos[0] = dr250() * sample->w[0];
+            vpos[1] = 0.0;
+            vpos[2] = ( dr250() * ( length + cot(theta)*diameter ) ) - cot(theta)*diameter;
 
-          t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
+            t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
 
-          // if we start beyond wire length (that would be inside the substrate) then retry
-        } while( t*pka->dir[2] + vpos[2] >= length );
+            // if we start beyond wire length (that would be inside the substrate) then retry
+          } while( t*pka->dir[2] + vpos[2] >= length );
 
-        // if first intersection with cylinder is at z<0 then check if we hit the top face instead
-        if( t*pka->dir[2] + vpos[2] < 0.0 )
-          t = -vpos[2]/pka->dir[2];
+          // if first intersection with cylinder is at z<0 then check if we hit the top face instead
+          if( t*pka->dir[2] + vpos[2] < 0.0 )
+            t = -vpos[2]/pka->dir[2];
 
-        // start PKA at calculated intersection point
-        for( int i = 0; i < 3; i++ )
-            pka->pos[i] = t*pka->dir[i] + vpos[i];
+          // start PKA at calculated intersection point
+          for( int i = 0; i < 3; i++ )
+              pka->pos[i] = t*pka->dir[i] + vpos[i];
 
-      } while( sample->lookupMaterial(pka->pos ) == 0 );
+        } while( sample->lookupMaterial(pka->pos ) == 0 );
+      }
     }
     cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << endl;
     continue;

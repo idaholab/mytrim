@@ -17,7 +17,7 @@ materialBase* sampleBurriedWire::lookupMaterial( double* pos )
   materialBase *ret = sampleWire::lookupMaterial(pos);
   if( ret == 0 )
   {
-    if( pos[0] > -250.0 )
+    if( pos[2] > -250.0 )
       return material[1];
     else
       return 0;
