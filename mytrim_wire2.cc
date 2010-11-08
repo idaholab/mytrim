@@ -45,20 +45,27 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 8 ) 
+  if( argc != 5 ) 
   {
-    fprintf( stderr, "syntax:\nmytrim_wire basename Eion[eV] angle[deg] numpka zpka mpka diameter(nm)\n" );
+    fprintf( stderr, "syntax:\nmytrim_wire2 basename angle[deg] diameter(nm) burried[0,1]\n" );
     return 1;
   }
 
-  double epka  = atof(argv[2]);
-  double theta = atof(argv[3]) * M_PI/180.0; // 0 = parallel to wire
-  int numpka  = atoi(argv[4]);
-  int   zpka  = atoi(argv[5]);
-  double mpka  = atof(argv[6]);
-  double diameter  = 10.0*atof(argv[7]);
+  double theta = atof(argv[2]) * M_PI/180.0; // 0 = parallel to wire
+  double diameter  = 10.0*atof(argv[3]);
   double length  = 10000.0;
-  bool burried = true;
+  bool burried = ( atoi(argv[4]) != 0 );
+
+  // ion series
+  const int nstep = 5;
+  double ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
+  int ion_count[nstep];
+  ionBase* ion_prototype[nstep];
+  ion_prototype[0] = new ionBase(  5, 11.0 , 320.0e3 ); // Z,m,E
+  ion_prototype[1] = new ionBase(  5, 11.0 , 220.0e3 ); // Z,m,E
+  ion_prototype[2] = new ionBase(  5, 11.0 , 160.0e3 ); // Z,m,E
+  ion_prototype[3] = new ionBase(  5, 11.0 , 120.0e3 ); // Z,m,E
+  ion_prototype[4] = new ionBase( 15, 31.0 , 250.0e3 ); // Z,m,E
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen( "/dev/random", "r" );
@@ -80,11 +87,26 @@ int main(int argc, char *argv[])
     sample->bc[2] = sampleWire::CUT;
   }
   
+  // calculate actual ion numbers
+  for( int s = 0; s < nstep; ++s )
+  {
+    double A; // irradiated area in Ang^2
+    if( burried )
+      A =( 2.0*length + sample->w[0] ) * ( 2.0*length + sample->w[1] );
+    else
+      A = cos(theta) * M_PI * 0.25 * sample->w[0] * sample->w[1]; // + projected side
+
+    // 1cm^2 = 1e16 Ang**2, 1Ang^2 = 1e-16cm^2
+    ion_count[s] = ion_dose[s] * A * 1.0e-16;
+    cerr << "Ion " << s << ' ' << ion_count[s] << endl;
+  }
+
   // initialize trim engine for the sample
 /*  const int z1 = 31;
   const int z2 = 33;
   trimVacMap *trim = new trimVacMap( sample, z1, z2 ); // GaAs*/
-  trimBase *trim = new trimBase( sample );
+  //trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimPrimaries( sample );
 
   materialBase *material;
   elementBase *element;
@@ -137,118 +159,117 @@ int main(int argc, char *argv[])
       for( int y = 0; y < my; y++ )
         imap[x][y][e] = 0;
 
-  // 10000 ions
-  for( int n = 0; n < numpka; n++ )
+  for( int s = 0; s < nstep; ++s )
   {
-    if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
-
-    pka = new ionBase;
-    pka->gen = 0; // generation (0 = PKA)
-    pka->tag = -1;
-    pka->md = 0;
-    pka->z1 = zpka; // S
-    pka->m1 = mpka;
-    pka->e  = epka; 
-
-    pka->dir[0] = 0.0;
-    pka->dir[1] = sin( theta );
-    pka->dir[2] = cos( theta );
-
-    v_norm( pka->dir );
-
-    if( burried )
+    for( int n = 0; n < ion_count[s]; ++n )
     {
-      // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
-      // TODO: take theta into account!
-      pka->pos[0] = dr250() * ( 2.0*length + sample->w[0] ) - ( length + 0.5 * sample->w[0] ) ;
-      pka->pos[1] = dr250() * ( 2.0*length + sample->w[1] ) - ( length + 0.5 * sample->w[1] ) ;
-      pka->pos[2] = -250.0; // overcoat thickness
-    }
-    else
-    {
-      if( theta == 0.0 )
+      if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+
+      // generate new PKA from prototype ion
+      pka = new ionBase( ion_prototype[s] );
+      pka->gen = 0; // generation (0 = PKA)
+      pka->tag = -1;
+      pka->md = 0;
+
+      pka->dir[0] = 0.0;
+      pka->dir[1] = sin( theta );
+      pka->dir[2] = cos( theta );
+
+      v_norm( pka->dir );
+
+      if( burried )
       {
-        // 0 degrees => start on top of wire!
-        pka->pos[2] = 0;
-        do
-        {
-          pka->pos[0] = dr250() * sample->w[0];
-          pka->pos[1] = dr250() * sample->w[1];
-        } while( sample->lookupMaterial(pka->pos ) == 0 );
+        // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
+        // TODO: take theta into account!
+        pka->pos[0] = dr250() * ( 2.0*length + sample->w[0] ) - ( length + 0.5 * sample->w[0] ) ;
+        pka->pos[1] = dr250() * ( 2.0*length + sample->w[1] ) - ( length + 0.5 * sample->w[1] ) ;
+        pka->pos[2] = -250.0; // overcoat thickness
       }
       else
       {
-        // start on side _or_ top!
-        double vpos[3], t;
-        do
+        if( theta == 0.0 )
         {
+          // 0 degrees => start on top of wire!
+          pka->pos[2] = 0;
           do
           {
-            vpos[0] = dr250() * sample->w[0];
-            vpos[1] = 0.0;
-            vpos[2] = ( dr250() * ( length + cot(theta)*diameter ) ) - cot(theta)*diameter;
+            pka->pos[0] = dr250() * sample->w[0];
+            pka->pos[1] = dr250() * sample->w[1];
+          } while( sample->lookupMaterial(pka->pos ) == 0 );
+        }
+        else
+        {
+          // start on side _or_ top!
+          double vpos[3], t;
+          do
+          {
+            do
+            {
+              vpos[0] = dr250() * sample->w[0];
+              vpos[1] = 0.0;
+              vpos[2] = ( dr250() * ( length + cot(theta)*diameter ) ) - cot(theta)*diameter;
 
-            t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
+              t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
 
-            // if we start beyond wire length (that would be inside the substrate) then retry
-          } while( t*pka->dir[2] + vpos[2] >= length );
+              // if we start beyond wire length (that would be inside the substrate) then retry
+            } while( t*pka->dir[2] + vpos[2] >= length );
 
-          // if first intersection with cylinder is at z<0 then check if we hit the top face instead
-          if( t*pka->dir[2] + vpos[2] < 0.0 )
-            t = -vpos[2]/pka->dir[2];
+            // if first intersection with cylinder is at z<0 then check if we hit the top face instead
+            if( t*pka->dir[2] + vpos[2] < 0.0 )
+              t = -vpos[2]/pka->dir[2];
 
-          // start PKA at calculated intersection point
-          for( int i = 0; i < 3; i++ )
-              pka->pos[i] = t*pka->dir[i] + vpos[i];
+            // start PKA at calculated intersection point
+            for( int i = 0; i < 3; i++ )
+                pka->pos[i] = t*pka->dir[i] + vpos[i];
 
-        } while( sample->lookupMaterial(pka->pos ) == 0 );
+          } while( sample->lookupMaterial(pka->pos ) == 0 );
+        }
       }
-    }
-    cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << endl;
-    continue;
+      cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << endl;
+      continue;
 
-    pka->set_ef();
-    recoils.push( pka );
+      pka->set_ef();
+      recoils.push( pka );
 
-    while( !recoils.empty() )
-    {
-      pka = recoils.front();
-      recoils.pop();
-      sample->averages( pka );
-
-      // do ion analysis/processing BEFORE the cascade here
-
-      if( pka->z1 == zpka  )
+      while( !recoils.empty() )
       {
-        //printf(  "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2] );
+        pka = recoils.front();
+        recoils.pop();
+        sample->averages( pka );
+
+        // do ion analysis/processing BEFORE the cascade here
+
+        if( pka->z1 == ion_prototype[s]->z1  )
+        {
+          //printf(  "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2] );
+        }
+
+        // follow this ion's trajectory and store recoils
+        // printf( "%f\t%d\n", pka->e, pka->z1 );
+        trim->trim( pka, recoils );
+
+        // do ion analysis/processing AFTER the cascade here
+
+        // ion is still in sample
+        if(  sample->lookupMaterial( pka->pos ) != 0 ) 
+        {
+          int x, y;
+          x = ( ( pka->pos[0] * mx ) / sample->w[0] );
+          y = ( ( pka->pos[1] * my ) / sample->w[1] );
+          x -= int(x/mx) * mx;
+          y -= int(y/my) * my;
+
+          // keep track of interstitials for the two constituents
+  /*        if( pka->z1 == z1 ) imap[x][y][0]++;
+          else if( pka->z1 == z2 ) imap[x][y][1]++;
+          else imap[x][y][2]++; // the PKAs*/
+        }
+
+        // done with this recoil
+        delete pka;
       }
-
-      // follow this ion's trajectory and store recoils
-      // printf( "%f\t%d\n", pka->e, pka->z1 );
-      trim->trim( pka, recoils );
-
-      // do ion analysis/processing AFTER the cascade here
-
-      // ion is still in sample
-      if(  sample->lookupMaterial( pka->pos ) != 0 ) 
-      {
-        int x, y;
-        x = ( ( pka->pos[0] * mx ) / sample->w[0] );
-        y = ( ( pka->pos[1] * my ) / sample->w[1] );
-        x -= int(x/mx) * mx;
-        y -= int(y/my) * my;
-
-        // keep track of interstitials for the two constituents
-/*        if( pka->z1 == z1 ) imap[x][y][0]++;
-        else if( pka->z1 == z2 ) imap[x][y][1]++;
-        else imap[x][y][2]++; // the PKAs*/
-      }
-
-      // done with this recoil
-      delete pka;
     }
   }
-
 //   char *elnam[3] = { "Ga", "As", "ion" };
 
 //   FILE *intf, *vacf, *netf;

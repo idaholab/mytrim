@@ -13,6 +13,8 @@ struct ionBase {
   double ef;
 
   ionBase();
+  ionBase( ionBase* prototype );
+  ionBase( int _z1, double _m1, double _e );
   virtual ~ionBase() {};
 
   virtual void parent( ionBase* parent );
