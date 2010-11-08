@@ -19,11 +19,27 @@ protected:
   ionBase *pka, *recoil;
   materialBase *material;
   elementBase *element;
+  queue<ionBase*> *recoil_queue_ptr;
+  bool terminate;
 
   // by default only follow recoils with E > 12eV
   virtual bool spawnRecoil() { return recoil->e > 12.0; };
   virtual void vacancyCreation();
 };
+
+// //
+// // Do a breadth first rather than depth first recoil simulation
+// //
+// class trimBreadthFirst : public trimBase {
+// public:
+//   trimBreadthFirst( sampleBase *sample_ ) : trimBase( sample_ ) {};
+// protected:
+//   virtual bool spawnRecoil() {
+//     recoil_queue_ptr->push(pka);
+//     terminate = true;
+//     return recoil->e > 12.0;
+//   };
+// };
 
 //
 // Only follow the primary knock ons

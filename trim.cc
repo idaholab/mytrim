@@ -21,6 +21,9 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
   // simconf should already be initialized
   pka = pka_;
 
+  // make recoil queue available in overloadable functions
+  recoil_queue_ptr = &recoils;
+
   //e = pka.e;
   double pl = 0.0;
   double max = 0.0;
@@ -38,7 +41,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
   double p1, p2;
   double range;
-  bool terminate;
+
 //if( simconf->fullTraj )
   r1 = dr250();
 
