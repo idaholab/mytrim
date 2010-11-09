@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
             {
               vpos[0] = dr250() * sample->w[0];
               vpos[1] = 0.0;
-              vpos[2] = ( dr250() * ( length + cot(theta)*diameter ) ) - cot(theta)*diameter;
+              vpos[2] = ( dr250() * ( length + diameter/tan(theta) ) ) - diameter/tan(theta);
 
               t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
 
@@ -263,35 +263,6 @@ int main(int argc, char *argv[])
       }
     }
   }
-//   char *elnam[3] = { "Ga", "As", "ion" };
-
-//   FILE *intf, *vacf, *netf;
-//   for( int e = 0; e < 3; e++ )
-//   {
-//     snprintf( fname, 199, "%s.%s.int", argv[1], elnam[e] );
-//     intf = fopen( fname, "wt" );
-//     snprintf( fname, 199, "%s.%s.vac", argv[1], elnam[e] );
-//     vacf = fopen( fname, "wt" );
-//     snprintf( fname, 199, "%s.%s.net", argv[1], elnam[e] );
-//     netf = fopen( fname, "wt" );
-// 
-//     for( int y = 0; y <= my; y++ )
-//     {
-//       for( int x = 0; x <= mx; x++ )
-//       {
-//         fprintf( intf, "%d %d %d\n", x, y, (x<mx && y<my) ? imap[x][y][e] : 0 );
-//         fprintf( vacf, "%d %d %d\n", x, y, (x<mx && y<my) ? trim->vmap[x][y][e] : 0 );
-//         fprintf( netf, "%d %d %d\n", x, y, (x<mx && y<my) ? ( imap[x][y][e] - trim->vmap[x][y][e] ) : 0 );
-//       }
-//       fprintf( intf, "\n" );
-//       fprintf( vacf, "\n" );
-//       fprintf( netf, "\n" );
-//     }
-// 
-//     fclose( intf );
-//     fclose( vacf );
-//     fclose( netf );
-//   }
 
   return EXIT_SUCCESS;
 }
