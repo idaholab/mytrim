@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
           {
             vpos[0] = dr250() * sample->w[0];
             vpos[1] = 0.0;
-            vpos[2] = ( dr250() * ( length + cot(theta)*diameter ) ) - cot(theta)*diameter;
+            vpos[2] = ( dr250() * ( length + diameter/tan(theta) ) ) - diameter/tan(theta);
 
             t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
 
