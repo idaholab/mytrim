@@ -45,9 +45,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 5 ) 
+  if( argc != 6 ) 
   {
-    fprintf( stderr, "syntax:\nmytrim_wire2 basename angle[deg] diameter(nm) burried[0,1]\n" );
+    cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier" << endl;
     return 1;
   }
 
@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
   double diameter  = 10.0*atof(argv[3]);
   double length  = 10000.0;
   bool burried = ( atoi(argv[4]) != 0 );
+  double mult = atof(argv[5]);
 
   // ion series
   const int nstep = 5;
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
     sample = new sampleWire( diameter, diameter, length );
     sample->bc[2] = sampleWire::CUT;
   }
-  
+
   // calculate actual ion numbers
   for( int s = 0; s < nstep; ++s )
   {
@@ -94,10 +95,11 @@ int main(int argc, char *argv[])
     if( burried )
       A =( 2.0*length + sample->w[0] ) * ( 2.0*length + sample->w[1] );
     else
-      A = cos(theta) * M_PI * 0.25 * sample->w[0] * sample->w[1]; // + projected side
+      A = cos(theta) * M_PI * 0.25 * sample->w[0] * sample->w[1] + //   slanted top face
+          sin(theta) * length * sample->w[0];                      // + projected side
 
     // 1cm^2 = 1e16 Ang**2, 1Ang^2 = 1e-16cm^2
-    ion_count[s] = ion_dose[s] * A * 1.0e-16;
+    ion_count[s] = ion_dose[s] * A * 1.0e-16 * mult;
     cerr << "Ion " << s << ' ' << ion_count[s] << endl;
   }
 
@@ -163,7 +165,8 @@ int main(int argc, char *argv[])
   {
     for( int n = 0; n < ion_count[s]; ++n )
     {
-      if( n % 1000 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+      if( n % 1000 == 0 ) 
+        cerr << "pka #" << n+1 << endl;
 
       // generate new PKA from prototype ion
       pka = new ionBase( ion_prototype[s] );
@@ -190,7 +193,7 @@ int main(int argc, char *argv[])
         if( theta == 0.0 )
         {
           // 0 degrees => start on top of wire!
-          pka->pos[2] = 0;
+          pka->pos[2] = 0.0;
           do
           {
             pka->pos[0] = dr250() * sample->w[0];
@@ -225,8 +228,8 @@ int main(int argc, char *argv[])
           } while( sample->lookupMaterial(pka->pos ) == 0 );
         }
       }
-      cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << endl;
-      continue;
+      //cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << endl;
+      //continue;
 
       pka->set_ef();
       recoils.push( pka );
@@ -245,24 +248,14 @@ int main(int argc, char *argv[])
         }
 
         // follow this ion's trajectory and store recoils
-        // printf( "%f\t%d\n", pka->e, pka->z1 );
         trim->trim( pka, recoils );
 
         // do ion analysis/processing AFTER the cascade here
 
-        // ion is still in sample
-        if(  sample->lookupMaterial( pka->pos ) != 0 ) 
+        // ion is in the wire
+        if(  sample->lookupMaterial( pka->pos ) == sample->material[0] )
         {
-          int x, y;
-          x = ( ( pka->pos[0] * mx ) / sample->w[0] );
-          y = ( ( pka->pos[1] * my ) / sample->w[1] );
-          x -= int(x/mx) * mx;
-          y -= int(y/my) * my;
-
-          // keep track of interstitials for the two constituents
-  /*        if( pka->z1 == z1 ) imap[x][y][0]++;
-          else if( pka->z1 == z2 ) imap[x][y][1]++;
-          else imap[x][y][2]++; // the PKAs*/
+          cout << pka->z1 << ' ' << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
         }
 
         // done with this recoil
