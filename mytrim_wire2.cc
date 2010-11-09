@@ -47,9 +47,9 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 6 ) 
+  if( argc != 8 ) 
   {
-    cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier" << endl;
+    cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << endl;
     return 1;
   }
 
@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
   double length  = 11000.0; // 1.1 mu
   bool burried = ( atoi(argv[4]) != 0 );
   double mult = atof(argv[5]);
+  bool xyz_out  = ( atoi(argv[6]) != 0 );
+  bool ldat_out = ( atoi(argv[7]) != 0 );
 
   // ion series
   const int nstep = 5;
@@ -95,7 +97,7 @@ int main(int argc, char *argv[])
   {
     double A; // irradiated area in Ang^2
     if( burried )
-      A =( 2.0*length + sample->w[0] ) * ( 2.0*length + sample->w[1] );
+      A =( length + sample->w[0] ) * ( length + sample->w[1] );
     else
       A = cos(theta) * M_PI * 0.25 * sample->w[0] * sample->w[1] + //   slanted top face
           sin(theta) * length * sample->w[0];                      // + projected side
@@ -195,8 +197,8 @@ int main(int argc, char *argv[])
       {
         // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
         // TODO: take theta into account!
-        pka->pos[0] = dr250() * ( 2.0*length + sample->w[0] ) - ( length + 0.5 * sample->w[0] ) ;
-        pka->pos[1] = dr250() * ( 2.0*length + sample->w[1] ) - ( length + 0.5 * sample->w[1] ) ;
+        pka->pos[0] = ( dr250() - 0.5 ) * ( length + sample->w[0] );
+        pka->pos[1] = ( dr250() - 0.5 ) * ( length + sample->w[1] );
         pka->pos[2] = -250.0; // overcoat thickness
       }
       else
@@ -266,12 +268,19 @@ int main(int argc, char *argv[])
         // ion is in the wire
         if(  sample->lookupMaterial( pka->pos ) == sample->material[0] )
         {
-          xyz_data << simconf->scoef[pka->z1-1].sym << ' ' 
-                   << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
-          xyz_lines++;
-
           int l = pka->pos[2] / dl;
-          if( l >=0 && l < lx ) lbins[ pka->z1 == 5 ? 0 : 1 ][l]++;
+          if( l >=0 && l < lx ) 
+          {
+            if( xyz_out )
+            {
+              xyz_data << simconf->scoef[pka->z1-1].sym << ' ' 
+                      << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
+              xyz_lines++;
+            }
+
+            if( ldat_out )
+              lbins[ pka->z1 == 5 ? 0 : 1 ][l]++;
+          }
         }
 
         // done with this recoil
@@ -281,21 +290,26 @@ int main(int argc, char *argv[])
   }
 
   // write xyz file
-  stringstream xyz_name;
-  xyz_name << argv[1] << ".xyz";
-  ofstream xyz( xyz_name.str().c_str() );
-  xyz << xyz_lines << endl << endl << xyz_data.str();
-  xyz.close();
+  if( xyz_out )
+  {
+    stringstream xyz_name;
+    xyz_name << argv[1] << ".xyz";
+    ofstream xyz( xyz_name.str().c_str() );
+    xyz << xyz_lines << endl << endl << xyz_data.str();
+    xyz.close();
+  }
 
   // write lbins file (atoms per nm^3)
-  stringstream ldat_name;
-  ldat_name << argv[1] << ".ldat";
-  ofstream ldat( ldat_name.str().c_str() );
-  double dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
-  for( int l = 0; l < lx; ++l )
-    ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << endl;
-  ldat.close();
-
+  if( ldat_out )
+  {
+    stringstream ldat_name;
+    ldat_name << argv[1] << ".ldat";
+    ofstream ldat( ldat_name.str().c_str() );
+    double dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
+    for( int l = 0; l < lx; ++l )
+      ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << endl;
+    ldat.close();
+  }
   delete[] lbins[0];
   delete[] lbins[1];
 
