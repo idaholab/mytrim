@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <queue>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "simconf.h"
 #include "element.h"
@@ -53,7 +55,7 @@ int main(int argc, char *argv[])
 
   double theta = atof(argv[2]) * M_PI/180.0; // 0 = parallel to wire
   double diameter  = 10.0*atof(argv[3]);
-  double length  = 10000.0;
+  double length  = 11000.0; // 1.1 mu
   bool burried = ( atoi(argv[4]) != 0 );
   double mult = atof(argv[5]);
 
@@ -154,18 +156,27 @@ int main(int argc, char *argv[])
 
   ionBase *pka;
 
-  const int mx = 20, my = 20;
-  int imap[mx][my][3];
-  for( int e = 0; e < 3; e++ )
-    for( int x = 0; x < mx; x++ )
-      for( int y = 0; y < my; y++ )
-        imap[x][y][e] = 0;
+  // map concentration along length
+  int *lbins[2];
+  int lx = 100; // 100 bins
+  int dl = length/double(lx);
+  lbins[1] = new int[lx]; // P z=15
+  for( int i = 0; i < 2; ++i )
+  {
+    lbins[i] = new int[lx]; // 0=B (z=5), 1=P (z=15)
+    for( int l = 0; l < lx; ++l )
+      lbins[i][l] = 0;
+  }
+
+  // xyz data
+  int xyz_lines = 0;
+  stringstream xyz_data;
 
   for( int s = 0; s < nstep; ++s )
   {
     for( int n = 0; n < ion_count[s]; ++n )
     {
-      if( n % 1000 == 0 ) 
+      if( n % 10000 == 0 ) 
         cerr << "pka #" << n+1 << endl;
 
       // generate new PKA from prototype ion
@@ -255,7 +266,12 @@ int main(int argc, char *argv[])
         // ion is in the wire
         if(  sample->lookupMaterial( pka->pos ) == sample->material[0] )
         {
-          cout << pka->z1 << ' ' << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
+          xyz_data << simconf->scoef[pka->z1-1].sym << ' ' 
+                   << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
+          xyz_lines++;
+
+          int l = pka->pos[2] / dl;
+          if( l >=0 && l < lx ) lbins[ pka->z1 == 5 ? 0 : 1 ][l]++;
         }
 
         // done with this recoil
@@ -263,6 +279,24 @@ int main(int argc, char *argv[])
       }
     }
   }
+
+  // write xyz file
+  stringstream xyz_name;
+  xyz_name << argv[1] << ".xyz";
+  ofstream xyz( xyz_name.str().c_str() );
+  xyz << xyz_lines << endl << endl << xyz_data.str();
+  xyz.close();
+
+  // write lbins file (atoms per nm wire length)
+  stringstream ldat_name;
+  ldat_name << argv[1] << ".ldat";
+  ofstream ldat( ldat_name.str().c_str() );
+  for( int l = 0; l < lx; ++l )
+    ldat << l*dl << ' ' << lbins[0][l]/(mult*0.1*dl) << ' ' << lbins[1][l]/(mult*0.1*dl) << endl;
+  ldat.close();
+
+  delete[] lbins[0];
+  delete[] lbins[1];
 
   return EXIT_SUCCESS;
 }
