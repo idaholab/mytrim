@@ -287,12 +287,13 @@ int main(int argc, char *argv[])
   xyz << xyz_lines << endl << endl << xyz_data.str();
   xyz.close();
 
-  // write lbins file (atoms per nm wire length)
+  // write lbins file (atoms per nm^3)
   stringstream ldat_name;
   ldat_name << argv[1] << ".ldat";
   ofstream ldat( ldat_name.str().c_str() );
+  double dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
   for( int l = 0; l < lx; ++l )
-    ldat << l*dl << ' ' << lbins[0][l]/(mult*0.1*dl) << ' ' << lbins[1][l]/(mult*0.1*dl) << endl;
+    ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << endl;
   ldat.close();
 
   delete[] lbins[0];
