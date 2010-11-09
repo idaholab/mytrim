@@ -17,7 +17,7 @@ install(FILES sample_wire.h     DESTINATION include/mytrim)
 install(FILES sample_burried_wire.h     DESTINATION include/mytrim)
 install(FILES sample_layers.h     DESTINATION include/mytrim)
 install(FILES sample_dynamic.h     DESTINATION include/mytrim)
-install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat DESTINATION ${DATA_DIR})
+install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat data/ELNAME.dat DESTINATION ${DATA_DIR})
 
 # build the test trim programs
 set(PROGRAMS mytrim_ODS mytrim_clusters mytrim_layers mytrim_solid mytrim_solid2 mytrim_uo2 mytrim_wire mytrim_dynamic mytrim_wire2)

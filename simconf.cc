@@ -84,5 +84,14 @@ void simconfType::read_scoef()
   for( int i = 0; i < 92; i++ )
     fscanf( sf, "%*d %lf\n", &scoef[i].lfctr );
   fclose( sf );
+
+  snprintf( fname, 500, "%s/ELNAME.dat", DATA_DIR );
+  sf = fopen( fname, "rt" );
+  int z;
+  for( int i = 0; i < 92; i++ )
+  {
+    fscanf( sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name );
+  }
+  fclose( sf );
 }
 
