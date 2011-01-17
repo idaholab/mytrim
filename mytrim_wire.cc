@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
         // keep track of interstitials for the two constituents
         if( pka->z1 == z1 ) imap[x][y][0]++;
         else if( pka->z1 == z2 ) imap[x][y][1]++;
-        else imap[x][y][2]++; // the PKAs
+        else if( pka->z1 == z3 ) imap[x][y][2]++;
       }
 
       // done with this recoil
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  char *elnam[3] = { "Ga", "As", "ion" };
+  char *elnam[3] = { "Ga", "C", "W" };
 
   FILE *intf, *vacf, *netf;
   for( int e = 0; e < 3; e++ )
@@ -208,9 +208,11 @@ int main(int argc, char *argv[])
     {
       for( int x = 0; x <= mx; x++ )
       {
-        fprintf( intf, "%d %d %d\n", x, y, (x<mx && y<my) ? imap[x][y][e] : 0 );
-        fprintf( vacf, "%d %d %d\n", x, y, (x<mx && y<my) ? trim->vmap[x][y][e] : 0 );
-        fprintf( netf, "%d %d %d\n", x, y, (x<mx && y<my) ? ( imap[x][y][e] - trim->vmap[x][y][e] ) : 0 );
+        double x1 = double(x)/double(mx)*sample->w[0];
+        double y1 = double(y)/double(my)*sample->w[1];
+        fprintf( intf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? imap[x][y][e] : 0 );
+        fprintf( vacf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? trim->vmap[x][y][e] : 0 );
+        fprintf( netf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? ( imap[x][y][e] - trim->vmap[x][y][e] ) : 0 );
       }
       fprintf( intf, "\n" );
       fprintf( vacf, "\n" );
