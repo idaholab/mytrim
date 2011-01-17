@@ -74,24 +74,30 @@ int main(int argc, char *argv[])
   sampleWire *sample = new sampleWire( 1500.0, 1500.0, 100.0 );
 
   // initialize trim engine for the sample
-  const int z1 = 31;
-  const int z2 = 33;
-  trimVacMap *trim = new trimVacMap( sample, z1, z2 ); // GaAs
+  const int z1 = 31; //Ga
+  const int z2 =  6; //C
+  const int z3 = 74; //W
+  trimVacMap *trim = new trimVacMap( sample, z1, z2, z3 ); // GaCW
 
   materialBase *material;
   elementBase *element;
 
-  // GaAs
+  // GaCW
   material = new materialBase( 5.31 ); // rho
   element = new elementBase;
   element->z = z1; // Ga 
   element->m = 70.0;
-  element->t = 1.0;
+  element->t = 0.1;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = z2; // As
-  element->m = 75.0;
-  element->t = 1.0;
+  element->z = z2; // C
+  element->m = 12.0;
+  element->t = 0.65;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = z3; // W
+  element->m = 184.0;
+  element->t = 0.25;
   material->element.push_back( element );
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample

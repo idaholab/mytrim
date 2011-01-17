@@ -108,7 +108,7 @@ class trimVacMap : public trimBase {
   static const int mx = 20, my = 20;
 public:
   int vmap[mx][my][3];
-  trimVacMap( sampleBase *sample_, int z1_, int z2_ ) : trimBase( sample_ ), z1(z1_), z2(z2_) 
+  trimVacMap( sampleBase *sample_, int z1_, int z2_, int z3_ = -1 ) : trimBase( sample_ ), z1(z1_), z2(z2_), z3(z3_) 
   {
     for( int e = 0; e < 3; e++ )
       for( int x = 0; x < mx; x++ )
@@ -116,7 +116,7 @@ public:
           vmap[x][y][e] = 0;
   };
 protected:
-  int z1, z2;
+  int z1, z2, z3;
   virtual bool spawnRecoil() 
   {
     // both atoms must have enough energy to leave the site
@@ -131,7 +131,7 @@ protected:
       // keep track of vaccancies for the two constituents
       if( recoil->z1 == z1 ) vmap[x][y][0]++;
       else if( recoil->z1 == z2 ) vmap[x][y][1]++;
-      else vmap[x][y][2]++; // this should never happen...
+      else if( recoil->z1 == z3 ) vmap[x][y][2]++;
     }
     // if pka->e <= pka->ef the resulting interstitial will be at the exact coordinates 
     // of the vaccancy and immediate annihilate
