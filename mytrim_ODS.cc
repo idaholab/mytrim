@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 
   materialBase *material;
   elementBase *element;
+
 /*
   // Fe
   material = new materialBase( 7.87 ); // rho
@@ -119,6 +120,18 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 */
 
+  // Cu
+  material = new materialBase( 8.94 ); // rho
+  element = new elementBase;
+  element->z = 29; // Fe
+  element->m = 63.0;
+  element->t = 1.0;
+  element->Edisp = 40.0;
+  material->element.push_back( element );
+  material->prepare(); // all materials added
+  sample->material.push_back( material ); // add material to sample
+
+/*
   // ZrO2
   material = new materialBase( 5.68 ); // rho
   element = new elementBase;
@@ -134,7 +147,6 @@ int main(int argc, char *argv[])
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
 
-/*
   // TiO2 precipitate
   material = new materialBase( 4.23 ); // rho
   element = new elementBase;
@@ -173,12 +185,28 @@ int main(int argc, char *argv[])
   material->prepare();
   sample->material.push_back( material ); // add material to sample
 */
+/*
   // xe bubble
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
   element->z = 54; // Xe 
   element->m = 132.0;
   element->t = 1.0;
+  material->element.push_back( element );
+  material->prepare();
+  sample->material.push_back( material ); // add material to sample
+*/
+  // TiB2 precipitate
+  material = new materialBase( 4.52 ); // rho
+  element = new elementBase;
+  element->z = 22; // Ti
+  element->m = 48.0;
+  element->t = 1.0;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = 5; // B
+  element->m = 11.0;
+  element->t = 2.0;
   material->element.push_back( element );
   material->prepare();
   sample->material.push_back( material ); // add material to sample
@@ -194,8 +222,8 @@ int main(int argc, char *argv[])
   int jumps;
   double dif[3], dif2[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  //massInverter *m = new massInverter;
+  //energyInverter *e = new energyInverter;
 
   double A1, A2, Etot, E1, E2;
   int Z1, Z2;
@@ -222,7 +250,7 @@ int main(int argc, char *argv[])
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = -1;
+    ff1->tag = 0;//tag =-1
     ff1->md = 0;
     ff1->id = simconf->id++;
 
@@ -253,7 +281,9 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      if( pka->z1 == 54 )
+      //if( pka->z1 == 54 )
+      // pka is B or Ti
+      if( pka->z1 == 5 || pka->z1 == 22 )
       {
         if( pka->gen > 0 )
         {
@@ -287,7 +317,9 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      if( pka->z1 == 54 )
+      //if( pka->z1 == 54 )
+      // pka is B or Ti
+      if( pka->z1 == 5 || pka->z1 == 22 )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
