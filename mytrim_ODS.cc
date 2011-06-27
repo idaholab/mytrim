@@ -173,12 +173,28 @@ int main(int argc, char *argv[])
   material->prepare();
   sample->material.push_back( material ); // add material to sample
 */
+/*
   // xe bubble
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
   element->z = 54; // Xe 
   element->m = 132.0;
   element->t = 1.0;
+  material->element.push_back( element );
+  material->prepare();
+  sample->material.push_back( material ); // add material to sample
+*/
+  // TiB2 precipitate
+  material = new materialBase( 4.52 ); // rho
+  element = new elementBase;
+  element->z = 22; // Ti
+  element->m = 48.0;
+  element->t = 1.0;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = 5; // B
+  element->m = 11.0;
+  element->t = 2.0;
   material->element.push_back( element );
   material->prepare();
   sample->material.push_back( material ); // add material to sample
@@ -253,7 +269,9 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      if( pka->z1 == 54 )
+      //if( pka->z1 == 54 )
+      // pka is B or Ti
+      if( pka->z1 == 5 || pka->z1 == 22 )
       {
         if( pka->gen > 0 )
         {
@@ -287,7 +305,9 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if( pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39 )
       // pka is Xe
-      if( pka->z1 == 54 )
+      //if( pka->z1 == 54 )
+      // pka is B or Ti
+      if( pka->z1 == 5 || pka->z1 == 22 )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
