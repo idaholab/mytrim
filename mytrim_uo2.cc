@@ -41,7 +41,6 @@
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
-#include <r250.h>
 
 #include "functions.h"
 
@@ -168,6 +167,7 @@ int main(int argc, char *argv[])
     // generate fission fragment data
     A1 = m->x( dr250() );
     A2 = 235.0 - A1;
+    e->setMass(A1);
     Etot = e->x( dr250() );
     E1 = Etot * A2 / ( A1 + A2 );
     E2 = Etot - E1;

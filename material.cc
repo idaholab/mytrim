@@ -12,7 +12,11 @@ void materialBase::prepare()
   double tt = 0.0;
 
   // get total stoichiometry
-  for( int i = 0; i < element.size(); i++ ) tt += element[i]->t;
+  for( int i = 0; i < element.size(); i++ ) 
+  {
+    if( element[i]->t < 0.0 ) element[i]->t = 0.0;
+    tt += element[i]->t;
+  }
 
   // normalize relative probabilities to 1
   for( int i = 0; i < element.size(); i++ ) element[i]->t /= tt;
@@ -26,12 +30,10 @@ void materialBase::prepare()
     az += double( element[i]->z ) * element[i]->t;
   }
 
-  if( am == 0.0 )
-  {
-    cout << "material=" << this << " am==0 e.size=" << element.size() << endl;
-    for( int i = 0; i < element.size(); i++ ) 
-      cout << i << ". m=" << element[i]->m << " t=" <<  element[i]->t << endl;
-  }
+  //  cout << "material=" << this << " am==0 e.size=" << element.size() << endl;
+  //  for( int i = 0; i < element.size(); i++ ) 
+  //    cout << i << ". m=" << element[i]->m << " t=" <<  element[i]->t << endl;
+
   arho = rho * 0.6022 / am; //[TRI00310] atoms/Ang^3
 }
 

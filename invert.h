@@ -30,7 +30,11 @@ class energyInverter : public inverter
 public:
   virtual double f( double x );
 
-  energyInverter() { maxx = 186.98; tol = 1e-7; maxf = f( maxx ); }
+  energyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
+  void setMass( double _A ) {
+    A = _A;
+    maxf = f( maxx );
+  }
 };
 
 #endif

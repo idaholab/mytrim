@@ -65,7 +65,13 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   layerThickness[layer] += ma / ( material[layer]->rho * w[1] * w[2] );
 
   // change stoichiometry (arho 1/ang^3 * ang^3 )
-  material[layer]->element[ne]->t += double(n)/nl; // sum t will be scaled to 1.0 in material->prepare()
+  if( material[layer]->element[ne]->t*nl + double(n) < 0.0 )
+  {
+    cout << "Crap, t*nl=" << material[layer]->element[ne]->t*nl << ", but n=" << n << endl;
+    material[layer]->element[ne]->t = 0.0;
+  }
+  else
+    material[layer]->element[ne]->t += double(n)/nl; // sum t will be scaled to 1.0 in material->prepare()
 
   // mark as dirty, just in case, and re-prepare to update averages
   material[layer]->dirty = true;

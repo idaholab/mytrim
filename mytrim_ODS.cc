@@ -34,7 +34,6 @@
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
-#include <r250.h>
 
 #include "functions.h"
 
@@ -222,9 +221,6 @@ int main(int argc, char *argv[])
   int jumps;
   double dif[3], dif2[3];
 
-  //massInverter *m = new massInverter;
-  //energyInverter *e = new energyInverter;
-
   double A1, A2, Etot, E1, E2;
   int Z1, Z2;
 
@@ -250,7 +246,7 @@ int main(int argc, char *argv[])
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = 0;//tag =-1
+    ff1->tag = -1;
     ff1->md = 0;
     ff1->id = simconf->id++;
 
@@ -288,7 +284,7 @@ int main(int argc, char *argv[])
         if( pka->gen > 0 )
         {
           // output energy and recoil generation
-          //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
+          fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
         }
 
         if( pka->tag >= 0 )

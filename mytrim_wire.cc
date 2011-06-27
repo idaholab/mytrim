@@ -41,7 +41,6 @@
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
-#include <r250.h>
 
 #include "functions.h"
 
@@ -71,7 +70,7 @@ int main(int argc, char *argv[])
   simconf = new simconfType;
 
   // initialize sample structure
-  sampleWire *sample = new sampleWire( 1500.0, 1500.0, 100.0 );
+  sampleWire *sample = new sampleWire( 800.0, 800.0, 100.0 );
 
   // initialize trim engine for the sample
   const int z1 = 31; //Ga

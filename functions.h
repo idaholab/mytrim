@@ -2,6 +2,7 @@
 #define FUNCTIONS_H
 
 #include <cmath>
+#include <stdlib.h>
 
 inline void v_cross( const double *a1, const double *a2, double *b )
 {
@@ -24,6 +25,11 @@ inline void v_norm( double *a1, double b = 1.0 ) // in-place normalize to b ( = 
 
 inline double sqr( double a ) { return a*a; }
 inline double cub( double a ) { return a*a*a; }
+
+// random numbers
+const double drm = double(RAND_MAX)+1.0;
+inline double dr250() { return double(rand())/drm; };
+inline void r250_init( int s ) { srand(s); }
 
 #endif
 

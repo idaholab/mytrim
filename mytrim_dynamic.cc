@@ -37,7 +37,6 @@ using namespace std;
 #include "sample_dynamic.h"
 #include "ion.h"
 #include "trim.h"
-#include <r250.h>
 
 #include "functions.h"
 
@@ -118,7 +117,8 @@ int main(int argc, char *argv[])
   double dif[3];
 
   //double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
+//  double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
+double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -166,7 +166,6 @@ int main(int argc, char *argv[])
       pka = recoils.front();
       recoils.pop();
 
-      cout << "averages" << endl;
       sample->averages( pka );
 
       //
@@ -174,8 +173,11 @@ int main(int argc, char *argv[])
       //
 
       // get layer of origin
-      cout << "Lookup layer" << endl;
       layer1 = sample->lookupLayer(pka->pos);
+
+      // remove from source layer
+      if( pka->gen > 0 )
+        sample->addAtomsToLayer( layer1, -1, pka->z1 );
 
       //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
       //for( int i = 0; i < 3; i++ )
@@ -184,45 +186,19 @@ int main(int argc, char *argv[])
       //
       // follow this ion's trajectory and store recoils
       //
-      cout << "done " << layer1 << endl;
       trim->trim( pka, recoils );
-      cout << "done trim" << endl;
 
-/*      if( pka->gen == 0 )
-      {
-        printf( "RP %f\n", pka->pos[0] );
-      }*/
+      // add to destination layer
+      layer2 = sample->lookupLayer(pka->pos);
+      if( pka->pos[0] > 0 )
+        sample->addAtomsToLayer( layer2, 1, pka->z1 );
+
       //
       // do ion analysis/processing AFTER the cascade here
       //
 
-      // potentially move atom between layers
-      layer2 = sample->lookupLayer(pka->pos);
-/*      if( pka->gen == 0 )
-        sample->addAtomsToLayer( layer2, 1, pka->z1 );*/
-      if( layer2 != layer1 || pka->pos[0] < 0.0 || pka->gen == 0 )
-      {
-        // add to destination layer
-        if( pka->pos[0] > 0 )
-          sample->addAtomsToLayer( layer2, 1, pka->z1 );
-
-        // remove from source layer
-        if( pka->gen > 0 )
-          sample->addAtomsToLayer( layer1, -1, pka->z1 );
-      }
-
-      //   // pka is O or Ag
-      //   if( pka->z1 == 8 || pka->z1 == 47 ) 
-      //   {
-      //     // output
-      //     printf( "RP %f %d %d\n", pka->pos[0], n,  pka->gen);
-      //   }
-
       // done with this recoil
       delete pka;
-
-      // this should rather be done with spawnRecoil returning false
-      //if( simconf->primariesOnly ) while( !recoils.empty() ) { delete recoils.front(); recoils.pop(); };
     }
   }
   fclose( rdist );

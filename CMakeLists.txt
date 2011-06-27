@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project(mytrim)
 
-find_library(R250C_LIB NAMES r250c PATHS /opt/lib)
-
 # build the mytrim library
 # put install prefix somehow into config file
 set( DATA_INSTALL /share/mytrim)
@@ -23,7 +21,7 @@ install(FILES data/SCOEF.95A data/SLFCTR.dat data/SNUC03.dat data/ELNAME.dat DES
 set(PROGRAMS mytrim_ODS mytrim_clusters mytrim_layers mytrim_solid mytrim_solid2 mytrim_uo2 mytrim_wire mytrim_dynamic mytrim_wire2)
 foreach(program ${PROGRAMS})
   add_executable(${program} ${program}.cc)
-  target_link_libraries(${program} ${R250C_LIB} mytrim m)
+  target_link_libraries(${program}  mytrim m)
 endforeach(program)
   
 

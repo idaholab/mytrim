@@ -38,7 +38,6 @@
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
-#include <r250.h>
 
 #include "functions.h"
 
@@ -81,6 +80,7 @@ int main(int argc, char *argv[])
 
   // initialize global parameter structure and read data tables from file
   simconf = new simconfType;
+  //simconf->fullTraj = true;
 
   // initialize sample structure
   sampleWire *sample;
@@ -279,7 +279,7 @@ int main(int argc, char *argv[])
             }
 
             if( ldat_out )
-              lbins[ pka->z1 == 5 ? 0 : 1 ][l]++;
+              lbins[ ( pka->z1 == 5 ) ? 0 : 1 ][l]++;
           }
         }
 
