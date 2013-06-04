@@ -70,25 +70,25 @@ int main(int argc, char *argv[])
   simconf = new simconfType;
 
   // initialize sample structure
-  sampleWire *sample = new sampleWire( 800.0, 800.0, 100.0 );
+  sampleWire *sample = new sampleWire( 500.0, 500.0, 100.0 );
 
   // initialize trim engine for the sample
-  const int z1 = 31; //Ga
-  const int z2 =  6; //C
-  const int z3 = 74; //W
-  trimVacMap *trim = new trimVacMap( sample, z1, z2, z3 ); // GaCW
+  const int z1 = 14; //Si
+  //const int z2 =  6; //C
+  //const int z3 = 74; //W
+  trimVacMap *trim = new trimVacMap( sample, z1, 0, 0 ); // GaCW
 
   materialBase *material;
   elementBase *element;
 
-  // GaCW
-  material = new materialBase( 5.31 ); // rho
+  // Si
+  material = new materialBase( 2.33 ); // rho
   element = new elementBase;
-  element->z = z1; // Ga 
-  element->m = 70.0;
-  element->t = 0.1;
+  element->z = z1; // Si
+  element->m = 28.0;
+  element->t = 1;
   material->element.push_back( element );
-  element = new elementBase;
+  /*element = new elementBase;
   element->z = z2; // C
   element->m = 12.0;
   element->t = 0.65;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
   element->z = z3; // W
   element->m = 184.0;
   element->t = 0.25;
-  material->element.push_back( element );
+  material->element.push_back( element );*/
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
 
@@ -194,7 +194,8 @@ int main(int argc, char *argv[])
   char *elnam[3] = { "Ga", "C", "W" };
 
   FILE *intf, *vacf, *netf;
-  for( int e = 0; e < 3; e++ )
+  // e<numberofelementsinwire
+  for( int e = 0; e < 1; e++ )
   {
     snprintf( fname, 199, "%s.%s.int", argv[1], elnam[e] );
     intf = fopen( fname, "wt" );
