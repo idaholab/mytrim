@@ -182,8 +182,8 @@ int main(int argc, char *argv[])
 
         // keep track of interstitials for the two constituents
         if( pka->z1 == z1 ) imap[x][y][0]++;
-        else if( pka->z1 == z2 ) imap[x][y][1]++;
-        else if( pka->z1 == z3 ) imap[x][y][2]++;
+        //else if( pka->z1 == z2 ) imap[x][y][1]++;
+        //else if( pka->z1 == z3 ) imap[x][y][2]++;
       }
 
       // done with this recoil
