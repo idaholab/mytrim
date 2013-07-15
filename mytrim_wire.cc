@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   char fname[200];
   if( argc != 7 ) 
   {
-    fprintf( stderr, "syntax:\nmytrim_wire basename Eion[eV] angle[deg] numpka zpka mpka\n" );
+    fprintf( stderr, "syntax:\n%s basename Eion[eV] angle[deg] numpka zpka mpka\n", argv[0] );
     return 1;
   }
   
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  char *elnam[3] = { "Ga", "C", "W" };
+  const char *elnam[3] = { "Ga", "C", "W" };
 
   FILE *intf, *vacf, *netf;
   // e<numberofelementsinwire

@@ -1,5 +1,7 @@
 #include <math.h>
+#if !defined(__APPLE__)
 #include "malloc.h"
+#endif
 
 #include "sample_clusters.h"
 

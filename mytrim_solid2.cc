@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
   char fname[200];
   if( argc != 2 )
   {
-    fprintf( stderr, "syntax:\nmytrim_solid2 basename\n" );
+    fprintf( stderr, "syntax:\n%s basename\n", argv[0] );
     return 1;
   }
 

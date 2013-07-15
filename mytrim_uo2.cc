@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   char fname[200];
   if( argc != 4 ) // 2
   {
-    fprintf( stderr, "syntax: mytrim basename r Cbfactor\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n" );
+    fprintf( stderr, "syntax:\n%s basename r Cbfactor\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n", argv[0] );
     return 1;
   }
 

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   char fname[200];
   if( argc != 2 ) // 2
   {
-    cerr << "syntax:\nmytrim_layers basename" << endl;
+    cerr << "syntax:\n" << argv[0] << " basename" << endl;
     return 1;
   }
 
