@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
   double natom = v_sam * sample->material[0]->arho;
   printf( "volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)\n",
           v_sam, s_sam, natom, simconf->vacancies_created / ( natom * nstep/s_sam ) );
-  printf( "sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g", sqd/(simconf->vacancies_created/natom), sqd/simconf->vacancies_created, sqd2/simconf->vacancies_created  );
+  printf( "sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g\nnvac = %d", sqd/(simconf->vacancies_created/natom), sqd/simconf->vacancies_created, sqd2/simconf->vacancies_created,simconf->vacancies_created  );
 
 /*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
