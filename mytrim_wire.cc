@@ -47,9 +47,9 @@
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 7 ) 
+  if( argc != 8 ) 
   {
-    fprintf( stderr, "syntax:\n%s basename Eion[eV] angle[deg] numpka zpka mpka\n", argv[0] );
+    fprintf( stderr, "syntax:\n%s basename Eion[eV] angle[deg] numpka zpka mpka r[nm]\n", argv[0] );
     return 1;
   }
   
@@ -58,6 +58,7 @@ int main(int argc, char *argv[])
   int numpka  = atoi(argv[4]);
   int   zpka  = atoi(argv[5]);
   double mpka  = atof(argv[6]);
+  double dwire  = atof(argv[7])*20.0;
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen( "/dev/random", "r" );
@@ -70,34 +71,33 @@ int main(int argc, char *argv[])
   simconf = new simconfType;
 
   // initialize sample structure
-  sampleWire *sample = new sampleWire( 500.0, 500.0, 100.0 );
+  sampleWire *sample = new sampleWire( dwire, dwire, 100.0 );
 
   // initialize trim engine for the sample
-  const int z1 = 14; //Si
-  //const int z2 =  6; //C
-  //const int z3 = 74; //W
-  trimVacMap *trim = new trimVacMap( sample, z1, 0, 0 ); // GaCW
+  const int z1 = 29; //Cu
+  const int z2 = 22; //Ti
+  const int z3 = 47; //Ag
+  trimVacMap *trim = new trimVacMap( sample, z1, z2, z3 ); // GaCW
 
   materialBase *material;
   elementBase *element;
 
-  // Si
-  material = new materialBase( 2.33 ); // rho
+  material = new materialBase( (56.0*8.920 + 38.0*4.507 + 8.0*10.490 )/(56.0+38.0+8.0) ); // rho
   element = new elementBase;
-  element->z = z1; // Si
-  element->m = 28.0;
-  element->t = 1;
-  material->element.push_back( element );
-  /*element = new elementBase;
-  element->z = z2; // C
-  element->m = 12.0;
-  element->t = 0.65;
+  element->z = z1; // Cu
+  element->m = 63.546;
+  element->t = 56.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = z3; // W
-  element->m = 184.0;
-  element->t = 0.25;
-  material->element.push_back( element );*/
+  element->z = z2; // Ti
+  element->m = 47.867;
+  element->t = 38.0;
+  material->element.push_back( element );
+  element = new elementBase;
+  element->z = z3; // Ag
+  element->m = 107.87;
+  element->t = 8.0;
+  material->element.push_back( element );
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
 
@@ -182,8 +182,8 @@ int main(int argc, char *argv[])
 
         // keep track of interstitials for the two constituents
         if( pka->z1 == z1 ) imap[x][y][0]++;
-        //else if( pka->z1 == z2 ) imap[x][y][1]++;
-        //else if( pka->z1 == z3 ) imap[x][y][2]++;
+        else if( pka->z1 == z2 ) imap[x][y][1]++;
+        else if( pka->z1 == z3 ) imap[x][y][2]++;
       }
 
       // done with this recoil
@@ -191,11 +191,11 @@ int main(int argc, char *argv[])
     }
   }
 
-  const char *elnam[3] = { "Ga", "C", "W" };
+  const char *elnam[3] = { "Cu", "Ti", "Ag" };
 
   FILE *intf, *vacf, *netf;
   // e<numberofelementsinwire
-  for( int e = 0; e < 1; e++ )
+  for( int e = 0; e < 3; e++ )
   {
     snprintf( fname, 199, "%s.%s.int", argv[1], elnam[e] );
     intf = fopen( fname, "wt" );
