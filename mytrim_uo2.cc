@@ -27,22 +27,14 @@
 #include <stdlib.h>
 #include <queue>
 
-/*#include <mytrim/simconf.h>
+#include <mytrim/simconf.h>
 #include <mytrim/element.h>
 #include <mytrim/material.h>
 #include <mytrim/sample_clusters.h>
 #include <mytrim/ion.h>
 #include <mytrim/trim.h>
-#include <mytrim/invert.h>*/
-#include "simconf.h"
-#include "element.h"
-#include "material.h"
-#include "sample_clusters.h"
-#include "ion.h"
-#include "trim.h"
-#include "invert.h"
-
-#include "functions.h"
+#include <mytrim/invert.h>
+#include <mytrim/functions.h>
 
 int main(int argc, char *argv[])
 {
@@ -53,12 +45,13 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen( "/dev/random", "r" );
+  // seed random number generator from system entropy pool
+  // we internally use the libc random function (not r250c, which is not threadsafe)
   int seed;
+  FILE *urand = fopen( "/dev/random", "r" );
   fread( &seed, sizeof(int), 1, urand );
   fclose( urand );
-  r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
+  r250_init( seed<0 ? -seed : seed );
 
   // initialize global parameter structure and read data tables from file
   simconf = new simconfType;
@@ -121,9 +114,10 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   // xe bubble
+  int gas_z1 = 54;
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
-  element->z = 54; // Xe 
+  element->z = gas_z1; // Xe 
   element->m = 132.0;
   element->t = 1.0;
   material->element.push_back( element );
@@ -214,7 +208,7 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if( pka->z1 == 54  )
+      if( pka->z1 == gas_z1  )
       {
 	// mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
 	if( pka->e > 200 && pka->e < 12000 && pka->md == 0 ) pka->md = 1;
@@ -244,8 +238,8 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing AFTER the cascade here
 
-      // pka is Xe
-      if( pka->z1 == 54  ) 
+      // pka is GAS
+      if( pka->z1 == gas_z1  ) 
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
