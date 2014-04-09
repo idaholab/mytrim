@@ -26,7 +26,8 @@ struct ionBase {
   //   REPLACEMENT     pka->z1 == element->z && pka->e < element->Edisp
   //   SUBSTITUTIONAL  pka->z1 != element->z && pka->e < element->Edisp
   //   INTERSTITIAL    no recoil spawned and pke->e < pka->ef
-  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL } state;
+  //   LOST            ion has left the sample
+  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } state;
 
   ionBase();
   ionBase( ionBase* prototype );

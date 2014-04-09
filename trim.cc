@@ -201,6 +201,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     if (pka->e<0.0) pka->e = 0.0;
     p2 = sqrtf(2.0 * pka->m1 * pka->e); // momentum after collision
 
+    // track maximum electronic energy loss TODO: might want to track max(see)!
     if (dee>max) max = dee;
 
     // total path lenght
@@ -244,28 +245,53 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     }
 
     // end cascade if a CUT boundary is crossed
-    terminate = false;
-    for( int i = 0; i < 3; i++ )
-      if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) )
-        terminate = true;
+    for (int i = 0; i < 3; i++) {
+      if ( sample->bc[i]==sampleBase::CUT &&
+           (pka->pos[i]>sample->w[i] || pka->pos[i]<0.0) ) {
+        pka->state = ionBase::LOST;
+        break;
+      }
+    }
 
     // put the recoil on the stack
-    if (!terminate && spawnRecoil())
+    if (pka->state!=ionBase::LOST)
     {
-      v_norm( recoil->dir );
-      recoil->tag = material->tag;
-      recoil->id = simconf->id++;
+      if(recoil->e > element->Edisp)
+      {
+        if (followRecoil()) {
+          v_norm( recoil->dir );
+          recoil->tag = material->tag;
+          recoil->id = simconf->id++;
 
-      recoils.push( recoil );
-      if( simconf->fullTraj ) printf( "spawn %d %d\n", recoil->id, pka->id );
+          recoils.push(recoil);
+          if( simconf->fullTraj ) printf( "spawn %d %d\n", recoil->id, pka->id );
+        }
+        else delete recoil;
 
-      // if recoil exceeds displacement energy assume a vacancy was created
-      // (we compare both ions agains the Edisp of the recoil atom!)
-      if (recoil->e > element->Edisp &&  pka->e > element->Edisp) vacancyCreation();
+        // if recoil exceeds displacement energy assume a vacancy was created
+        // (we compare both ions agains the Edisp of the recoil atom!)
+        if (pka->e > element->Edisp) {
+          vacancyCreation();
+        } else {
+          if (pka->z1 == element->z)
+            pka->state = ionBase::REPLACEMENT;
+          else
+            pka->state = ionBase::SUBSTITUTIONAL;
+        }
+      }
+      else
+      {
+        delete recoil;
+        if (pka->e < pka->ef) {
+          pka->state = ionBase::INTERSTITIAL;
+        }
+      }
     }
-    else delete recoil;
+
+    checkPKAState();
 
     // output the full trajectory TODO: the ion object should output itself!
+    // TODO: and this shou;d be done in checkPKSState()
     if (simconf->fullTraj) {
       printf(
         "cont %f %f %f %d %d %d\n",
@@ -274,7 +300,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       );
     }
 
-  } while (!terminate && pka->e > pka->ef);
+  } while (pka->state==ionBase::MOVING);
 }
 
 void trimBase::vacancyCreation()

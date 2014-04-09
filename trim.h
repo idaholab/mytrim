@@ -23,7 +23,7 @@ protected:
   bool terminate;
 
   // by default only follow recoils with E > 12eV
-  virtual bool spawnRecoil() {
+  virtual bool followRecoil() {
     // TODO: find a better place for this!
     /*if( pka->md > 0 )
       recoil->md = pka->md +1;
@@ -33,6 +33,7 @@ protected:
     return recoil->e > 12.0;
   };
   virtual void vacancyCreation();
+  virtual void checkPKAState() {};
 };
 
 // //
@@ -42,12 +43,13 @@ protected:
 // public:
 //   trimBreadthFirst( sampleBase *sample_ ) : trimBase( sample_ ) {};
 // protected:
-//   virtual bool spawnRecoil() {
+//   virtual bool followRecoil() {
 //     recoil_queue_ptr->push(pka);
 //     terminate = true;
 //     return recoil->e > 12.0;
 //   };
 // };
+
 
 //
 // Only follow the primary knock ons
@@ -56,8 +58,9 @@ class trimPrimaries : public trimBase {
 public:
   trimPrimaries( sampleBase *sample_ ) : trimBase( sample_ ) {};
 protected:
-  virtual bool spawnRecoil() { return false; };
+  virtual bool followRecoil() { return false; };
 };
+
 
 //
 // Only follow the first generation of recoils
@@ -66,7 +69,7 @@ class trimRecoils : public trimBase {
   public:
     trimRecoils( sampleBase *sample_ ) : trimBase( sample_ ) {};
   protected:
-    virtual bool spawnRecoil() { return ( recoil->gen <= 2 ); };
+    virtual bool followRecoil() { return ( recoil->gen <= 2 ); };
 };
 
 
@@ -78,7 +81,7 @@ public:
   trimHistory( sampleBase *sample_ ) : trimBase( sample_ ) {};
   vector<double> pos_hist[3];
 protected:
-  virtual bool spawnRecoil()
+  virtual bool followRecoil()
   {
     pos_hist[0].push_back(pka->pos[0]);
     pos_hist[1].push_back(pka->pos[1]);
@@ -146,7 +149,7 @@ public:
   trimPhononOut( sampleBase *sample_, FILE *phonfile_ ) : phonfile(phonfile_), trimBase( sample_ ) {};
 protected:
   FILE *phonfile;
-  virtual bool spawnRecoil()
+  virtual bool followRecoil()
   {
     // dissipate lattice binding energy where recoil branches off
     double Edep = recoil->e + element->Elbind;
