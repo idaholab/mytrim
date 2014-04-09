@@ -41,35 +41,35 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
   double p1, p2;
   double range;
 
-//if( simconf->fullTraj )
+  // generate random number for use in the first loop iteration only!
   r1 = dr250();
 
   do // cycle for each collision
   {
-    r2 = dr250();
-    hh = dr250(); // selects element inside material to scatter from
-
+    // increase loop counter
     ic++;
+
+    // which material is the ion currently in?
     material = sample->lookupMaterial( pka->pos );
-    if( material == 0 ) break;
+    if (material==0) break; // TODO: add flight through vacuum
 
     // normalize direction vector
-    v_norm( pka->dir );
+    v_norm(pka->dir);
 
     // setup max. impact parameter
     eps =  pka->e * material->f;
     eeg = sqrtf( eps * material->epsdg ); // [TRI02450]
     material->pmax = material->a / ( eeg + sqrtf( eeg ) + 0.125 * pow( eeg, 0.1 ) );
 
-    ls = 1.0 / ( M_PI * pow( material->pmax, 2.0 ) * material->arho );
-    if( ic == 1 ) ls = r1 * fmin( ls, simconf->cw );
+    ls = 1.0 / ( M_PI * pow(material->pmax, 2.0) * material->arho );
+    if (ic==1) ls = r1 * fmin(ls, simconf->cw);
 
     // correct for maximum available range in current material by increasing maximum impact parameter
     #ifdef RANGECORRECT
     range = sample->rangeMaterial( pka->pos, pka->dir );
-    if( range < ls )
+    if (range<ls)
     {
-/*       cout << "range=" << range << " ls=" << ls
+      /* cout << "range=" << range << " ls=" << ls
             << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << endl;
       cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << endl;
       cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << endl;
@@ -104,10 +104,19 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     }
     #endif
 
+    // advance clock pathlength/velocity
+    pka->t += 10.1811859 * ( ls - simconf->tau ) / sqrt( 2.0 * pka->e / pka->m1 );
+
+    // time in fs! m in u, l in Ang, e in eV
+    // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
+    //printf( "se %d  %f [eV]  %f [keV/nm]  %f [nm]\n", pka->id, pka->e, see/100.0, pl/10.0 );
+
     // choose impact parameter
-    p = material->pmax * sqrtf( r2 );
+    r2 = dr250();
+    p = material->pmax * sqrtf(r2);
 
     // which atom in the material will be hit
+    hh = dr250(); // selects element inside material to scatter from
     for( nn = 0; nn < material->element.size(); nn++ )
     {
       hh -= material->element[nn]->t;
@@ -127,7 +136,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     //if( pka.e < e0kev ) see = material->se[0] * sqrtf( pka.e / e0kev );
     dee = ls * see;
 
-    if( eps > 10.0 )
+    if (eps>10.0)
     {
       // use rutherford scattering
       s2 = 1.0 / ( 1.0 + ( 1.0 + b * ( 1.0 + b ) ) * pow( 2.0 * eps * b , 2.0 ) );
@@ -137,7 +146,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     }
     else
     {
-      // first gues at ion c.p.a. [TRI02780]
+      // first guess at ion c.p.a. [TRI02780]
       r = b;
       rr = -2.7 * logf( eps * b );
       if( rr >= b )
@@ -161,7 +170,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
         fr1 = - b*b / ( r*r ) + ( v + v1 * r ) / eps - 1.0;
         q = fr / fr1;
         r -= q;
-      } while( fabs( q / r ) > 0.001 ); // [TRI03110]
+      } while (fabs(q/r) > 0.001); // [TRI03110]
 
       roc = -2.0 * ( eps - v ) / v1;
       sqe = sqrtf( eps );
@@ -175,7 +184,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       co = ( b + delta + roc ) / ( r + roc );
       c2 = co*co;
       s2 = 1.0 - c2;
-//printf("nonrf\n");
+      //printf("nonrf\n");
       ct = 2.0 * c2 - 1.0;
       st = sqrtf( 1.0 - ct*ct );
     } // end non-rutherford scattering
@@ -183,21 +192,16 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     // energy transferred to recoil atom
     den = element->ec * s2 * pka->e;
 
-    // advance clock pathlength/velocity
-    pka->t += 10.1811859 * ( ls - simconf->tau ) / sqrt( 2.0 * pka->e / pka->m1 );
-    // time in fs! m in u, l in Ang, e in eV
-    // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
-    //printf( "se %d  %f [eV]  %f [keV/nm]  %f [nm]\n", pka->id, pka->e, see/100.0, pl/10.0 );
-
     pka->e -= dee; // electronic energy loss
     if( pka->e < 0.0 && den > 100.0 )
       fprintf( stderr, " electronic energy loss stopped the ion. Broken recoil!!\n" );
 
-    p1 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum before collision
-    pka->e -= den; if( pka->e < 0.0 ) pka->e = 0.0;
-    p2 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum after collision
+    p1 = sqrtf(2.0 * pka->m1 * pka->e); // momentum before collision
+    pka->e -= den;
+    if (pka->e<0.0) pka->e = 0.0;
+    p2 = sqrtf(2.0 * pka->m1 * pka->e); // momentum after collision
 
-    if( dee > max ) max = dee;
+    if (dee>max) max = dee;
 
     // total path lenght
     pl += ls - simconf->tau;
