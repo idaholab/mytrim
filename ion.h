@@ -7,16 +7,16 @@ struct ionBase {
   double m1, e;
 
   // normalized velocity vector, and position
-  double dir[3], pos[3]; 
+  double dir[3], pos[3];
 
   // internal clock (needed for visualization)
-  double t; 
+  double t;
 
-  // integer tag, recoild generation number, ID field
-  int tag, gen, id;
+  // recoil generation number, unique ID
+  int gen, id;
 
-  // generation after first ion falling into the MD energy gap ( 200eV - 12000eV ) TODO: move to subclass?
-  int md; 
+  // material tag
+  int tag;
 
   // final energy up to which this recoil will be followed
   double ef;
@@ -35,4 +35,12 @@ struct ionBase {
   void set_ef();
 };
 
+struct ionMDtag : public ionBase {
+  // generation after first ion falling into the MD energy gap ( 200eV - 12000eV ) TODO: move to subclass?
+  int md;
+
+
+  // overwrite this tor return recoil ion objects of type ionMDtag
+  virtual ionBase* spawnRecoil();
+};
 #endif

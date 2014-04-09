@@ -30,14 +30,15 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <mytrim/simconf.h>
-#include <mytrim/element.h>
-#include <mytrim/material.h>
-#include <mytrim/sample_clusters.h>
-#include <mytrim/ion.h>
-#include <mytrim/trim.h>
-#include <mytrim/invert.h>
-#include <mytrim/functions.h>
+#include "simconf.h"
+#include "element.h"
+#include "material.h"
+#include "sample_clusters.h"
+#include "ion.h"
+#include "trim.h"
+#include "invert.h"
+
+#include "functions.h"
 
 int main(int argc, char *argv[])
 {
@@ -176,14 +177,14 @@ int main(int argc, char *argv[])
 
   double pos1[3];
 
-  ionBase *ff1, *ff2, *pka;
+  ionMDtag *ff1, *ff2, *pka;
 
   // Nev fission events
   for( int n = 0; n < Nev; n++ )
   {
     if( n % 10 == 0 ) fprintf( stderr, "event #%d\n", n+1 );
 
-    ff1 = new ionBase;
+    ff1 = new ionMDtag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->md = 0;
@@ -216,7 +217,7 @@ int main(int argc, char *argv[])
     ff1->set_ef();
     recoils.push( ff1 );
 
-    ff2 = new ionBase( *ff1 ); // copy constructor
+    ff2 = new ionMDtag( *ff1 ); // copy constructor
 
     // reverse direction
     for( int i = 0; i < 3; i++ ) ff2->dir[i] *= -1.0;
@@ -232,16 +233,15 @@ int main(int argc, char *argv[])
 
     while( !recoils.empty() )
     {
-      pka = recoils.front();
+      pka = dynamic_cast<ionMDtag*>(recoils.front());
       recoils.pop();
       sample->averages( pka );
 
       // do ion analysis/processing BEFORE the cascade here
-
       if( pka->z1 == gas_z1  )
       {
-	// mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
-	if( pka->e > 200 && pka->e < 12000 && pka->md == 0 ) pka->md = 1;
+	      // mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
+	      if( pka->e > 200 && pka->e < 12000 && pka->md == 0 ) pka->md = 1;
 
         if( pka->gen > 0 )
         {
@@ -250,16 +250,16 @@ int main(int argc, char *argv[])
         }
 
         if( pka->tag >= 0 )
-	{
+        {
           for( int i = 0; i < 3; i++ )
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
             if( sample->bc[i] == sampleBase::PBC ) dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
-	    pos1[i] = pka->pos[i] + dif[i];
-	    //printf( "%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i] );
+            pos1[i] = pka->pos[i] + dif[i];
+            //printf( "%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i] );
           }
 	  //printf( "\n" );
-	}
+        }
       }
 
       // follow this ion's trajectory and store recoils

@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
@@ -114,12 +114,12 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
 /*  element = new elementBase;
-  element->z = 54; // Xe 
+  element->z = 54; // Xe
   element->m = 132.0;
   element->t = 0.01;
   material->element.push_back( element );*/
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
   element->Edisp = 57.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 7.0;
   element->Edisp = 57.0;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
   // xe bubble
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
-  element->z = 54; // Xe 
+  element->z = 54; // Xe
   element->m = 132.0;
   element->t = 1.0;
   material->element.push_back( element );
@@ -217,7 +217,6 @@ int main(int argc, char *argv[])
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
-    ff1->md = 0;
     ff1->id = simconf->id++;
 
     ff1->z1 = Z;
@@ -257,7 +256,7 @@ int main(int argc, char *argv[])
           //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
         }
 
-        for( int i = 0; i < 3; i++ ) 
+        for( int i = 0; i < 3; i++ )
         {
           pos2[i] = pka->pos[i];
         }
@@ -281,7 +280,7 @@ int main(int argc, char *argv[])
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
 
         // print out distance to cluster of origin center (and depth of recoil)
-        for( int i = 0; i < 3; i++ ) 
+        for( int i = 0; i < 3; i++ )
         {
           dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
         }
@@ -316,11 +315,11 @@ int main(int argc, char *argv[])
   double kd = 0.1337 * pow( Zatoms, 2.0/3.0 ) / pow( Matoms, 0.5); //Z,M
   double Ev = Epka / ( 1.0 + kd * g );
   double Ed = 40.0;
-  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed) );
 
   // do Kinchin-Pease for all primary recoils
-  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           simconf->KP_vacancies, simconf->KP_vacancies / 100.0 );
 */
   return EXIT_SUCCESS;

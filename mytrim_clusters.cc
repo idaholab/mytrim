@@ -27,13 +27,6 @@
 #include <stdlib.h>
 #include <queue>
 
-/*#include <mytrim/simconf.h>
-#include <mytrim/element.h>
-#include <mytrim/material.h>
-#include <mytrim/sample_clusters.h>
-#include <mytrim/ion.h>
-#include <mytrim/trim.h>
-#include <mytrim/invert.h>*/
 #include "simconf.h"
 #include "element.h"
 #include "material.h"
@@ -90,7 +83,7 @@ int main(int argc, char *argv[])
 
   // double atp = 0.1; // 10at% Mo 90at%Cu
   double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  double v_cl = 4.0/3.0 * M_PI * cub(r); 
+  double v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / ( v_cl * ( ( 1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho ) );
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
@@ -108,7 +101,7 @@ int main(int argc, char *argv[])
     fprintf( ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i );
   fclose( ccf );
 
-  fprintf( stderr, "sample built.\n" ); 
+  fprintf( stderr, "sample built.\n" );
   //return 0;
 
   materialBase *material;
@@ -117,12 +110,12 @@ int main(int argc, char *argv[])
   // UO2
   material = new materialBase( 10.0 ); // rho
   element = new elementBase;
-  element->z = 92; // U 
+  element->z = 92; // U
   element->m = 235.0;
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 16; // O 
+  element->z = 16; // O
   element->m = 32.0;
   element->t = 2.0;
   material->element.push_back( element );
@@ -132,7 +125,7 @@ int main(int argc, char *argv[])
   // xe bubble
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
-  element->z = 54; // Xe 
+  element->z = 54; // Xe
   element->m = 132.0;
   element->t = 1.0;
 //  element->t = 0.002;
@@ -163,7 +156,7 @@ int main(int argc, char *argv[])
 
   double pos1[3], pos2[3];
 
-  ionBase *ff1, *ff2, *pka;
+  ionMDtag *ff1, *ff2, *pka;
   int id = 1;
 
   // 1000 fission events
@@ -171,7 +164,7 @@ int main(int argc, char *argv[])
   {
     if( n % 10 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
-    ff1 = new ionBase;
+    ff1 = new ionMDtag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->md = 0;
@@ -200,18 +193,18 @@ int main(int argc, char *argv[])
 //     ff1->e  = 70.0 * 1.0e6;
 
     do
-    { 
+    {
       for( int i = 0; i < 3; i++ ) ff1->dir[i] = dr250() - 0.5;
       norm = v_dot( ff1->dir, ff1->dir );
     }
     while( norm <= 0.0001 );
 
-/*
-norm = 1.0;
-ff1->dir[0] = 1.0;
-ff1->dir[1] = 0.0;
-ff1->dir[2] = 0.0;
-*/
+    /*
+    norm = 1.0;
+    ff1->dir[0] = 1.0;
+    ff1->dir[1] = 0.0;
+    ff1->dir[2] = 0.0;
+    */
     v_scale( ff1->dir, 1.0 / sqrtf( norm ) );
 
     // random origin (outside cluster!)
@@ -222,7 +215,7 @@ ff1->dir[2] = 0.0;
     ff1->set_ef();
     recoils.push( ff1 );
 
-    ff2 = new ionBase( *ff1 ); // copy constructor
+    ff2 = new ionMDtag( *ff1 ); // copy constructor
     //ff1->id = simconf->id++;
 
     // reverse direction
@@ -239,7 +232,7 @@ ff1->dir[2] = 0.0;
 
     while( !recoils.empty() )
     {
-      pka = recoils.front();
+      pka = dynamic_cast<ionMDtag*>(recoils.front());
       recoils.pop();
       sample->averages( pka );
 
@@ -258,7 +251,7 @@ ff1->dir[2] = 0.0;
 
         if( pka->tag >= 0 )
 	{
-          for( int i = 0; i < 3; i++ ) 
+          for( int i = 0; i < 3; i++ )
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
             pos2[i] = pka->pos[i];
@@ -282,15 +275,15 @@ ff1->dir[2] = 0.0;
       // do ion analysis/processing AFTER the cascade here
 
       // pka is Xe
-      if( pka->z1 == 54  ) 
+      if( pka->z1 == 54  )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if( pka->tag >= 0 ) 
+        if( pka->tag >= 0 )
         {
-          for( int i = 0; i < 3; i++ ) 
+          for( int i = 0; i < 3; i++ )
           {
             dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
             dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
@@ -307,7 +300,7 @@ ff1->dir[2] = 0.0;
           if( material->tag >= 0 ) break;
 
           do
-          { 
+          {
             for( int i = 0; i < 3; i++ ) pka->dir[i] = dr250() - 0.5;
             norm = v_dot( pka->dir, pka->dir );
           }

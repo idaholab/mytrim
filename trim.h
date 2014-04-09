@@ -23,7 +23,15 @@ protected:
   bool terminate;
 
   // by default only follow recoils with E > 12eV
-  virtual bool spawnRecoil() { return recoil->e > 12.0; };
+  virtual bool spawnRecoil() {
+    // TODO: find a better place for this!
+    /*if( pka->md > 0 )
+      recoil->md = pka->md +1;
+    else
+      recoil->md = 0;
+    */
+    return recoil->e > 12.0;
+  };
   virtual void vacancyCreation();
 };
 
@@ -70,8 +78,8 @@ public:
   trimHistory( sampleBase *sample_ ) : trimBase( sample_ ) {};
   vector<double> pos_hist[3];
 protected:
-  virtual bool spawnRecoil() 
-  { 
+  virtual bool spawnRecoil()
+  {
     pos_hist[0].push_back(pka->pos[0]);
     pos_hist[1].push_back(pka->pos[1]);
     pos_hist[2].push_back(pka->pos[2]);
@@ -103,7 +111,7 @@ class trimVacMap : public trimBase {
   static const int mx = 20, my = 20;
 public:
   int vmap[mx][my][3];
-  trimVacMap( sampleBase *sample_, int z1_, int z2_, int z3_ = -1 ) : trimBase( sample_ ), z1(z1_), z2(z2_), z3(z3_) 
+  trimVacMap( sampleBase *sample_, int z1_, int z2_, int z3_ = -1 ) : trimBase( sample_ ), z1(z1_), z2(z2_), z3(z3_)
   {
     for( int e = 0; e < 3; e++ )
       for( int x = 0; x < mx; x++ )
@@ -138,11 +146,11 @@ public:
   trimPhononOut( sampleBase *sample_, FILE *phonfile_ ) : phonfile(phonfile_), trimBase( sample_ ) {};
 protected:
   FILE *phonfile;
-  virtual bool spawnRecoil() 
-  { 
-    // dissipate lattice binding energy where recoil branches off 
+  virtual bool spawnRecoil()
+  {
+    // dissipate lattice binding energy where recoil branches off
     double Edep = recoil->e + element->Elbind;
-    fprintf( phonfile, "%f %f %f %f %d %d %e 0\n", Edep, recoil->pos[0], recoil->pos[1], recoil->pos[2], pka->z1, pka->id, pka->t );  
+    fprintf( phonfile, "%f %f %f %f %d %d %e 0\n", Edep, recoil->pos[0], recoil->pos[1], recoil->pos[2], pka->z1, pka->id, pka->t );
     return (recoil->e > 10.0);
   };
 };

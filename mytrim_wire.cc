@@ -47,12 +47,12 @@
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 8 ) 
+  if( argc != 8 )
   {
     fprintf( stderr, "syntax:\n%s basename Eion[eV] angle[deg] numpka zpka mpka r[nm]\n", argv[0] );
     return 1;
   }
-  
+
   double epka  = atof(argv[2]);
   double theta = atof(argv[3]) * M_PI/180.0; // 0 = perpendicular to wire
   int numpka  = atoi(argv[4]);
@@ -132,10 +132,9 @@ int main(int argc, char *argv[])
     pka = new ionBase;
     pka->gen = 0; // generation (0 = PKA)
     pka->tag = -1;
-    pka->md = 0;
     pka->z1 = zpka; // S
     pka->m1 = mpka;
-    pka->e  = epka; 
+    pka->e  = epka;
 
     pka->dir[0] = 0.0;
     pka->dir[1] = -cos( theta );
@@ -172,7 +171,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // ion is still in sample
-      if(  sample->lookupMaterial( pka->pos ) != 0 ) 
+      if(  sample->lookupMaterial( pka->pos ) != 0 )
       {
         int x, y;
         x = ( ( pka->pos[0] * mx ) / sample->w[0] );

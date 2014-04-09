@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
   // double atp = 0.1; // 10at% Mo 90at%Cu
   double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  double v_cl = 4.0/3.0 * M_PI * cub(r); 
+  double v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / ( v_cl * ( ( 1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho ) );
 
   n_cl = v_sam * 1.5e-7 * Cbf ; // Allen08 1.5e-4/nm^3
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     fprintf( ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i );
   fclose( ccf );
 
-  fprintf( stderr, "sample built.\n" ); 
+  fprintf( stderr, "sample built.\n" );
   //return 0;
 
   materialBase *material;
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
   element->Edisp = 57.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 7.0;
   element->Edisp = 57.0;
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
   // xe bubble
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
-  element->z = 54; // Xe 
+  element->z = 54; // Xe
   element->m = 132.0;
   element->t = 1.0;
   material->element.push_back( element );
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
 
   double pos1[3], pos2[3];
 
-  ionBase *ff1, *pka;
+  ionMDtag *ff1, *pka;
   int id = 1;
 
   double A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
   {
     if( n % 10 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
 
-    ff1 = new ionBase;
+    ff1 = new ionMDtag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->md = 0;
@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
 
     while( !recoils.empty() )
     {
-      pka = recoils.front();
+      pka = dynamic_cast<ionMDtag*>(recoils.front());
       recoils.pop();
       sample->averages( pka );
 
@@ -289,7 +289,7 @@ int main(int argc, char *argv[])
 
         if( pka->tag >= 0 )
         {
-          for( int i = 0; i < 3; i++ ) 
+          for( int i = 0; i < 3; i++ )
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
             pos2[i] = pka->pos[i];
@@ -321,9 +321,9 @@ int main(int argc, char *argv[])
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if( pka->tag >= 0 ) 
+        if( pka->tag >= 0 )
         {
-          for( int i = 0; i < 3; i++ ) 
+          for( int i = 0; i < 3; i++ )
           {
             dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
             dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
@@ -340,7 +340,7 @@ int main(int argc, char *argv[])
           if( material->tag >= 0 ) break;
 
           do
-          { 
+          {
             for( int i = 0; i < 3; i++ ) pka->dir[i] = dr250() - 0.5;
             norm = v_dot( pka->dir, pka->dir );
           }
@@ -378,11 +378,11 @@ int main(int argc, char *argv[])
   double kd = 0.1337 * pow( Zatoms, 2.0/3.0 ) / pow( Matoms, 0.5); //Z,M
   double Ev = Epka / ( 1.0 + kd * g );
   double Ed = 40.0;
-  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed) );
 
   // do Kinchin-Pease for all primary recoils
-  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           simconf->KP_vacancies, simconf->KP_vacancies / 100.0 );
 */
   return EXIT_SUCCESS;

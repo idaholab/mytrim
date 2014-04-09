@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   {
     cin >> lename >> lthick >> lrho >> nelem;
     cin.ignore( numeric_limits<streamsize>::max(), '\n');
-    cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho=" 
+    cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
          << lrho << "g/ccm  n_elements=" << nelem << endl;
 
     material = new materialBase( lrho ); // rho
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
       element = new elementBase;
       cin >> lename >> element->z >> element->m >> element->t;
       cin.ignore( numeric_limits<streamsize>::max(), '\n');
-      cout << "  Element: " << lename << "  Z=" << element->z 
+      cout << "  Element: " << lename << "  Z=" << element->z
            << "  m=" << element->m << "  fraction=" << element->t << endl;
       material->element.push_back( element );
     }
@@ -147,7 +147,6 @@ int main(int argc, char *argv[])
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
-    ff1->md = 0;
     ff1->id = simconf->id++;
 
     ff1->z1 = Z;
@@ -192,7 +191,7 @@ int main(int argc, char *argv[])
       }
 
       // pka is O or Ag
-      //if( pka->z1 == 29 && pka->pos[0] >= 500.0 ) 
+      //if( pka->z1 == 29 && pka->pos[0] >= 500.0 )
       if( pka->z1 == 29 )
       {
         // output

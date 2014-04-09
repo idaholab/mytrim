@@ -69,7 +69,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     range = sample->rangeMaterial( pka->pos, pka->dir );
     if( range < ls )
     {
-/*       cout << "range=" << range << " ls=" << ls 
+/*       cout << "range=" << range << " ls=" << ls
             << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << endl;
       cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << endl;
       cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << endl;
@@ -185,17 +185,17 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // advance clock pathlength/velocity
     pka->t += 10.1811859 * ( ls - simconf->tau ) / sqrt( 2.0 * pka->e / pka->m1 );
-    // time in fs! m in u, l in Ang, e in eV 
+    // time in fs! m in u, l in Ang, e in eV
     // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
     //printf( "se %d  %f [eV]  %f [keV/nm]  %f [nm]\n", pka->id, pka->e, see/100.0, pl/10.0 );
 
     pka->e -= dee; // electronic energy loss
-    if( pka->e < 0.0 && den > 100.0 ) 
+    if( pka->e < 0.0 && den > 100.0 )
       fprintf( stderr, " electronic energy loss stopped the ion. Broken recoil!!\n" );
 
     p1 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum before collision
     pka->e -= den; if( pka->e < 0.0 ) pka->e = 0.0;
-    p2 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum after collision 
+    p2 = sqrtf( 2.0 * pka->m1 * pka->e ); // momentum after collision
 
     if( dee > max ) max = dee;
 
@@ -204,7 +204,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // find new position, save old direction to recoil
     recoil = pka->spawnRecoil();
-    for( int i = 0; i < 3; i++ ) 
+    for( int i = 0; i < 3; i++ )
     {
       // used to assign the new position to the recoil, but
       // we have to make sure the recoil starts in the appropriate material!
@@ -233,7 +233,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     v_scale( pka->dir, cos( psi ) );
 
     // calculate new direction, subtract from old dir (stored in recoil)
-    for( int i = 0; i < 3; i++ ) 
+    for( int i = 0; i < 3; i++ )
     {
       pka->dir[i] += perp[i] * sin( psi );
       recoil->dir[i] -= pka->dir[i] * p2;
@@ -241,39 +241,36 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // end cascade if a CUT boundary is crossed
     terminate = false;
-    for( int i = 0; i < 3; i++ ) 
-      if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) ) 
+    for( int i = 0; i < 3; i++ )
+      if( sample->bc[i] == sampleBase::CUT && ( pka->pos[i] > sample->w[i] || pka->pos[i] < 0.0 ) )
         terminate = true;
 
     // put the recoil on the stack
-    if( spawnRecoil() && !terminate )
+    if (!terminate && spawnRecoil())
     {
       v_norm( recoil->dir );
       recoil->tag = material->tag;
-
-      if( pka->md > 0 ) 
-        recoil->md = pka->md +1;
-      else 
-        recoil->md = 0;
-
       recoil->id = simconf->id++;
+
       recoils.push( recoil );
       if( simconf->fullTraj ) printf( "spawn %d %d\n", recoil->id, pka->id );
 
-      // if recoil exceeds displacement energy assume a vacancy was created 
+      // if recoil exceeds displacement energy assume a vacancy was created
       // (we compare both ions agains the Edisp of the recoil atom!)
       if (recoil->e > element->Edisp &&  pka->e > element->Edisp) vacancyCreation();
     }
     else delete recoil;
 
-    // output the full trajectory
-    if( simconf->fullTraj )
-      printf( "cont %f %f %f %d %d %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->z1, pka->md, pka->id );
+    // output the full trajectory TODO: the ion object should output itself!
+    if (simconf->fullTraj) {
+      printf(
+        "cont %f %f %f %d %d %d\n",
+        pka->pos[0], pka->pos[1], pka->pos[2],
+        pka->z1, pka->tag, pka->id
+      );
+    }
 
-  } while ( pka->e > pka->ef && !terminate );
-
-  if( simconf->fullTraj )
-   if(pka->z1 == 54 && pka->gen > 0 ) printf( "\n" );
+  } while (!terminate && pka->e > pka->ef);
 }
 
 void trimBase::vacancyCreation()
@@ -289,7 +286,7 @@ void trimBase::vacancyCreation()
     double g = 3.4008 * pow( ed, 1.0/6.0 ) + 0.40244 * pow( ed, 3.0/4.0 ) + ed;
     double kd = 0.1337 * pow( material->az, 2.0/3.0 ) / pow( material->am, 0.5); //Z,M
     double Ev = recoil->e / ( 1.0 + kd * g );
-    simconf->KP_vacancies += 0.8 * Ev / ( 2.0 * element->Edisp ); 
+    simconf->KP_vacancies += 0.8 * Ev / ( 2.0 * element->Edisp );
     // should be something like material->Edisp (average?)
   }
   */
@@ -297,8 +294,8 @@ void trimBase::vacancyCreation()
 
 
 /*
-materialBase* sampleType::lookupLayer( const double* pos ) 
-{ 
+materialBase* sampleType::lookupLayer( const double* pos )
+{
   double dif[3];
 
   dif[0] = pos[0] - 100.0;
@@ -306,8 +303,8 @@ materialBase* sampleType::lookupLayer( const double* pos )
   dif[2] = pos[2];
   double r2 = v_dot( dif, dif );
   if( r2 < 2500.0 ) // r<50.0
-    return material[1]; 
+    return material[1];
   else
-    return material[0]; 
+    return material[0];
 }
 */

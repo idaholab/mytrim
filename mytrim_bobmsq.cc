@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
   materialBase *material;
   elementBase *element;
-  
+
   const char *choice[4] = {"Fe", "Si", "Cu", "Au"};
   int i;
   for(i=0; i<4 && strcmp(choice[i],argv[1])!=0; ++i);
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     fprintf( stderr, "Element choice not supported: %s\n",argv[1] );
     return 1;
   }
-  double A,Z; 
+  double A,Z;
   switch(i) {
     case 0:
       // Fe
@@ -176,7 +176,6 @@ int main(int argc, char *argv[])
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
-    ff1->md = 0;
     ff1->id = simconf->id++;
 
     ff1->z1 = Z;
@@ -202,7 +201,7 @@ int main(int argc, char *argv[])
 
       // store position
       if( pka->gen > 0 )
-        for( int i = 0; i < 3; i++ ) 
+        for( int i = 0; i < 3; i++ )
           pos2[i] = pka->pos[i];
 
       // follow this ion's trajectory and store recoils
@@ -210,11 +209,11 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing AFTER the cascade here
       if( pka->gen > 0 )
-        for( int i = 0; i < 3; i++ ) 
-          sqd += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]); 
+        for( int i = 0; i < 3; i++ )
+          sqd += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]);
       else if( pka->gen > 1 )
-        for( int i = 0; i < 3; i++ ) 
-          sqd2 += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]); 
+        for( int i = 0; i < 3; i++ )
+          sqd2 += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]);
 
       // done with this recoil
       delete pka;
@@ -240,11 +239,11 @@ int main(int argc, char *argv[])
   double kd = 0.1337 * pow( Zatoms, 2.0/3.0 ) / pow( Matoms, 0.5); //Z,M
   double Ev = Epka / ( 1.0 + kd * g );
   double Ed = 40.0;
-  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed) );
 
   // do Kinchin-Pease for all primary recoils
-  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n", 
+  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           simconf->KP_vacancies, simconf->KP_vacancies / 100.0 );
 */
   return EXIT_SUCCESS;

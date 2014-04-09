@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   {
     cin >> lename >> lthick >> lrho >> nelem;
     cin.ignore( numeric_limits<streamsize>::max(), '\n');
-    cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho=" 
+    cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
          << lrho << "g/ccm  n_elements=" << nelem << endl;
 
     material = new materialBase( lrho ); // rho
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
       element = new elementBase;
       cin >> lename >> element->z >> element->m >> element->t;
       cin.ignore( numeric_limits<streamsize>::max(), '\n');
-      cout << "  Element: " << lename << "  Z=" << element->z 
+      cout << "  Element: " << lename << "  Z=" << element->z
            << "  m=" << element->m << "  fraction=" << element->t << endl;
       material->element.push_back( element );
     }
@@ -116,9 +116,9 @@ int main(int argc, char *argv[])
   int jumps;
   double dif[3];
 
-  //double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-//  double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
-double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
+  // double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  // double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
+  double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
 
   snprintf( fname, 199, "%s.Erec", argv[1] );
   FILE *erec = fopen( fname, "wt" );
@@ -143,7 +143,6 @@ double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
-    ff1->md = 0;
     ff1->id = simconf->id++;
 
     ff1->z1 = Z;
@@ -209,7 +208,7 @@ double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
     cout << sample->layerThickness[i] << ' ';
     for( int j = 0; j < sample->material[i]->element.size(); j++ )
     {
-      cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' '; 
+      cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' ';
     }
     cout << endl;
   }

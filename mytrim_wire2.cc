@@ -46,7 +46,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 8 ) 
+  if( argc != 8 )
   {
     cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << endl;
     return 1;
@@ -178,14 +178,13 @@ int main(int argc, char *argv[])
   {
     for( int n = 0; n < ion_count[s]; ++n )
     {
-      if( n % 10000 == 0 ) 
+      if( n % 10000 == 0 )
         cerr << "pka #" << n+1 << endl;
 
       // generate new PKA from prototype ion
       pka = new ionBase( ion_prototype[s] );
       pka->gen = 0; // generation (0 = PKA)
       pka->tag = -1;
-      pka->md = 0;
 
       pka->dir[0] = 0.0;
       pka->dir[1] = sin( theta );
@@ -269,11 +268,11 @@ int main(int argc, char *argv[])
         if(  sample->lookupMaterial( pka->pos ) == sample->material[0] )
         {
           int l = pka->pos[2] / dl;
-          if( l >=0 && l < lx ) 
+          if( l >=0 && l < lx )
           {
             if( xyz_out )
             {
-              xyz_data << simconf->scoef[pka->z1-1].sym << ' ' 
+              xyz_data << simconf->scoef[pka->z1-1].sym << ' '
                       << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
               xyz_lines++;
             }
