@@ -8,20 +8,21 @@ ionBase::ionBase()
   t = 0.0; //clock
 }
 
-ionBase::ionBase( ionBase* prototype )
+ionBase::ionBase( ionBase* prototype ) : state(MOVING)
 {
   ef = prototype->ef; // final energy
-  t = prototype->t; //clock
+  t = prototype->t;   //clock
 
   z1 = prototype->z1;
   m1 = prototype->m1;
   e = prototype->e;
 }
 
-ionBase::ionBase( int _z1, double _m1, double _e ) : z1(_z1), m1(_m1), e(_e)
+ionBase::ionBase( int _z1, double _m1, double _e ) :
+  z1(_z1), m1(_m1), e(_e), state(MOVING)
 {
   ef = 5.0; // final energy
-  t = 0.0; //clock
+  t = 0.0; //clock;
 }
 
 void ionBase::set_ef()

@@ -21,8 +21,12 @@ struct ionBase {
   // final energy up to which this recoil will be followed
   double ef;
 
-  // state of the recoil
-  enum StateType { MOVING, REPLACEMENT, INTERSTITIAL } state;
+  // state of the recoil:
+  //   MOVING          ion is still being tracked
+  //   REPLACEMENT     pka->z1 == element->z && pka->e < element->Edisp
+  //   SUBSTITUTIONAL  pka->z1 != element->z && pka->e < element->Edisp
+  //   INTERSTITIAL    no recoil spawned and pke->e < pka->ef
+  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL } state;
 
   ionBase();
   ionBase( ionBase* prototype );
