@@ -26,7 +26,7 @@ ionBase::ionBase( int _z1, double _m1, double _e ) : z1(_z1), m1(_m1), e(_e)
 
 void ionBase::set_ef()
 {
-  ef = fmax( 5.0, 0.00001 * e ); // final energy
+  ef = fmax( 5.0, 0.00001 * e ); // final energy TODO: 100Mev*0.00001 = 1keV - do we really want to stop there?!
 }
 
 void ionBase::parent( ionBase *parent )

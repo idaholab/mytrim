@@ -88,16 +88,11 @@ public:
   trimVacLog( sampleBase *sample_, FILE *vacfile_ ) : vacfile(vacfile_), trimBase( sample_ ) {};
 protected:
   FILE *vacfile;
-  virtual bool spawnRecoil() 
+  virtual void vacancyCreation()
   {
-    // both atoms must have enough energy to leave the site
-    if( recoil->e > 10 )
-      fprintf( vacfile, "%f %f %f %d\n", recoil->pos[0], recoil->pos[1], recoil->pos[2], recoil->z1 );
-    
-    // if pka->e <= pka->ef the resulting interstitial will be at the exact coordinates 
-    // of the vaccancy and immediate annihilate
-
-    return recoil->e > 10.0; 
+    // both atoms have enough energy to leave the site
+    // log the original recoil atom position as a vacancy site
+    fprintf( vacfile, "%f %f %f %d\n", recoil->pos[0], recoil->pos[1], recoil->pos[2], recoil->z1 );
   };
 };
 
@@ -117,26 +112,20 @@ public:
   };
 protected:
   int z1, z2, z3;
-  virtual bool spawnRecoil() 
+  virtual void vacancyCreation()
   {
-    // both atoms must have enough energy to leave the site
+    // both atoms have enough energy to leave the site
     int x, y;
-    if( recoil->e > 10 )
-    {
-      x = ( ( recoil->pos[0] * mx ) / sample->w[0] );
-      y = ( ( recoil->pos[1] * my ) / sample->w[1] );
-      x -= int(x/mx) * mx;
-      y -= int(y/my) * my;
 
-      // keep track of vaccancies for the two constituents
-      if( recoil->z1 == z1 ) vmap[x][y][0]++;
-      else if( recoil->z1 == z2 ) vmap[x][y][1]++;
-      else if( recoil->z1 == z3 ) vmap[x][y][2]++;
-    }
-    // if pka->e <= pka->ef the resulting interstitial will be at the exact coordinates 
-    // of the vaccancy and immediate annihilate
+    x = ( ( recoil->pos[0] * mx ) / sample->w[0] );
+    y = ( ( recoil->pos[1] * my ) / sample->w[1] );
+    x -= int(x/mx) * mx;
+    y -= int(y/my) * my;
 
-    return recoil->e > 10.0; 
+    // keep track of vaccancies for the two constituents
+    if( recoil->z1 == z1 ) vmap[x][y][0]++;
+    else if( recoil->z1 == z2 ) vmap[x][y][1]++;
+    else if( recoil->z1 == z3 ) vmap[x][y][2]++;
   };
 };
 
@@ -151,12 +140,10 @@ protected:
   FILE *phonfile;
   virtual bool spawnRecoil() 
   { 
-    if( recoil->e > 10.0 ) return true;
-    else
-    {
-      fprintf( phonfile, "%f %f %f %f %d %d %e\n", recoil->e, recoil->pos[0], recoil->pos[1], recoil->pos[2], pka->z1, pka->id, pka->t );  
-      return false;
-    }
+    // dissipate lattice binding energy where recoil branches off 
+    double Edep = recoil->e + element->Elbind;
+    fprintf( phonfile, "%f %f %f %f %d %d %e 0\n", Edep, recoil->pos[0], recoil->pos[1], recoil->pos[2], pka->z1, pka->id, pka->t );  
+    return (recoil->e > 10.0);
   };
 };
 

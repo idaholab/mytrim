@@ -27,6 +27,9 @@
 #include <stdlib.h>
 #include <queue>
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include <mytrim/simconf.h>
 #include <mytrim/element.h>
 #include <mytrim/material.h>
@@ -39,11 +42,15 @@
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 4 ) // 2
+  if( argc != 5 ) // 2
   {
-    fprintf( stderr, "syntax:\n%s basename r Cbfactor\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n", argv[0] );
+    fprintf( stderr, "syntax:\n%s basename r Cbfactor Nev\n\nCbfactor=1 => 7e-4 bubbles/nm^3\nNev  number of fission events (two fragemnts each)\n", argv[0] );
     return 1;
   }
+
+  // run mode
+  enum RunMode { PLAIN, PHONONS, VACANCIES };
+  RunMode mode = VACANCIES;
 
   // seed random number generator from system entropy pool
   // we internally use the libc random function (not r250c, which is not threadsafe)
@@ -60,12 +67,28 @@ int main(int argc, char *argv[])
   sampleClusters *sample = new sampleClusters( 400.0, 400.0, 400.0 );
 
   // initialize trim engine for the sample
-  trimBase *trim = new trimBase( sample );
-
+  trimBase *trim;
+  FILE *auxout;
+  switch (mode) {
+    case PLAIN:
+      trim = new trimBase(sample);
+      break;
+    case PHONONS:
+      snprintf( fname, 199, "%s.phon", argv[1] );
+      auxout = fopen( fname, "wt" );
+      trim = new trimPhononOut( sample, auxout );
+    case VACANCIES:
+      snprintf( fname, 199, "%s.vac", argv[1] );
+      auxout = fopen( fname, "wt" );
+      trim = new trimVacLog( sample, auxout );
+    default:
+      return 1;
+  }
 
   //double r = 10.0;
   double r = atof( argv[2] ); //10.0;
   double Cbf = atof( argv[3] );
+  int Nev = atoi( argv[4] );
 
   //sample->bc[0] = CUT; // no pbc in x dir
   sample->initSpatialhash( int( sample->w[0] / r ) - 1,
@@ -75,7 +98,7 @@ int main(int argc, char *argv[])
 
   // double atp = 0.1; // 10at% Mo 90at%Cu
   double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  double v_cl = 4.0/3.0 * M_PI * cub(r); 
+  double v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / ( v_cl * ( ( 1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho ) );
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
@@ -92,37 +115,44 @@ int main(int argc, char *argv[])
     fprintf( ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i );
   fclose( ccf );
 
-  fprintf( stderr, "sample built.\n" ); 
+  fprintf( stderr, "sample built.\n" );
   //return 0;
 
   materialBase *material;
   elementBase *element;
 
-  // UO2
+  // UO2 TODO: Eidplacement and binding energies!
   material = new materialBase( 10.0 ); // rho
   element = new elementBase;
-  element->z = 92; // U 
+  element->z = 92; // U
   element->m = 235.0;
   element->t = 1.0;
   material->element.push_back( element );
   element = new elementBase;
-  element->z = 8; // O 
+  element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
   material->element.push_back( element );
   material->prepare(); // all materials added
   sample->material.push_back( material ); // add material to sample
+  double N_UO2 = material->arho;
 
   // xe bubble
   int gas_z1 = 54;
   material = new materialBase( 3.5 ); // rho
   element = new elementBase;
-  element->z = gas_z1; // Xe 
+  element->z = gas_z1; // Xe
   element->m = 132.0;
   element->t = 1.0;
   material->element.push_back( element );
   material->prepare();
   sample->material.push_back( material ); // add material to sample
+
+  N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * pow(r,3.0));
+  printf("N_UO2 = %f\n", N_UO2);
+
+  double N_gas = sample->cn * material->arho * 4.0/3.0 * M_PI * pow(r,3.0);
+  printf("N_gas = %f (arho=%f)\n", N_gas, material->arho);
 
   // create a FIFO for recoils
   queue<ionBase*> recoils;
@@ -148,10 +178,10 @@ int main(int argc, char *argv[])
 
   ionBase *ff1, *ff2, *pka;
 
-  // 20000 fission events
-  for( int n = 0; n < 20000; n++ )
+  // Nev fission events
+  for( int n = 0; n < Nev; n++ )
   {
-    if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+    if( n % 10 == 0 ) fprintf( stderr, "event #%d\n", n+1 );
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
@@ -173,7 +203,7 @@ int main(int argc, char *argv[])
     ff1->e  = E1 * 1.0e6;
 
     do
-    { 
+    {
       for( int i = 0; i < 3; i++ ) ff1->dir[i] = dr250() - 0.5;
       norm = v_dot( ff1->dir, ff1->dir );
     }
@@ -221,7 +251,7 @@ int main(int argc, char *argv[])
 
         if( pka->tag >= 0 )
 	{
-          for( int i = 0; i < 3; i++ ) 
+          for( int i = 0; i < 3; i++ )
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
             if( sample->bc[i] == sampleBase::PBC ) dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
@@ -235,46 +265,23 @@ int main(int argc, char *argv[])
       // follow this ion's trajectory and store recoils
       // printf( "%f\t%d\n", pka->e, pka->z1 );
       trim->trim( pka, recoils );
+      if (mode == PHONONS) fprintf( auxout, "%f %f %f %f %d %d %e 1\n", pka->e, pka->pos[0], pka->pos[1], pka->pos[2], pka->z1, pka->id, pka->t );
 
       // do ion analysis/processing AFTER the cascade here
 
       // pka is GAS
-      if( pka->z1 == gas_z1  ) 
+      if( pka->z1 == gas_z1  )
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if( pka->tag >= 0 ) 
+        if( pka->tag >= 0 )
         {
-          for( int i = 0; i < 3; i++ ) 
+          for( int i = 0; i < 3; i++ )
             dif[i] = pos1[i] - pka->pos[i];
           fprintf( rdist, "%f %d %f %f %f\n", sqrt( v_dot( dif, dif ) ), pka->md, pka->pos[0], pka->pos[1], pka->pos[2] );
         }
-
-
-        // do a random walk
-/*        jumps = 0;
-        do
-        {
-          material = sample->lookupLayer( pka->pos );
-          if( material->tag >= 0 ) break;
-
-          do
-          { 
-            for( int i = 0; i < 3; i++ ) pka->dir[i] = dr250() - 0.5;
-            norm = v_dot( pka->dir, pka->dir );
-          }
-          while( norm <= 0.0001 );
-          v_scale( pka->dir, jmp / sqrtf( norm ) );
-
-          for( int i = 0; i < 3; i++ ) pka->pos[i] += pka->dir[i];
-          jumps++;
-        }
-        while ( pka->pos[0] > 0 && pka->pos[0] < sample->w[0] );
-
-        if( material->tag >= 0 && jumps > 0 )
-          fprintf( stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->tag, pka->tag, jumps ); */
       }
 
       // done with this recoil
@@ -284,8 +291,10 @@ int main(int argc, char *argv[])
       //if( simconf->primariesOnly ) while( !recoils.empty() ) { delete recoils.front(); recoils.pop(); };
     }
   }
-  fclose( rdist );
-  fclose( erec );
+  fclose(rdist);
+  fclose(erec);
+
+  if (mode != PLAIN) fclose(auxout);
 
   return EXIT_SUCCESS;
 }
