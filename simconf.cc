@@ -26,7 +26,6 @@ simconfType::simconfType( double _alfa )
 
   // initialize global statistics
   vacancies_created = 0;
-  KP_vacancies = 0.0;
   EelTotal = 0.0;
   EnucTotal = 0.0;
 

@@ -261,11 +261,13 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       }
     }
 
-    // put the recoil on the stack
+    //
+    // decide on the fate of recoil and pka
+    //
     if (pka->state != ionBase::LOST) {
       if (recoil->e > element->Edisp) {
         // non-physics based descision on recoil following
-        if (true || followRecoil()) {
+        if (followRecoil()) {
           v_norm( recoil->dir );
           recoil->tag = material->tag;
           recoil->id  = simconf->id++;
@@ -274,22 +276,20 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
           recoils.push(recoil);
           if( simconf->fullTraj )
             cout << "spawn " << recoil->id << ' ' << pka->id << endl;
-
-          // did we create a vacancy by knocking out the recoil atom?
-          if (pka->e > element->Edisp) {
-            // yes, because the knock-on can escape, too!
-            vacancyCreation();
-          }
-        }
-        else {
+        } else {
           // this recoil could have left its lattice site, but we chose
           // not to follow it (simulation of PKAs only)
-          delete recoil;
+          recoil->id = ionBase::DELETE;
         }
 
         // will the knock-on get trapped at the recoil atom site?
         // (TODO: make sure that pka->ef < element->Edisp for all elements!)
-        if (pka->e <= element->Edisp) {
+        // did we create a vacancy by knocking out the recoil atom?
+        if (pka->e > element->Edisp) {
+          // yes, because the knock-on can escape, too!
+          vacancyCreation();
+        } else {
+          // nope, the pka gets stuck at that site as...
           if (pka->z1 == element->z)
             pka->state = ionBase::REPLACEMENT;
           else
@@ -298,7 +298,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       } else {
         // this recoil will not leave its lattice site
         dissipateRecoilEnergy();
-        delete recoil;
+        recoil->id  = ionBase::DELETE;;
 
         // if the PKA has no energy left, put it to rest here as an interstitial
         if (pka->e < pka->ef) {
@@ -307,6 +307,10 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       }
     }
 
+    // delete recoil if it was not queued
+    if (recoil->id  == ionBase::DELETE) delete recoil;
+
+    // act on the pka state change
     checkPKAState();
 
     // output the full trajectory (state is not output by the ion object)

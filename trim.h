@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <queue>
-
-using namespace std;
+#include <cmath>
 
 #include "material.h"
 #include "sample.h"
@@ -54,24 +53,45 @@ protected:
 
 
 //
-// Only follow the primary knock ons
+// Only follow the primary knock ons (i.e. fission fragments)
 //
 class trimPrimaries : public trimBase {
 public:
   trimPrimaries( sampleBase *sample_ ) : trimBase( sample_ ) {};
 protected:
-  virtual bool followRecoil() { return false; };
+  virtual int maxGen() { return 1; };
+  virtual bool followRecoil() { return (recoil->gen < maxGen()); };
+
+  void vacancyCreation()
+  {
+    simconf->vacancies_created++;
+
+    // Modified Kinchin-Pease
+    if (recoil->gen == maxGen())
+    {
+      // calculate modified kinchin pease data
+      // http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
+      double ed = 0.0115 * pow( material->az, -7.0/3.0) * recoil->e;
+      double g = 3.4008 * pow( ed, 1.0/6.0 ) + 0.40244 * pow( ed, 3.0/4.0 ) + ed;
+      double kd = 0.1337 * pow( material->az, 2.0/3.0 ) / pow( material->am, 0.5); //Z,M
+      double Ev = recoil->e / ( 1.0 + kd * g );
+      simconf->vacancies_created += int(0.8 * Ev / (2.0*element->Edisp));
+
+      // TODO: this is missing the energy threshold of 2.5Ed!!!!
+      // TODO: should be something like material->Edisp (average?)
+    }
+  }
 };
 
 
 //
 // Only follow the first generation of recoils
 //
-class trimRecoils : public trimBase {
+class trimRecoils : public trimPrimaries {
   public:
-    trimRecoils( sampleBase *sample_ ) : trimBase( sample_ ) {};
+    trimRecoils( sampleBase *sample_ ) : trimPrimaries( sample_ ) {};
   protected:
-    virtual bool followRecoil() { return ( recoil->gen <= 2 ); };
+    virtual int maxGen() { return 2; };
 };
 
 

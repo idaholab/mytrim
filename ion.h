@@ -30,6 +30,7 @@ struct ionBase {
   //   INTERSTITIAL    no recoil spawned and pke->e < pka->ef
   //   LOST            ion has left the sample
   enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } state;
+  static const int DELETE = -1;
 
   ionBase();
   ionBase( ionBase* prototype );
