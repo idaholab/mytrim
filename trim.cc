@@ -2,11 +2,9 @@
 #include <stdio.h>
 
 #include "trim.h"
-#include "simconf.h"
 
 #include "functions.h"
 #include <iostream>
-using namespace std;
 
 //#define RANGECORRECT2
 
@@ -66,42 +64,42 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // correct for maximum available range in current material by increasing maximum impact parameter
     #ifdef RANGECORRECT
-    range = sample->rangeMaterial( pka->pos, pka->dir );
-    if (range<ls)
-    {
-      /* cout << "range=" << range << " ls=" << ls
-            << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << endl;
-      cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << endl;
-      cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << endl;
-      cout << "CC " << endl;*/
+      range = sample->rangeMaterial( pka->pos, pka->dir );
+      if (range<ls)
+      {
+        /* cout << "range=" << range << " ls=" << ls
+              << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << endl;
+        cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << endl;
+        cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << endl;
+        cout << "CC " << endl;*/
 
-      ls = range;
+        ls = range;
 
-      // correct pmax to correspond with new ls
-      material->pmax = 1.0 / sqrtf(  M_PI * ls * material->arho );
-    }
+        // correct pmax to correspond with new ls
+        material->pmax = 1.0 / sqrtf(  M_PI * ls * material->arho );
+      }
     #endif
 
     // correct for maximum available range in current material by dropping recoils randomly (faster)
     #ifdef RANGECORRECT2
-    range = sample->rangeMaterial( pka->pos, pka->dir );
-    if( range < ls )
-    {
-      // skip this recoil, just advance the ion
-      if( range/ls < dr250() )
+      range = sample->rangeMaterial( pka->pos, pka->dir );
+      if( range < ls )
       {
-        // electronic stopping
-        pka->e -= range * material->getrstop( pka );
+        // skip this recoil, just advance the ion
+        if (range/ls < dr250())
+        {
+          // electronic stopping
+          pka->e -= range * material->getrstop( pka );
 
-        // free flight
-        for( int i = 0; i < 3; i++ )
-          pka->pos[i] += pka->dir[i] * range;
+          // free flight
+          for( int i = 0; i < 3; i++ )
+            pka->pos[i] += pka->dir[i] * range;
 
-        // start over
-        continue;
+          // start over
+          continue;
+        }
+        ls = range;
       }
-      ls = range;
-    }
     #endif
 
     // advance clock pathlength/velocity
@@ -192,13 +190,23 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     // energy transferred to recoil atom
     den = element->ec * s2 * pka->e;
 
-    pka->e -= dee; // electronic energy loss
-    if( pka->e < 0.0 && den > 100.0 )
-      fprintf( stderr, " electronic energy loss stopped the ion. Broken recoil!!\n" );
+    if (dee > pka->e) {
+      // avoid getting negative energies
+      dee = pka->e;
 
+      // sanity check
+      if (den > 100.0)
+        cerr << " electronic energy loss stopped the ion. Broken recoil!!\n";
+    }
+
+    // electronic energy loss
+    pka->e -= dee;
+    simconf->EelTotal += dee;
+
+    // momentum transfer
     p1 = sqrtf(2.0 * pka->m1 * pka->e); // momentum before collision
+    if (den > pka->e) den = pka->e; // avoid nevative energy
     pka->e -= den;
-    if (pka->e<0.0) pka->e = 0.0;
     p2 = sqrtf(2.0 * pka->m1 * pka->e); // momentum after collision
 
     // track maximum electronic energy loss TODO: might want to track max(see)!
@@ -254,34 +262,45 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
     }
 
     // put the recoil on the stack
-    if (pka->state!=ionBase::LOST)
-    {
-      if(recoil->e > element->Edisp)
-      {
-        if (followRecoil()) {
+    if (pka->state != ionBase::LOST) {
+      if (recoil->e > element->Edisp) {
+        // non-physics based descision on recoil following
+        if (true || followRecoil()) {
           v_norm( recoil->dir );
           recoil->tag = material->tag;
-          recoil->id = simconf->id++;
+          recoil->id  = simconf->id++;
 
+          // queue recoil for processing
           recoils.push(recoil);
-          if( simconf->fullTraj ) printf( "spawn %d %d\n", recoil->id, pka->id );
-        }
-        else delete recoil;
+          if( simconf->fullTraj )
+            cout << "spawn " << recoil->id << ' ' << pka->id << endl;
 
-        // if recoil exceeds displacement energy assume a vacancy was created
-        // (we compare both ions agains the Edisp of the recoil atom!)
-        if (pka->e > element->Edisp) {
-          vacancyCreation();
-        } else {
+          // did we create a vacancy by knocking out the recoil atom?
+          if (pka->e > element->Edisp) {
+            // yes, because the knock-on can escape, too!
+            vacancyCreation();
+          }
+        }
+        else {
+          // this recoil could have left its lattice site, but we chose
+          // not to follow it (simulation of PKAs only)
+          delete recoil;
+        }
+
+        // will the knock-on get trapped at the recoil atom site?
+        // (TODO: make sure that pka->ef < element->Edisp for all elements!)
+        if (pka->e <= element->Edisp) {
           if (pka->z1 == element->z)
             pka->state = ionBase::REPLACEMENT;
           else
             pka->state = ionBase::SUBSTITUTIONAL;
         }
-      }
-      else
-      {
+      } else {
+        // this recoil will not leave its lattice site
+        dissipateRecoilEnergy();
         delete recoil;
+
+        // if the PKA has no energy left, put it to rest here as an interstitial
         if (pka->e < pka->ef) {
           pka->state = ionBase::INTERSTITIAL;
         }
@@ -290,17 +309,11 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     checkPKAState();
 
-    // output the full trajectory TODO: the ion object should output itself!
-    // TODO: and this shou;d be done in checkPKSState()
-    if (simconf->fullTraj) {
-      printf(
-        "cont %f %f %f %d %d %d\n",
-        pka->pos[0], pka->pos[1], pka->pos[2],
-        pka->z1, pka->tag, pka->id
-      );
-    }
+    // output the full trajectory (state is not output by the ion object)
+    if (simconf->fullTraj)
+      cout << pka->state << ' ' << *pka << endl;
 
-  } while (pka->state==ionBase::MOVING);
+  } while (pka->state == ionBase::MOVING);
 }
 
 void trimBase::vacancyCreation()

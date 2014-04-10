@@ -18,6 +18,10 @@ struct simconfType {
 
   bool fullTraj;
 
+  // tally electronic and nuclear stopping losses
+  double EelTotal;
+  double EnucTotal;
+
   // statistics of the simulation run
   int vacancies_created;
   double KP_vacancies;

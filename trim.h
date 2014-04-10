@@ -8,6 +8,7 @@ using namespace std;
 
 #include "material.h"
 #include "sample.h"
+#include "simconf.h"
 
 class trimBase {
 public:
@@ -30,10 +31,11 @@ protected:
     else
       recoil->md = 0;
     */
-    return recoil->e > 12.0;
+    return true;
   };
   virtual void vacancyCreation();
   virtual void checkPKAState() {};
+  virtual void dissipateRecoilEnergy() {};
 };
 
 // //
@@ -73,6 +75,7 @@ class trimRecoils : public trimBase {
 };
 
 
+
 //
 // store a history of all recoils
 //
@@ -86,26 +89,37 @@ protected:
     pos_hist[0].push_back(pka->pos[0]);
     pos_hist[1].push_back(pka->pos[1]);
     pos_hist[2].push_back(pka->pos[2]);
-    return recoil->e > 10.0;
+    return true;
   };
 };
+
 
 
 //
 // Full damage cascade, plus log vaccancy creation
 //
-class trimVacLog : public trimBase {
+class trimDefectLog : public trimBase {
 public:
-  trimVacLog( sampleBase *sample_, FILE *vacfile_ ) : vacfile(vacfile_), trimBase( sample_ ) {};
+  trimDefectLog(sampleBase *sample_, std::ostream &os_) : os(os_), trimBase(sample_) {};
 protected:
-  FILE *vacfile;
-  virtual void vacancyCreation()
-  {
-    // both atoms have enough energy to leave the site
-    // log the original recoil atom position as a vacancy site
-    fprintf( vacfile, "%f %f %f %d\n", recoil->pos[0], recoil->pos[1], recoil->pos[2], recoil->z1 );
+  std::ostream &os;
+
+  // ions being removed from lattice sites
+  virtual void vacancyCreation() {
+    os << "V " << *recoil << endl;
+  };
+
+  // ions coming to rest
+  virtual void checkPKAState() {
+    if (pka->state==ionBase::INTERSTITIAL)
+      os << "I " << *pka << endl;
+    else if (pka->state==ionBase::SUBSTITUTIONAL)
+      os << "S " << *pka << endl;
+    else if (pka->state==ionBase::REPLACEMENT)
+      os << "R " << *pka << endl;
   };
 };
+
 
 //
 // Full damage cascade, plus map vaccancy creation
@@ -146,16 +160,25 @@ protected:
 //
 class trimPhononOut : public trimBase {
 public:
-  trimPhononOut( sampleBase *sample_, FILE *phonfile_ ) : phonfile(phonfile_), trimBase( sample_ ) {};
+  trimPhononOut(sampleBase *sample_,  std::ostream &os_) : os(os_), trimBase( sample_ ) {};
 protected:
-  FILE *phonfile;
-  virtual bool followRecoil()
+  std::ostream &os;
+
+  // recoil atom is not leaving its site
+  // (make sure it keeps its binding enrgy and dissipate emeining E)
+  virtual void dissipateRecoilEnergy()
   {
-    // dissipate lattice binding energy where recoil branches off
     double Edep = recoil->e + element->Elbind;
-    fprintf( phonfile, "%f %f %f %f %d %d %e 0\n", Edep, recoil->pos[0], recoil->pos[1], recoil->pos[2], pka->z1, pka->id, pka->t );
-    return (recoil->e > 10.0);
+    os << Edep << ' ' <<  *recoil << endl;
+    simconf->EnucTotal += Edep;
   };
+
+  // dissipate lattice binding energy where recoil branches off
+  virtual bool followRecoil() {
+    os << element->Elbind << ' ' <<  *recoil << endl;
+    simconf->EnucTotal += element->Elbind;
+    return true;
+  }
 };
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef ION_H
 #define ION_H 1
 
+#include <iostream>
+
 struct ionBase {
   // atomic number, mass, and kinetic energy of the ion
   int z1;
@@ -40,6 +42,9 @@ struct ionBase {
   void set_ef();
 };
 
+std::ostream& operator << (std::ostream& os, const ionBase &i); /// Serialize ion into text stream
+
+
 struct ionMDtag : public ionBase {
   // generation after first ion falling into the MD energy gap ( 200eV - 12000eV ) TODO: move to subclass?
   int md;
@@ -48,4 +53,6 @@ struct ionMDtag : public ionBase {
   // overwrite this tor return recoil ion objects of type ionMDtag
   virtual ionBase* spawnRecoil();
 };
+
+std::ostream& operator << (std::ostream& os, const ionMDtag &p); /// Serialize ion into text stream
 #endif

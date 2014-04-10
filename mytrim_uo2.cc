@@ -23,6 +23,10 @@
 #include <config.h>
 #endif
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <queue>
@@ -43,15 +47,19 @@
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 5 ) // 2
-  {
-    fprintf( stderr, "syntax:\n%s basename r Cbfactor Nev\n\nCbfactor=1 => 7e-4 bubbles/nm^3\nNev  number of fission events (two fragemnts each)\n", argv[0] );
+  if( argc != 5 ) {
+    cerr << "syntax:\n"
+         << argv[0] << " basename r Cbfactor Nev\n\n"
+         << "r Bubble radius in Ang\n"
+         << "Cbfactor=1 => 7e-4 bubbles/nm^3\n"
+         << "Nev  number of fission events (two fragemnts each)\n";
     return 1;
   }
 
   // run mode
-  enum RunMode { PLAIN, PHONONS, VACANCIES };
-  RunMode mode = VACANCIES;
+  enum RunMode { PLAIN, PHONONS, DEFECTS };
+  RunMode mode = DEFECTS;
+  //RunMode mode = PHONONS;
 
   // seed random number generator from system entropy pool
   // we internally use the libc random function (not r250c, which is not threadsafe)
@@ -65,23 +73,29 @@ int main(int argc, char *argv[])
   simconf = new simconfType;
 
   // initialize sample structure
-  sampleClusters *sample = new sampleClusters( 400.0, 400.0, 400.0 );
+  sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
 
   // initialize trim engine for the sample
   trimBase *trim;
-  FILE *auxout;
+  ofstream auxout;
+  std::stringstream auxoutname;
   switch (mode) {
     case PLAIN:
       trim = new trimBase(sample);
       break;
+
     case PHONONS:
-      snprintf( fname, 199, "%s.phon", argv[1] );
-      auxout = fopen( fname, "wt" );
-      trim = new trimPhononOut( sample, auxout );
-    case VACANCIES:
-      snprintf( fname, 199, "%s.vac", argv[1] );
-      auxout = fopen( fname, "wt" );
-      trim = new trimVacLog( sample, auxout );
+      auxoutname << argv[1] << ".phonons";
+      auxout.open( auxoutname.str().c_str() );
+      trim = new trimPhononOut(sample, auxout);
+      break;
+
+    case DEFECTS:
+      auxoutname << argv[1] << ".defects";
+      auxout.open( auxoutname.str().c_str() );
+      trim = new trimDefectLog(sample, auxout);
+      break;
+
     default:
       return 1;
   }
@@ -104,7 +118,7 @@ int main(int argc, char *argv[])
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
   //fprintf( stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0 );
-  fprintf( stderr, "adding %d clusters...\n", n_cl );
+  cerr << "adding " << n_cl << " clusters...\n";
 
   // cluster surfaces must be at least 25.0 Ang apart
   sample->addRandomClusters( n_cl, r, 25.0 );
@@ -116,7 +130,7 @@ int main(int argc, char *argv[])
     fprintf( ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i );
   fclose( ccf );
 
-  fprintf( stderr, "sample built.\n" );
+  cerr << "sample built.\n";
   //return 0;
 
   materialBase *material;
@@ -150,10 +164,10 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * pow(r,3.0));
-  printf("N_UO2 = %f\n", N_UO2);
+  cout << "N_UO2 = " << N_UO2 << endl;
 
   double N_gas = sample->cn * material->arho * 4.0/3.0 * M_PI * pow(r,3.0);
-  printf("N_gas = %f (arho=%f)\n", N_gas, material->arho);
+  cout << "N_gas = " << N_gas << " (arho=" << material->arho << ")\n";
 
   // create a FIFO for recoils
   queue<ionBase*> recoils;
@@ -182,7 +196,7 @@ int main(int argc, char *argv[])
   // Nev fission events
   for( int n = 0; n < Nev; n++ )
   {
-    if( n % 10 == 0 ) fprintf( stderr, "event #%d\n", n+1 );
+    if( n % 10 == 0 ) cerr << "event #" << n+1 << "\n";
 
     ff1 = new ionMDtag;
     ff1->gen = 0; // generation (0 = PKA)
@@ -194,7 +208,7 @@ int main(int argc, char *argv[])
     A2 = 235.0 - A1;
     e->setMass(A1);
     Etot = e->x( dr250() );
-    E1 = Etot * A2 / ( A1 + A2 );
+    E1 = Etot * A2 / (A1+A2);
     E2 = Etot - E1;
     Z1 = round( ( A1 * 92.0 ) / 235.0 );
     Z2 = 92 - Z1;
@@ -229,72 +243,85 @@ int main(int argc, char *argv[])
     ff2->set_ef();
     recoils.push( ff2 );
 
-    printf( "A1=%f Z1=%d (%f MeV)\tA2=%f Z2=%d (%f MeV)\n", A1, Z1, E1, A2, Z2, E2 );
+    cout << "A1=" << A1 << " Z1=" << Z1 << " (" << E1 << " MeV)\t"
+         << "A2=" << A1 << " Z2=" << Z2 << " (" << E2 << " MeV)\n";
+
+    // total energy of this fission event
+    double Efiss = ff1->e + ff2->e;
 
     while( !recoils.empty() )
     {
       pka = dynamic_cast<ionMDtag*>(recoils.front());
       recoils.pop();
-      sample->averages( pka );
+      sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
-      if( pka->z1 == gas_z1  )
+      if (pka->z1 == gas_z1)
       {
-	      // mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
-	      if( pka->e > 200 && pka->e < 12000 && pka->md == 0 ) pka->md = 1;
+	      // mark the first recoil that falls into the MD energy gap with 1
+        // (child generations increase the number)
+	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
 
-        if( pka->gen > 0 )
+        if (pka->gen > 0)
         {
           // output energy and recoil generation
           fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md );
         }
 
-        if( pka->tag >= 0 )
+        if (pka->tag >= 0)
         {
-          for( int i = 0; i < 3; i++ )
+          for (int i = 0; i < 3; i++)
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
-            if( sample->bc[i] == sampleBase::PBC ) dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
+
+            if( sample->bc[i] == sampleBase::PBC )
+              dif[i] -= round( dif[i] / sample->w[i] ) * sample->w[i];
+
             pos1[i] = pka->pos[i] + dif[i];
             //printf( "%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i] );
           }
-	  //printf( "\n" );
+	        //printf( "\n" );
         }
       }
 
       // follow this ion's trajectory and store recoils
       // printf( "%f\t%d\n", pka->e, pka->z1 );
-      trim->trim( pka, recoils );
-      if (mode == PHONONS) fprintf( auxout, "%f %f %f %f %d %d %e 1\n", pka->e, pka->pos[0], pka->pos[1], pka->pos[2], pka->z1, pka->id, pka->t );
+      trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
 
       // pka is GAS
-      if( pka->z1 == gas_z1  )
+      if (pka->z1 == gas_z1)
       {
         // output
         //printf( "%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag );
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if( pka->tag >= 0 )
-        {
+        if (pka->tag >= 0) {
           for( int i = 0; i < 3; i++ )
             dif[i] = pos1[i] - pka->pos[i];
-          fprintf( rdist, "%f %d %f %f %f\n", sqrt( v_dot( dif, dif ) ), pka->md, pka->pos[0], pka->pos[1], pka->pos[2] );
+
+          fprintf( rdist, "%f %d %f %f %f\n", sqrt( v_dot( dif, dif ) ),
+                   pka->md, pka->pos[0], pka->pos[1], pka->pos[2] );
         }
       }
 
       // done with this recoil
       delete pka;
-
-      // this should rather be done with spawnRecoil returning flase
-      //if( simconf->primariesOnly ) while( !recoils.empty() ) { delete recoils.front(); recoils.pop(); };
     }
+
+    // check if all energy is accounted for
+    cout << simconf->EelTotal << endl;
+    cout << simconf->EnucTotal << endl;
+    cout << Efiss-(simconf->EelTotal+simconf->EnucTotal) << endl;
+    simconf->EelTotal = 0.0;
+    simconf->EnucTotal = 0.0;
   }
   fclose(rdist);
   fclose(erec);
 
-  if (mode != PLAIN) fclose(auxout);
+
+  if (mode != PLAIN) auxout.close();
 
   return EXIT_SUCCESS;
 }
