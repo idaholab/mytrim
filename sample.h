@@ -7,8 +7,6 @@
 #include "ion.h"
 #include "material.h"
 
-using namespace std;
-
 
 struct sampleBase {
   enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades

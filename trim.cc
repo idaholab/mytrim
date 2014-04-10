@@ -1,6 +1,3 @@
-#include <math.h>
-#include <stdio.h>
-
 #include "trim.h"
 
 #include "functions.h"

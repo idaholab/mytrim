@@ -37,20 +37,6 @@ protected:
   virtual void dissipateRecoilEnergy() {};
 };
 
-// //
-// // Do a breadth first rather than depth first recoil simulation
-// //
-// class trimBreadthFirst : public trimBase {
-// public:
-//   trimBreadthFirst( sampleBase *sample_ ) : trimBase( sample_ ) {};
-// protected:
-//   virtual bool followRecoil() {
-//     recoil_queue_ptr->push(pka);
-//     terminate = true;
-//     return recoil->e > 12.0;
-//   };
-// };
-
 
 //
 // Only follow the primary knock ons (i.e. fission fragments)
@@ -95,7 +81,6 @@ class trimRecoils : public trimPrimaries {
 };
 
 
-
 //
 // store a history of all recoils
 //
@@ -114,9 +99,8 @@ protected:
 };
 
 
-
 //
-// Full damage cascade, plus log vaccancy creation
+// Log vaccancy/interstitial creation
 //
 class trimDefectLog : public trimBase {
 public:
@@ -142,7 +126,7 @@ protected:
 
 
 //
-// Full damage cascade, plus map vaccancy creation
+// Map vaccancy creation
 //
 class trimVacMap : public trimBase {
   static const int mx = 20, my = 20;

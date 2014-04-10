@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
+#include <iostream>
 
 #include "config.h"
 #include "simconf.h"
@@ -36,14 +37,10 @@ simconfType::simconfType( double _alfa )
 
 void simconfType::read_snuc()
 {
-  char buf[200], fname[500];
-
-  //snprintf( fname, 500, "%s/SNUC03.dat", getenv("HOME") );
-  snprintf( fname, 500, "%s/SNUC03.dat", DATA_DIR );
-  FILE *sf = fopen( fname, "rt" );
+  FILE *sf = fopen( DATA_DIR"/SNUC03.dat", "rt" );
   if( sf == 0 )
   {
-    fprintf( stderr, "unable to open %s\n", fname );
+    std::cerr << "Unable to open " << DATA_DIR"/SNUC03.dat" << std::endl;
     exit(1);
   }
   for( int i = 0; i < 92; i++ )
@@ -59,12 +56,10 @@ void simconfType::read_snuc()
 
 void simconfType::read_scoef()
 {
-  char buf[2001], fname[500];
+  char buf[2001];
   FILE *sf;
 
-  //snprintf( fname, 500, "%s/SCOEF.95A", getenv("HOME") );
-  snprintf( fname, 500, "%s/SCOEF.95A", DATA_DIR );
-  sf = fopen( fname, "rt" );
+  sf = fopen( DATA_DIR"/SCOEF.95A", "rt" );
   fgets( buf, 2000, sf ); // header
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
@@ -74,24 +69,18 @@ void simconfType::read_scoef()
       &scoef[i].rho, &scoef[i].atrho, &scoef[i].vfermi, &scoef[i].heat,
       &pcoef[i][0], &pcoef[i][1], &pcoef[i][2], &pcoef[i][3],
       &pcoef[i][4], &pcoef[i][5], &pcoef[i][6], &pcoef[i][7] );
-    //printf( "%f %f\n", scoef[i].mm1, pcoef[i][7] );
   }
   fclose( sf );
 
-  //snprintf( fname, 500, "%s/SLFCTR.dat", getenv("HOME") );
-  snprintf( fname, 500, "%s/SLFCTR.dat", DATA_DIR );
-  sf = fopen( fname, "rt" );
+  sf = fopen( DATA_DIR"/SLFCTR.dat", "rt" );
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
     fscanf( sf, "%*d %lf\n", &scoef[i].lfctr );
   fclose( sf );
 
-  snprintf( fname, 500, "%s/ELNAME.dat", DATA_DIR );
-  sf = fopen( fname, "rt" );
-  int z;
+  sf = fopen( DATA_DIR"/ELNAME.dat", "rt" );
   for( int i = 0; i < 92; i++ )
-  {
     fscanf( sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name );
-  }
+
   fclose( sf );
 }
