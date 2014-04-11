@@ -58,8 +58,8 @@ int main(int argc, char *argv[])
 
   // run mode
   enum RunMode { PLAIN, PHONONS, DEFECTS };
-  RunMode mode = DEFECTS;
-  //RunMode mode = PHONONS;
+  //RunMode mode = DEFECTS;
+  RunMode mode = PHONONS;
 
   // seed random number generator from system entropy pool
   // we internally use the libc random function (not r250c, which is not threadsafe)

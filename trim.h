@@ -168,6 +168,15 @@ public:
 protected:
   std::ostream &os;
 
+  // residual energy of pka coming to a stop
+  virtual void checkPKAState() {
+    if (pka->state == ionBase::MOVING ||
+        pka->state == ionBase::LOST ) return;
+
+    os << pka->e << ' ' <<  *pka << endl;
+    simconf->EnucTotal += pka->e;
+  }
+
   // recoil atom is not leaving its site
   // (make sure it keeps its binding enrgy and dissipate emeining E)
   virtual void dissipateRecoilEnergy()
