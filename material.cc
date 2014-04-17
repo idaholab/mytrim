@@ -55,8 +55,8 @@ void materialBase::average( const ionBase *pka )
   {
     element[i]->my = pka->m1 / element[i]->m;
     element[i]->ec = 4.0 * element[i]->my / pow( 1.0 + element[i]->my, 2.0 );
-    element[i]->ai = .5292 * .8853 / ( pow( double(pka->z1), 0.23 ) + pow( element[i]->m, 0.23 ) );
-    //ai = .5292 * .8853 / pow( pow( double(pka.z1), 0.5 ) + pow( element[i].m, 0.5 ), 2.0/3.0 );
+    element[i]->ai = .5292 * .8853 / ( pow( double(pka->z1), 0.23 ) + pow( element[i]->z, 0.23 ) );
+    //ai = .5292 * .8853 / pow( pow( double(pka.z1), 0.5 ) + pow( element[i].z, 0.5 ), 2.0/3.0 );
     element[i]->fi = element[i]->ai * element[i]->m /
                      ( double(pka->z1) * double(element[i]->z) * 14.4 * ( pka->m1 + element[i]->m ) );
   }
