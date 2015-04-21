@@ -1,5 +1,5 @@
 #ifndef MATERIAL_H
-#define MATERIAL_H 1
+#define MATERIAL_H
 
 #include <vector>
 #include <stdio.h>
@@ -7,7 +7,7 @@
 #include "ion.h"
 #include "element.h"
 
-using namespace std;
+namespace MyTRIM_NS {
 
 struct materialBase {
   double rho;
@@ -20,7 +20,7 @@ struct materialBase {
   int tag;
   bool dirty;
 
-  vector<elementBase*> element;
+  std::vector<elementBase*> element;
 
   //layerType() { semax = 0.0; sem = 0.0; sez = 0; }
   materialBase( double _rho ) : rho(_rho), tag(-1) { dirty = true; };
@@ -28,7 +28,7 @@ struct materialBase {
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
 
-  // compute pka dependent averages 
+  // compute pka dependent averages
   void average( const ionBase *pka );
   double getrstop( const ionBase *pka );
 
@@ -36,5 +36,7 @@ protected:
   double rpstop( int z2, double e );
   double rstop( const ionBase *ion, int z2 );
 };
+
+}
 
 #endif

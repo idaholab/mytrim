@@ -1,7 +1,9 @@
 #ifndef ION_H
-#define ION_H 1
+#define ION_H
 
 #include <iostream>
+
+namespace MyTRIM_NS {
 
 struct ionBase {
   // atomic number, mass, and kinetic energy of the ion
@@ -50,10 +52,12 @@ struct ionMDtag : public ionBase {
   // generation after first ion falling into the MD energy gap ( 200eV - 12000eV ) TODO: move to subclass?
   int md;
 
-
   // overwrite this tor return recoil ion objects of type ionMDtag
   virtual ionBase* spawnRecoil();
 };
 
 std::ostream& operator << (std::ostream& os, const ionMDtag &p); /// Serialize ion into text stream
+
+}
+
 #endif

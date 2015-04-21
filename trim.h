@@ -1,5 +1,5 @@
 #ifndef TRIM_H
-#define TRIM_H 1
+#define TRIM_H
 
 #include <vector>
 #include <queue>
@@ -9,9 +9,11 @@
 #include "sample.h"
 #include "simconf.h"
 
+namespace MyTRIM_NS {
+
 class trimBase {
 public:
-  void trim( ionBase *pka, queue<ionBase*> &recoils );
+  void trim( ionBase *pka, std::queue<ionBase*> &recoils );
   trimBase( sampleBase *sample_ ) : sample( sample_ ) {};
 
 protected:
@@ -19,7 +21,7 @@ protected:
   ionBase *pka, *recoil;
   materialBase *material;
   elementBase *element;
-  queue<ionBase*> *recoil_queue_ptr;
+  std::queue<ionBase*> *recoil_queue_ptr;
   bool terminate;
 
   // by default only follow recoils with E > 12eV
@@ -87,7 +89,7 @@ class trimRecoils : public trimPrimaries {
 class trimHistory : public trimBase {
 public:
   trimHistory( sampleBase *sample_ ) : trimBase( sample_ ) {};
-  vector<double> pos_hist[3];
+  std::vector<double> pos_hist[3];
 protected:
   virtual bool followRecoil()
   {
@@ -110,17 +112,17 @@ protected:
 
   // ions being removed from lattice sites
   virtual void vacancyCreation() {
-    os << "V " << *recoil << endl;
+    os << "V " << *recoil << std::endl;
   };
 
   // ions coming to rest
   virtual void checkPKAState() {
     if (pka->state==ionBase::INTERSTITIAL)
-      os << "I " << *pka << endl;
+      os << "I " << *pka << std::endl;
     else if (pka->state==ionBase::SUBSTITUTIONAL)
-      os << "S " << *pka << endl;
+      os << "S " << *pka << std::endl;
     else if (pka->state==ionBase::REPLACEMENT)
-      os << "R " << *pka << endl;
+      os << "R " << *pka << std::endl;
   };
 };
 
@@ -173,7 +175,7 @@ protected:
     if (pka->state == ionBase::MOVING ||
         pka->state == ionBase::LOST ) return;
 
-    os << pka->e << ' ' <<  *pka << endl;
+    os << pka->e << ' ' <<  *pka << std::endl;
     simconf->EnucTotal += pka->e;
   }
 
@@ -182,16 +184,18 @@ protected:
   virtual void dissipateRecoilEnergy()
   {
     double Edep = recoil->e + element->Elbind;
-    os << Edep << ' ' <<  *recoil << endl;
+    os << Edep << ' ' <<  *recoil << std::endl;
     simconf->EnucTotal += Edep;
   };
 
   // dissipate lattice binding energy where recoil branches off
   virtual bool followRecoil() {
-    os << element->Elbind << ' ' <<  *recoil << endl;
+    os << element->Elbind << ' ' <<  *recoil << std::endl;
     simconf->EnucTotal += element->Elbind;
     return true;
   }
 };
+
+}
 
 #endif

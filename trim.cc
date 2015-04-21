@@ -3,6 +3,8 @@
 #include "functions.h"
 #include <iostream>
 
+using namespace MyTRIM_NS;
+
 //#define RANGECORRECT2
 
 //
@@ -10,7 +12,7 @@
 //
 
 // does a single ion cascade
-void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
+void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
 {
   // simconf should already be initialized
   pka = pka_;
@@ -64,11 +66,11 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
       range = sample->rangeMaterial( pka->pos, pka->dir );
       if (range<ls)
       {
-        /* cout << "range=" << range << " ls=" << ls
-              << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << endl;
-        cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << endl;
-        cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << endl;
-        cout << "CC " << endl;*/
+        /* std::cout << "range=" << range << " ls=" << ls
+              << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << std::endl;
+        std::cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << std::endl;
+        std::cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << std::endl;
+        std::cout << "CC " << std::endl;*/
 
         ls = range;
 
@@ -193,7 +195,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
       // sanity check
       if (den > 100.0)
-        cerr << " electronic energy loss stopped the ion. Broken recoil!!\n";
+        std::cerr << " electronic energy loss stopped the ion. Broken recoil!!\n";
     }
 
     // electronic energy loss
@@ -272,7 +274,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
           // queue recoil for processing
           recoils.push(recoil);
           if( simconf->fullTraj )
-            cout << "spawn " << recoil->id << ' ' << pka->id << endl;
+            std::cout << "spawn " << recoil->id << ' ' << pka->id << std::endl;
         } else {
           // this recoil could have left its lattice site, but we chose
           // not to follow it (simulation of PKAs only)
@@ -312,7 +314,7 @@ void trimBase::trim( ionBase *pka_, queue<ionBase*> &recoils )
 
     // output the full trajectory (state is not output by the ion object)
     if (simconf->fullTraj)
-      cout << pka->state << ' ' << *pka << endl;
+      std::cout << pka->state << ' ' << *pka << std::endl;
 
   } while (pka->state == ionBase::MOVING);
 }

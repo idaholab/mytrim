@@ -5,6 +5,7 @@
 
 #include "sample_wire.h"
 
+using namespace MyTRIM_NS;
 
 sampleWire::sampleWire( double x, double y, double z )  : sampleBase( x, y, z)
 {
@@ -13,7 +14,7 @@ sampleWire::sampleWire( double x, double y, double z )  : sampleBase( x, y, z)
 }
 
 // look if we are within dr of the wire axis
-materialBase* sampleWire::lookupMaterial( double* pos ) 
+materialBase* sampleWire::lookupMaterial( double* pos )
 {
   double x = ( pos[0] / w[0] ) * 2.0 - 1.0;
   double y = ( pos[1] / w[1] ) * 2.0 - 1.0;

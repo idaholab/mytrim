@@ -6,7 +6,11 @@
 #include "config.h"
 #include "simconf.h"
 
-simconfType *simconf;
+namespace MyTRIM_NS {
+  simconfType *simconf;
+}
+
+using namespace MyTRIM_NS;
 
 simconfType::simconfType( double _alfa )
 {

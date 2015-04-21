@@ -1,6 +1,8 @@
 #include "sample_layers.h"
 #include <cmath>
 
+using namespace MyTRIM_NS;
+
 int sampleLayers::lookupLayer( double* pos )
 {
   int i;
@@ -34,12 +36,12 @@ double sampleLayers::rangeMaterial( double* pos, double* dir )
   // parallel to layer interfaces
   if( dir[0] == 0.0 ) return unrestricted;
 
-  double epsilon = fabs( 1.0e-10 / dir[0] );
+  double epsilon = std::abs( 1.0e-10 / dir[0] );
 
   // outside film
   if( pos[0] < 0.0 )
   {
-    if( dir[0] < 0.0 ) 
+    if( dir[0] < 0.0 )
       return unrestricted;
     else
       return -pos[0]/dir[0] + epsilon;
@@ -59,7 +61,7 @@ double sampleLayers::rangeMaterial( double* pos, double* dir )
   }
 
   // not returned yet, means we are beyond the last layer
-  if( dir[0] > 0.0 ) 
+  if( dir[0] > 0.0 )
     return unrestricted;
   else
     return (d-pos[0])/dir[0] + epsilon;

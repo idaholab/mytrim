@@ -1,5 +1,7 @@
 #ifndef ELEMENT_H
-#define ELEMENT_H 1
+#define ELEMENT_H
+
+namespace MyTRIM_NS {
 
 struct elementBase {
   int z;
@@ -13,5 +15,6 @@ struct elementBase {
   elementBase();
 };
 
+}
 
 #endif

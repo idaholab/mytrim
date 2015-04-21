@@ -1,7 +1,9 @@
 #ifndef SAMPLE_CLUSTERS_H
-#define SAMPLE_CLUSTERS_H 1
+#define SAMPLE_CLUSTERS_H
 
 #include "sample.h"
+
+namespace MyTRIM_NS {
 
 struct sampleClusters : sampleBase {
 
@@ -25,5 +27,7 @@ struct sampleClusters : sampleBase {
 protected:
   void reallocClusters( int n );
 };
+
+}
 
 #endif

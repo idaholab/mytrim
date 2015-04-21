@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cmath>
 
+using namespace MyTRIM_NS;
+
 void sampleDynamic::averages( const ionBase *_pka )
 {
   // remember pka, we do not calculate averages right now, but on demand!
@@ -16,16 +18,16 @@ void sampleDynamic::averages( const ionBase *_pka )
 
 materialBase*  sampleDynamic::lookupMaterial( double* pos )
 {
-  //cout << "lookuplayer" << endl;
+  //std::cout << "lookuplayer" << std::endl;
   materialBase* m = material[lookupLayer(pos)];
-  //cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << endl;
+  //std::cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << std::endl;
 
   // on-demand update
   if( m->dirty )
   {
-    //cout << "on demand aver" << endl;
+    //std::cout << "on demand aver" << std::endl;
     m->average( pka );
-    //cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << endl;
+    //std::cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << std::endl;
   }
   return m;
 }
@@ -67,7 +69,7 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   // change stoichiometry (arho 1/ang^3 * ang^3 )
   if( material[layer]->element[ne]->t*nl + double(n) < 0.0 )
   {
-    cout << "Crap, t*nl=" << material[layer]->element[ne]->t*nl << ", but n=" << n << endl;
+    std::cout << "Crap, t*nl=" << material[layer]->element[ne]->t*nl << ", but n=" << n << std::endl;
     material[layer]->element[ne]->t = 0.0;
   }
   else

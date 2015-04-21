@@ -4,6 +4,8 @@
 #include <cmath>
 #include <stdlib.h>
 
+namespace MyTRIM_NS {
+
 inline void v_cross( const double *a1, const double *a2, double *b )
 {
     for( int i = 0; i < 3; i++ ) b[i] = a1[(i+1)%3] * a2[(i+2)%3] - a1[(i+2)%3] * a2[(i+1)%3];
@@ -31,5 +33,6 @@ const double drm = double(RAND_MAX)+1.0;
 inline double dr250() { return double(rand())/drm; };
 inline void r250_init( int s ) { srand(s); }
 
-#endif
+}
 
+#endif

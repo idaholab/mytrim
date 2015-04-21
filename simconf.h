@@ -1,5 +1,7 @@
 #ifndef SIMCONF_H
-#define SIMCONF_H 1
+#define SIMCONF_H
+
+namespace MyTRIM_NS {
 
 // ZBL coefficients a,b,c,d for all element pairs from Z=1..92
 struct scoefLine {
@@ -32,5 +34,7 @@ private:
 };
 
 extern simconfType *simconf;
+
+}
 
 #endif

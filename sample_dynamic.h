@@ -1,10 +1,11 @@
 #ifndef SAMPLE_DYNAMIC_H
-#define SAMPLE_DYNAMIC_H 1
+#define SAMPLE_DYNAMIC_H
 
 #include "sample_layers.h"
 #include "material.h"
 #include <vector>
-using namespace std;
+
+namespace MyTRIM_NS {
 
 struct sampleDynamic : sampleLayers {
   const ionBase *pka;
@@ -16,5 +17,7 @@ struct sampleDynamic : sampleLayers {
 
   virtual void addAtomsToLayer( int layer, int n, int Z );
 };
+
+}
 
 #endif

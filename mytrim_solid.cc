@@ -37,6 +37,8 @@
 
 #include "functions.h"
 
+using namespace MyTRIM_NS;
+
 int main(int argc, char *argv[])
 {
   char fname[200];
@@ -101,7 +103,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   // create a FIFO for recoils
-  queue<ionBase*> recoils;
+  std::queue<ionBase*> recoils;
 
   double norm;
   double jmp = 2.7; // diffusion jump distance

@@ -1,5 +1,5 @@
 #ifndef SAMPLE_H
-#define SAMPLE_H 1
+#define SAMPLE_H
 
 #include <vector>
 #include <queue>
@@ -7,11 +7,12 @@
 #include "ion.h"
 #include "material.h"
 
+namespace MyTRIM_NS {
 
 struct sampleBase {
   enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades
 
-  vector<materialBase*> material;
+  std::vector<materialBase*> material;
   double w[3]; // simulation volume
   sampleBoundary bc[3]; // boundary conditions
 
@@ -21,5 +22,7 @@ struct sampleBase {
 
   sampleBase( double x = 10000.0, double y = 10000.0, double z = 10000.0 );
 };
+
+}
 
 #endif

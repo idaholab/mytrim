@@ -4,11 +4,12 @@
 #endif
 
 #include "sample_clusters.h"
-
 #include "functions.h"
 
+using namespace MyTRIM_NS;
+
 sampleClusters::sampleClusters( double x, double y, double z )  : sampleBase( x, y, z)
-{ 
+{
   sh = 0;
   cl = 0; cn = 0; cnm = 0;
   for( int i = 0; i < 4; i++ ) c[i] = 0;
@@ -16,7 +17,7 @@ sampleClusters::sampleClusters( double x, double y, double z )  : sampleBase( x,
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-materialBase* sampleClusters::lookupMaterial( double* pos ) 
+materialBase* sampleClusters::lookupMaterial( double* pos )
 {
   int l = lookupCluster( pos, 0.0 );
 
@@ -29,14 +30,14 @@ materialBase* sampleClusters::lookupMaterial( double* pos )
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-int sampleClusters::lookupCluster( double* pos, double dr ) 
+int sampleClusters::lookupCluster( double* pos, double dr )
 {
   double dif[3], r2;
   int k[3], k1[3], k2[3], j[3], l, ks;
 
   // spatial hash center and span
-  // if pos>w || pos<0 drop out early when bc[] = CUT or return material[0] 
-  for( int i = 0; i<3; i++ ) 
+  // if pos>w || pos<0 drop out early when bc[] = CUT or return material[0]
+  for( int i = 0; i<3; i++ )
   {
     k[i] = floor( ( pos[i] * kn[i] ) / w[i] );
     if( pos[i] < 0.0 || pos[i] >= w[i] )
@@ -75,8 +76,8 @@ int sampleClusters::lookupCluster( double* pos, double dr )
         {
           l = sh[l];
           //printf("entering while loop\n" );
-          while( l >= 0 ) 
-          { 
+          while( l >= 0 )
+          {
             for( int i = 0; i<3; i++ )
             {
               dif[i] = pos[i] - c[i][l];
@@ -101,10 +102,10 @@ void sampleClusters::initSpatialhash( int x, int y, int z )
   kn[0] = x; kn[1] = y; kn[2] = z;
   sh = (int*)malloc( sizeof(int) * x*y*z );
   clearSpatialHash();
-  
+
   // calculate half the spatial diagonal of a hash block
   sd = 0.0;
-  for( int i = 0; i < 3; i++ ) 
+  for( int i = 0; i < 3; i++ )
   {
     kd[i] = w[i] / double( kn[i] );
     sd += kd[i];
@@ -147,7 +148,7 @@ void sampleClusters::addCluster( double x, double y, double z, double r )
   if( cn >= cnm ) reallocClusters( cnm + cnm/10 + 10 ); // get 10% more slots plus 10
   c[0][cn] = x; c[1][cn] = y; c[2][cn] = z; c[3][cn] = r;
 
-  for( int i = 0; i < 3; i++ ) 
+  for( int i = 0; i < 3; i++ )
   {
     k[i] = int( floor( ( c[i][cn] * kn[i] ) / w[i] ) ) % kn[i];
     k[i] = (k[i] < 0 ) ? k[i] + kn[i] : k[i];
@@ -192,4 +193,3 @@ void sampleClusters::addRandomClusters( int n, double r, double dr )
     if( i+1 % 10000 == 0 ) fprintf( stderr, " %d (%d) clusters added\n", i+1, cn );
   }
 }
-

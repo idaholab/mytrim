@@ -2,6 +2,8 @@
 
 #include "ion.h"
 
+using namespace MyTRIM_NS;
+
 ionBase::ionBase() :
   state(MOVING),
   ef(3.0), // final energy
@@ -54,15 +56,16 @@ ionBase* ionBase::spawnRecoil()
 }
 
 // output operator (implement for derived classes if necessary)
-std::ostream& operator << (std::ostream& os, const ionBase &i)
-{
-  os << i.pos[0] << ' ' << i.pos[1] << ' ' << i.pos[2] << ' '
-     << i.z1 << ' ' << i.m1 << ' ' << i.e << ' '
-     << i.t << ' '
-     << i.id << ' ' << i.gen << ' ' << i.tag << ' ';
-  return os;
+namespace MyTRIM_NS {
+  std::ostream& operator << (std::ostream& os, const ionBase &i)
+  {
+    os << i.pos[0] << ' ' << i.pos[1] << ' ' << i.pos[2] << ' '
+       << i.z1 << ' ' << i.m1 << ' ' << i.e << ' '
+       << i.t << ' '
+       << i.id << ' ' << i.gen << ' ' << i.tag << ' ';
+    return os;
+  }
 }
-
 
 
 ionBase* ionMDtag::spawnRecoil()
@@ -72,9 +75,11 @@ ionBase* ionMDtag::spawnRecoil()
   return recoil;
 }
 
-// leverage the parent class output and augment it
-std::ostream& operator << (std::ostream& os, const ionMDtag &i)
-{
-  os << (static_cast<const ionBase &>(i)) <<  i.md << ' ';
-  return os;
+namespace MyTRIM_NS {
+  // leverage the parent class output and augment it
+  std::ostream& operator << (std::ostream& os, const ionMDtag &i)
+  {
+    os << (static_cast<const ionBase &>(i)) <<  i.md << ' ';
+    return os;
+  }
 }

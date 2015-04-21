@@ -1,7 +1,9 @@
 #ifndef INVERT_H
-#define INVERT_H 1
+#define INVERT_H
 
 #include <math.h>
+
+namespace MyTRIM_NS {
 
 class inverter
 {
@@ -36,5 +38,7 @@ public:
     maxf = f( maxx );
   }
 };
+
+}
 
 #endif

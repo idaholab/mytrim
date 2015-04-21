@@ -44,15 +44,17 @@
 
 #include "functions.h"
 
+using namespace MyTRIM_NS;
+
 int main(int argc, char *argv[])
 {
   char fname[200];
   if( argc != 5 ) {
-    cerr << "syntax:\n"
-         << argv[0] << " basename r Cbfactor Nev\n\n"
-         << "r Bubble radius in Ang\n"
-         << "Cbfactor=1 => 7e-4 bubbles/nm^3\n"
-         << "Nev  number of fission events (two fragemnts each)\n";
+    std::cerr << "syntax:\n"
+              << argv[0] << " basename r Cbfactor Nev\n\n"
+              << "r Bubble radius in Ang\n"
+              << "Cbfactor=1 => 7e-4 bubbles/nm^3\n"
+              << "Nev  number of fission events (two fragemnts each)\n";
     return 1;
   }
 
@@ -77,7 +79,7 @@ int main(int argc, char *argv[])
 
   // initialize trim engine for the sample
   trimBase *trim;
-  ofstream auxout;
+  std::ofstream auxout;
   std::stringstream auxoutname;
   switch (mode) {
     case PLAIN:
@@ -118,7 +120,7 @@ int main(int argc, char *argv[])
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
   //fprintf( stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0 );
-  cerr << "adding " << n_cl << " clusters...\n";
+  std::cerr << "adding " << n_cl << " clusters...\n";
 
   // cluster surfaces must be at least 25.0 Ang apart
   sample->addRandomClusters( n_cl, r, 25.0 );
@@ -130,7 +132,7 @@ int main(int argc, char *argv[])
     fprintf( ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i );
   fclose( ccf );
 
-  cerr << "sample built.\n";
+  std::cerr << "sample built.\n";
   //return 0;
 
   materialBase *material;
@@ -164,13 +166,13 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * pow(r,3.0));
-  cout << "N_UO2 = " << N_UO2 << endl;
+  std::cout << "N_UO2 = " << N_UO2 << std::endl;
 
   double N_gas = sample->cn * material->arho * 4.0/3.0 * M_PI * pow(r,3.0);
-  cout << "N_gas = " << N_gas << " (arho=" << material->arho << ")\n";
+  std::cout << "N_gas = " << N_gas << " (arho=" << material->arho << ")\n";
 
   // create a FIFO for recoils
-  queue<ionBase*> recoils;
+  std::queue<ionBase*> recoils;
 
   double norm;
   double jmp = 2.7; // diffusion jump distance
@@ -196,7 +198,7 @@ int main(int argc, char *argv[])
   // Nev fission events
   for( int n = 0; n < Nev; n++ )
   {
-    if( n % 10 == 0 ) cerr << "event #" << n+1 << "\n";
+    if( n % 10 == 0 ) std::cerr << "event #" << n+1 << "\n";
 
     ff1 = new ionMDtag;
     ff1->gen = 0; // generation (0 = PKA)
@@ -243,8 +245,8 @@ int main(int argc, char *argv[])
     ff2->set_ef();
     recoils.push( ff2 );
 
-    cout << "A1=" << A1 << " Z1=" << Z1 << " (" << E1 << " MeV)\t"
-         << "A2=" << A1 << " Z2=" << Z2 << " (" << E2 << " MeV)\n";
+    std::cout << "A1=" << A1 << " Z1=" << Z1 << " (" << E1 << " MeV)\t"
+              << "A2=" << A1 << " Z2=" << Z2 << " (" << E2 << " MeV)\n";
 
     // total energy of this fission event
     double Efiss = ff1->e + ff2->e;
@@ -311,9 +313,9 @@ int main(int argc, char *argv[])
     }
 
     // check if all energy is accounted for
-    cout << simconf->EelTotal << endl;
-    cout << simconf->EnucTotal << endl;
-    cout << Efiss-(simconf->EelTotal+simconf->EnucTotal) << endl;
+    std::cout << simconf->EelTotal << std::endl;
+    std::cout << simconf->EnucTotal << std::endl;
+    std::cout << Efiss-(simconf->EelTotal+simconf->EnucTotal) << std::endl;
     simconf->EelTotal = 0.0;
     simconf->EnucTotal = 0.0;
   }
