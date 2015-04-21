@@ -29,7 +29,6 @@
 #include <iostream>
 #include <string>
 #include <limits>
-using namespace std;
 
 #include "simconf.h"
 #include "element.h"
@@ -47,7 +46,7 @@ int main(int argc, char *argv[])
   char fname[200];
   if( argc != 2 ) // 2
   {
-    cerr << "syntax:\n" << argv[0] << " basename" << endl;
+    std::cerr << "syntax:\n" << argv[0] << " basename" << std::endl;
     return 1;
   }
 
@@ -67,9 +66,9 @@ int main(int argc, char *argv[])
 
   // initialize sample structure
   double sx, sy, sz;
-  cin >> sx >> sy >> sz;
-  cin.ignore( numeric_limits<streamsize>::max(), '\n' );
-  cout << "SS " << sx << ' ' << sy << ' ' << sz << endl;
+  std::cin >> sx >> sy >> sz;
+  std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+  std::cout << "SS " << sx << ' ' << sy << ' ' << sz << std::endl;
 
   sampleDynamic *sample = new sampleDynamic( sx, sy, sz );
   trimBase *trim = new trimBase( sample );
@@ -77,33 +76,33 @@ int main(int argc, char *argv[])
   // Read Materials description from stdin
   int nlayer;
   double lthick, lrho, nelem;
-  string lename;
-  cin >> nlayer;
-  cin.ignore( numeric_limits<streamsize>::max(), '\n' );
-  cout << "n_layers=" << nlayer << endl;
+  std::string lename;
+  std::cin >> nlayer;
+  std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+  std::cout << "n_layers=" << nlayer << std::endl;
 
   materialBase *material;
   elementBase *element;
 
   for( int i = 0; i < nlayer; i++ )
   {
-    cin >> lename >> lthick >> lrho >> nelem;
-    cin.ignore( numeric_limits<streamsize>::max(), '\n');
-    cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
-         << lrho << "g/ccm  n_elements=" << nelem << endl;
+    std::cin >> lename >> lthick >> lrho >> nelem;
+    std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
+         << lrho << "g/ccm  n_elements=" << nelem << std::endl;
 
     material = new materialBase( lrho ); // rho
 
     for( int j = 0; j < nelem; j++ )
     {
       element = new elementBase;
-      cin >> lename >> element->z >> element->m >> element->t;
-      cin.ignore( numeric_limits<streamsize>::max(), '\n');
-      cout << "  Element: " << lename << "  Z=" << element->z
-           << "  m=" << element->m << "  fraction=" << element->t << endl;
+      std::cin >> lename >> element->z >> element->m >> element->t;
+      std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "  Element: " << lename << "  Z=" << element->z
+           << "  m=" << element->m << "  fraction=" << element->t << std::endl;
       material->element.push_back( element );
     }
-    cout << material << endl;
+    std::cout << material << std::endl;
 
     material->prepare(); // all elements added
     sample->material.push_back( material ); // add material to sample
@@ -207,14 +206,14 @@ int main(int argc, char *argv[])
 
   for( int i = 0; i < sample->material.size(); i++ )
   {
-    cout << sample->layerThickness[i] << ' ';
+    std::cout << sample->layerThickness[i] << ' ';
     for( int j = 0; j < sample->material[i]->element.size(); j++ )
     {
-      cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' ';
+      std::cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' ';
     }
-    cout << endl;
+    std::cout << std::endl;
   }
 
-  cout << "n=" << nrec << " sum_r2=" << sum_r2 << endl;
+  std::cout << "n=" << nrec << " sum_r2=" << sum_r2 << std::endl;
   return EXIT_SUCCESS;
 }

@@ -13,7 +13,7 @@ double inverter::x( double f1 )
   for( int i = 0; i < 32; i++ )
   {
     f2 = f(x1) / maxf;
-    if( fabs( f2 - f1 ) <= tol ) break;
+    if( std::abs( f2 - f1 ) <= tol ) break;
     if( f2 > f1 )
       x1 -= w;
     else
@@ -38,5 +38,5 @@ double massInverter::f( double x )
 double energyInverter::f( double x )
 {
   double x1 = x / ( 1.0 - A / 234.0 );
-  return ( -0.00014122 + (0.00014122 -7.12299E-7 * x1 ) * exp(0.0886603 * x1) ) / 127.216;
+  return ( -0.00014122 + (0.00014122 -7.12299E-7 * x1 ) * std::exp(0.0886603 * x1) ) / 127.216;
 }

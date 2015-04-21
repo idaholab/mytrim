@@ -167,7 +167,7 @@ void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
         fr1 = - b*b / ( r*r ) + ( v + v1 * r ) / eps - 1.0;
         q = fr / fr1;
         r -= q;
-      } while (fabs(q/r) > 0.001); // [TRI03110]
+      } while (std::abs(q/r) > 0.001); // [TRI03110]
 
       roc = -2.0 * ( eps - v ) / v1;
       sqe = sqrtf( eps );

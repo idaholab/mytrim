@@ -41,8 +41,6 @@
 
 #include "functions.h"
 
-using namespace std;
-
 using namespace MyTRIM_NS;
 
 int main(int argc, char *argv[])
@@ -50,7 +48,7 @@ int main(int argc, char *argv[])
   char fname[200];
   if( argc != 8 )
   {
-    cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << endl;
+    std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << std::endl;
     return 1;
   }
 
@@ -106,7 +104,7 @@ int main(int argc, char *argv[])
 
     // 1cm^2 = 1e16 Ang**2, 1Ang^2 = 1e-16cm^2
     ion_count[s] = ion_dose[s] * A * 1.0e-16 * mult;
-    cerr << "Ion " << s << ' ' << ion_count[s] << endl;
+    std::cerr << "Ion " << s << ' ' << ion_count[s] << std::endl;
   }
 
   // initialize trim engine for the sample
@@ -174,14 +172,14 @@ int main(int argc, char *argv[])
 
   // xyz data
   int xyz_lines = 0;
-  stringstream xyz_data;
+  std::stringstream xyz_data;
 
   for( int s = 0; s < nstep; ++s )
   {
     for( int n = 0; n < ion_count[s]; ++n )
     {
       if( n % 10000 == 0 )
-        cerr << "pka #" << n+1 << endl;
+        std::cerr << "pka #" << n+1 << std::endl;
 
       // generate new PKA from prototype ion
       pka = new ionBase( ion_prototype[s] );
@@ -242,7 +240,7 @@ int main(int argc, char *argv[])
           } while( sample->lookupMaterial(pka->pos ) == 0 );
         }
       }
-      //cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << endl;
+      //cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << std::endl;
       //continue;
 
       pka->set_ef();
@@ -275,7 +273,7 @@ int main(int argc, char *argv[])
             if( xyz_out )
             {
               xyz_data << simconf->scoef[pka->z1-1].sym << ' '
-                      << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << endl;
+                      << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << std::endl;
               xyz_lines++;
             }
 
@@ -293,22 +291,22 @@ int main(int argc, char *argv[])
   // write xyz file
   if( xyz_out )
   {
-    stringstream xyz_name;
+    std::stringstream xyz_name;
     xyz_name << argv[1] << ".xyz";
-    ofstream xyz( xyz_name.str().c_str() );
-    xyz << xyz_lines << endl << endl << xyz_data.str();
+    std::ofstream xyz( xyz_name.str().c_str() );
+    xyz << xyz_lines << std::endl << std::endl << xyz_data.str();
     xyz.close();
   }
 
   // write lbins file (atoms per nm^3)
   if( ldat_out )
   {
-    stringstream ldat_name;
+    std::stringstream ldat_name;
     ldat_name << argv[1] << ".ldat";
-    ofstream ldat( ldat_name.str().c_str() );
+    std::ofstream ldat( ldat_name.str().c_str() );
     double dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
     for( int l = 0; l < lx; ++l )
-      ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << endl;
+      ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << std::endl;
     ldat.close();
   }
   delete[] lbins[0];

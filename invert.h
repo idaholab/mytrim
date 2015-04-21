@@ -1,7 +1,7 @@
 #ifndef INVERT_H
 #define INVERT_H
 
-#include <math.h>
+#include <cmath>
 
 namespace MyTRIM_NS {
 
