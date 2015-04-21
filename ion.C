@@ -5,9 +5,9 @@
 using namespace MyTRIM_NS;
 
 ionBase::ionBase() :
-  state(MOVING),
+  t(0.0),  // clock
   ef(3.0), // final energy
-  t(0.0)   // clock
+  state(MOVING)
 {
 }
 

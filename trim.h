@@ -106,7 +106,7 @@ protected:
 //
 class trimDefectLog : public trimBase {
 public:
-  trimDefectLog(sampleBase *sample_, std::ostream &os_) : os(os_), trimBase(sample_) {};
+  trimDefectLog(sampleBase *sample_, std::ostream &os_) : trimBase(sample_), os(os_) {};
 protected:
   std::ostream &os;
 
@@ -166,7 +166,7 @@ protected:
 //
 class trimPhononOut : public trimBase {
 public:
-  trimPhononOut(sampleBase *sample_,  std::ostream &os_) : os(os_), trimBase( sample_ ) {};
+  trimPhononOut(sampleBase *sample_,  std::ostream &os_) : trimBase( sample_ ), os(os_) {};
 protected:
   std::ostream &os;
 
