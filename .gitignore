@@ -1,6 +1,5 @@
-<<<<<<< HEAD
 *~
-mybuild
+mybuild*
 fptrim
 rndtest*
 runs
@@ -24,3 +23,4 @@ config.h
 *.lai
 *.la
 *.a
+*.lo.d
