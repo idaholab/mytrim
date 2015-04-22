@@ -10,6 +10,27 @@ By J. F. Ziegler, J. P. Biersack, and U. Littmark (1985 (new edition in 1996)).
 
 [Wikipedia article](https://en.wikipedia.org/wiki/Stopping_and_Range_of_Ions_in_Matter)
 
+![TRIM Schema](http://idaholab.github.io/img/mytrim/trims_hor.png)
+
+*MyTRIM* is fully tree dimensional and extendable to arbitrary sample geometries.
+
+Examples
+-----
+
+### Energy deposition
+![TRIM Schema](http://idaholab.github.io/img/mytrim/trim.png)
+
+Displacement events calculated by *MyTRIM*, colored by inelastic energy loss. The cube is 100nm on the side.
+
+### Gas resolution
+
+The video linked below shows ion cascades in a ceramic material knocking gas atoms out of a bubble inclusion.
+
+[MyTRIM cascade video](http://idaholab.github.io/img/mytrim/3dtrim.mp4)
+
+About
+----
+
 The MyTRIM source code is licensed under the LGPL 2.1 license.
 The data files supplied in data/ are prepared by James. F. Ziegler as part of the
 [SRIM](http://www.srim.org) distribution.
