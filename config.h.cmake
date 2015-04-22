@@ -1,6 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#cmakedefine DATA_DIR "@DATA_DIR@"
+#cmakedefine MYTRIM_DATA_DIR "@MYTRIM_DATA_DIR@"
 
 #endif

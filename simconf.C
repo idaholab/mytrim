@@ -41,10 +41,10 @@ simconfType::simconfType( double _alfa )
 
 void simconfType::read_snuc()
 {
-  FILE *sf = fopen( DATA_DIR"/SNUC03.dat", "rt" );
+  FILE *sf = fopen( MYTRIM_DATA_DIR"/SNUC03.dat", "rt" );
   if( sf == 0 )
   {
-    std::cerr << "Unable to open " << DATA_DIR"/SNUC03.dat" << std::endl;
+    std::cerr << "Unable to open " << MYTRIM_DATA_DIR"/SNUC03.dat" << std::endl;
     exit(1);
   }
   for( int i = 0; i < 92; i++ )
@@ -63,7 +63,7 @@ void simconfType::read_scoef()
   char buf[2001];
   FILE *sf;
 
-  sf = fopen( DATA_DIR"/SCOEF.95A", "rt" );
+  sf = fopen( MYTRIM_DATA_DIR"/SCOEF.95A", "rt" );
   fgets( buf, 2000, sf ); // header
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
@@ -76,13 +76,13 @@ void simconfType::read_scoef()
   }
   fclose( sf );
 
-  sf = fopen( DATA_DIR"/SLFCTR.dat", "rt" );
+  sf = fopen( MYTRIM_DATA_DIR"/SLFCTR.dat", "rt" );
   fgets( buf, 2000, sf ); // header
   for( int i = 0; i < 92; i++ )
     fscanf( sf, "%*d %lf\n", &scoef[i].lfctr );
   fclose( sf );
 
-  sf = fopen( DATA_DIR"/ELNAME.dat", "rt" );
+  sf = fopen( MYTRIM_DATA_DIR"/ELNAME.dat", "rt" );
   for( int i = 0; i < 92; i++ )
     fscanf( sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name );
 
