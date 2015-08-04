@@ -23,9 +23,9 @@ void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
   //e = pka.e;
   double pl = 0.0;
   double max = 0.0;
-  double e0kev = pka->e / 1000.0;
+  //double e0kev = pka->e / 1000.0;
   int ic = 0;
-  int nn, ie;
+  unsigned int nn; //, ie;
   double r1, r2, hh;
   double eps, eeg, ls, p, b, r, see, dee;
   double s2, c2, ct, st;
@@ -36,7 +36,7 @@ void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
   double rdir[3], perp[3], norm, psi;
 
   double p1, p2;
-  double range;
+  //double range;
 
   // generate random number for use in the first loop iteration only!
   r1 = dr250();
@@ -114,7 +114,7 @@ void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
 
     // which atom in the material will be hit
     hh = dr250(); // selects element inside material to scatter from
-    for( nn = 0; nn < material->element.size(); nn++ )
+    for (nn = 0; nn < material->element.size(); ++nn)
     {
       hh -= material->element[nn]->t;
       if( hh <= 0 ) break;

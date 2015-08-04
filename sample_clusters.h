@@ -38,12 +38,12 @@ struct sampleClusters : sampleBase {
 
   virtual materialBase* lookupMaterial( double* pos );
 
-  int lookupCluster( double* pos, double dr = 0.0 );
-  void initSpatialhash( int x, int y, int z );
+  int lookupCluster(double* pos, double dr = 0.0);
+  void initSpatialhash(int x, int y, int z);
   void clearSpatialHash();
   void clearClusters();
-  void addCluster( double x, double y, double z, double r );
-  void addRandomClusters( int n, double r, double dr = 0.0 );
+  void addCluster(double x, double y, double z, double r);
+  void addRandomClusters(unsigned int n, double r, double dr = 0.0);
 protected:
   void reallocClusters( int n );
 };
