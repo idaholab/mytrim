@@ -1,5 +1,6 @@
 #include <cmath>
 #include <stdio.h>
+#include <stdlib.h>
 //#include <stdlib.h>
 #include <iostream>
 
@@ -8,6 +9,11 @@
 #endif
 
 #include "simconf.h"
+
+// building from within magpie
+#ifdef MYTRIM_ENABLED
+#include "MooseError.h"
+#endif
 
 namespace MyTRIM_NS {
   simconfType *simconf;
@@ -47,8 +53,12 @@ void simconfType::read_snuc()
   FILE *sf = fopen( MYTRIM_DATA_DIR"/SNUC03.dat", "rt" );
   if( sf == 0 )
   {
+#ifdef MYTRIM_ENABLED
+    mooseError("Unable to open " << MYTRIM_DATA_DIR"/SNUC03.dat");
+#else
     std::cerr << "Unable to open " << MYTRIM_DATA_DIR"/SNUC03.dat" << std::endl;
     exit(1);
+#endif
   }
   for( int i = 0; i < 92; i++ )
     for( int j = i; j < 92; j++ )
