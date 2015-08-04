@@ -10,11 +10,6 @@
 
 #include "simconf.h"
 
-// building from within magpie
-#ifdef MYTRIM_ENABLED
-#include "MooseError.h"
-#endif
-
 namespace MyTRIM_NS {
   simconfType *simconf;
 }

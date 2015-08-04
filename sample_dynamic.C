@@ -34,18 +34,18 @@ materialBase*  sampleDynamic::lookupMaterial( double* pos )
 
 void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
 {
-  int i, ne = material[layer]->element.size();
+  unsigned int i, ne = material[layer]->element.size();
   double rnorm = 0.0; // volume of one atom with the fractional composition of the layer at natural density
 
   // look which element in the layer we are modifying and take weighted average of 1/rho of elements
-  for( i = 0; i < material[layer]->element.size(); i++ )
+  for (i = 0; i < material[layer]->element.size(); ++i)
   {
-    if( material[layer]->element[i]->z == Z ) ne = i;
+    if (material[layer]->element[i]->z == Z) ne = i;
     rnorm += material[layer]->element[i]->t / simconf->scoef[material[layer]->element[i]->z-1].atrho;
   }
 
   // element not yet contained in layer
-  if( ne == material[layer]->element.size() )
+  if (ne == material[layer]->element.size())
   {
     elementBase* element = new elementBase;
     element->z = Z;
@@ -67,7 +67,7 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   layerThickness[layer] += ma / ( material[layer]->rho * w[1] * w[2] );
 
   // change stoichiometry (arho 1/ang^3 * ang^3 )
-  if( material[layer]->element[ne]->t*nl + double(n) < 0.0 )
+  if (material[layer]->element[ne]->t*nl + double(n) < 0.0)
   {
     std::cout << "Crap, t*nl=" << material[layer]->element[ne]->t*nl << ", but n=" << n << std::endl;
     material[layer]->element[ne]->t = 0.0;

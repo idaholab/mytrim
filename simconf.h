@@ -21,6 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef SIMCONF_H
 #define SIMCONF_H
 
+// building from within magpie
+#ifdef MYTRIM_ENABLED
+#include "MooseError.h"
+#endif
+
 namespace MyTRIM_NS {
 
 // ZBL coefficients a,b,c,d for all element pairs from Z=1..92
