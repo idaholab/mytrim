@@ -1,5 +1,5 @@
-#ifndef ELEMENT_H
-#define ELEMENT_H
+#ifndef MYTRIM_ELEMENT_H
+#define MYTRIM_ELEMENT_H
 
 namespace MyTRIM_NS {
 

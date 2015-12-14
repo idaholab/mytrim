@@ -1,5 +1,5 @@
-#ifndef ION_H
-#define ION_H
+#ifndef MYTRIM_ION_H
+#define MYTRIM_ION_H
 
 #include <iostream>
 

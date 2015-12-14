@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef SAMPLE_H
-#define SAMPLE_H
+#ifndef MYTRIM_SAMPLE_H
+#define MYTRIM_SAMPLE_H
 
 #include <vector>
 #include <queue>

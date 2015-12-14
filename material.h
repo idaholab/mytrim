@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef MATERIAL_H
-#define MATERIAL_H
+#ifndef MYTRIM_MATERIAL_H
+#define MYTRIM_MATERIAL_H
 
 #include <vector>
 #include <stdio.h>
@@ -32,10 +32,16 @@ namespace MyTRIM_NS {
 struct materialBase {
   double rho;
 
+  // set in prepare
   double am, az; // average mass and atomic number
-  double arho, mu;
+  double arho;
+
+  // set in average
+  double mu;
   double a, f, epsdg;
-  double fd, kd, pmax;
+  double fd, kd;
+
+  double pmax;
 
   int tag;
   bool dirty;
@@ -43,7 +49,7 @@ struct materialBase {
   std::vector<elementBase*> element;
 
   //layerType() { semax = 0.0; sem = 0.0; sez = 0; }
-  materialBase( double _rho ) : rho(_rho), tag(-1) { dirty = true; };
+  materialBase( double _rho ) : rho(_rho), tag(-1), dirty(true) {};
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();

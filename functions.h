@@ -1,5 +1,5 @@
-#ifndef FUNCTIONS_H
-#define FUNCTIONS_H
+#ifndef MYTRIM_FUNCTIONS_H
+#define MYTRIM_FUNCTIONS_H
 
 #include <cmath>
 #include <stdlib.h>

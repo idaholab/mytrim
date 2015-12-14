@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef SAMPLE_WIRE_H
-#define SAMPLE_WIRE_H
+#ifndef MYTRIM_SAMPLE_WIRE_H
+#define MYTRIM_SAMPLE_WIRE_H
 
 #include "sample.h"
 

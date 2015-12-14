@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef SAMPLE_DYNAMIC_H
-#define SAMPLE_DYNAMIC_H
+#ifndef MYTRIM_SAMPLE_DYNAMIC_H
+#define MYTRIM_SAMPLE_DYNAMIC_H
 
 #include "sample_layers.h"
 #include "material.h"

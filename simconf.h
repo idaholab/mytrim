@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef SIMCONF_H
-#define SIMCONF_H
+#ifndef MYTRIM_SIMCONF_H
+#define MYTRIM_SIMCONF_H
 
 // building from within magpie
 #ifdef MYTRIM_ENABLED

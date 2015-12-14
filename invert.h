@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef INVERT_H
-#define INVERT_H
+#ifndef MYTRIM_INVERT_H
+#define MYTRIM_INVERT_H
 
 #include <cmath>
 
