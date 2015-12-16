@@ -119,7 +119,7 @@ void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
       hh -= material->element[nn]->t;
       if( hh <= 0 ) break;
     }
-    element = material->element[nn];
+    element = material->getElement(nn);
 
     // epsilon and reduced impact parameter b
     eps = element->fi * pka->e;
@@ -204,7 +204,7 @@ void trimBase::trim( ionBase *pka_, std::queue<ionBase*> &recoils )
 
     // momentum transfer
     p1 = sqrtf(2.0 * pka->m1 * pka->e); // momentum before collision
-    if (den > pka->e) den = pka->e; // avoid nevative energy
+    if (den > pka->e) den = pka->e; // avoid negative energy
     pka->e -= den;
     p2 = sqrtf(2.0 * pka->m1 * pka->e); // momentum after collision
 

@@ -59,6 +59,8 @@ struct materialBase {
   void average( const ionBase *pka );
   double getrstop( const ionBase *pka );
 
+  virtual elementBase * getElement(unsigned int nn) { return element[nn]; }
+
 protected:
   double rpstop( int z2, double e );
   double rstop( const ionBase *ion, int z2 );
