@@ -8,6 +8,12 @@
 
 using namespace MyTRIM_NS;
 
+materialBase::~materialBase()
+{
+  for (unsigned int i = 0; i < element.size(); ++i)
+    delete element[i];
+}
+
 void materialBase::prepare()
 {
   double tt = 0.0;

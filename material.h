@@ -50,6 +50,7 @@ struct materialBase {
 
   //layerType() { semax = 0.0; sem = 0.0; sez = 0; }
   materialBase( double _rho ) : rho(_rho), tag(-1), dirty(true) {};
+  virtual ~materialBase();
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
