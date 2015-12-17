@@ -13,7 +13,7 @@ sampleDynamic::sampleDynamic(simconfType * simconf_, double x, double y, double 
   bc[0] = CUT;
   bc[1] = PBC;
   bc[2] = PBC;
-};
+}
 
 void sampleDynamic::averages( const ionBase *_pka )
 {
