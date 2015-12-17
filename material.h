@@ -50,7 +50,6 @@ struct materialBase {
   std::vector<elementBase*> element;
 
   materialBase(simconfType * simconf_, double rho_);
-  virtual ~materialBase();
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();

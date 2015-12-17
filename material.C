@@ -16,12 +16,6 @@ materialBase::materialBase(simconfType * simconf_, double rho_) :
 {
 }
 
-materialBase::~materialBase()
-{
-  for (unsigned int i = 0; i < element.size(); ++i)
-    delete element[i];
-}
-
 void materialBase::prepare()
 {
   double tt = 0.0;
