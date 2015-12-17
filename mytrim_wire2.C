@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   //simconf->fullTraj = true;
 
   // initialize sample structure
@@ -112,13 +112,13 @@ int main(int argc, char *argv[])
   const int z2 = 33;
   trimVacMap *trim = new trimVacMap( sample, z1, z2 ); // GaAs*/
   //trimBase *trim = new trimBase( sample );
-  trimBase *trim = new trimPrimaries( sample );
+  trimBase *trim = new trimPrimaries(simconf, sample);
 
   materialBase *material;
   elementBase *element;
 
   // Si
-  material = new materialBase( 2.329 ); // rho
+  material = new materialBase(simconf, 2.329); // rho
   element = new elementBase;
   element->z = 14; // Si
   element->m = 28.0;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   // SiO2 (material[1] for the cover layer in SampleBurriedWire)
-  material = new materialBase( 2.634 ); // rho
+  material = new materialBase(simconf, 2.634); // rho
   element = new elementBase;
   element->z = 14; // Si
   element->m = 28.0;

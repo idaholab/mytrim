@@ -8,6 +8,14 @@
 
 using namespace MyTRIM_NS;
 
+materialBase::materialBase(simconfType * simconf_, double rho_) :
+    rho(rho_),
+    tag(-1),
+    dirty(true),
+    simconf(simconf_)
+{
+}
+
 materialBase::~materialBase()
 {
   for (unsigned int i = 0; i < element.size(); ++i)

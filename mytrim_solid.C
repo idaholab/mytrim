@@ -56,15 +56,15 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid( 200.0, 200.0, 200.0 );
+  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
 
-  trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimBase(simconf, sample);
 
 
   //double r = 10.0;
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   elementBase *element;
 
   // UO2
-  material = new materialBase( 9.4 ); // rho
+  material = new materialBase(simconf, 9.4); // rho
   element = new elementBase;
   element->z = 92; // U
   element->m = 235.0;

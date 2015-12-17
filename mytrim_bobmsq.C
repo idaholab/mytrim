@@ -59,16 +59,16 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid( 200.0, 200.0, 200.0 );
+  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
-  trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimBase(simconf, sample);
   //trimBase *trim = new trimPrimaries( sample );
 
   //sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
   switch(i) {
     case 0:
       // Fe
-      material = new materialBase( 7.87 ); // rho
+      material = new materialBase(simconf, 7.87); // rho
       element = new elementBase;
       Z = 26.0;
       A = 56.0;
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
       break;
     case 1:
       // Si
-      material = new materialBase( 2.33 ); // rho
+      material = new materialBase(simconf, 2.33); // rho
       element = new elementBase;
       Z = 14.0;
       A = 28.0;
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
       break;
     case 2:
       // Cu
-      material = new materialBase( 8.89 ); // rho
+      material = new materialBase(simconf, 8.89); // rho
       element = new elementBase;
       Z = 29.0;
       A = 63.5;
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
       break;
     case 3:
       // Au
-      material = new materialBase( 19.32 ); // rho
+      material = new materialBase(simconf, 19.32); // rho
       element = new elementBase;
       Z = 79.0;
       A = 197.0;

@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 #include "sample_layers.h"
 #include "material.h"
+#include "simconf.h"
 #include <vector>
 
 namespace MyTRIM_NS {
@@ -32,10 +33,13 @@ struct sampleDynamic : sampleLayers {
 
   virtual void averages( const ionBase *_pka );
 
-  sampleDynamic( double x, double y, double z ): sampleLayers( x, y, z) { bc[0] = CUT; bc[1] = PBC; bc[2] = PBC; };
-  virtual materialBase* lookupMaterial( double* pos );
+  sampleDynamic(simconfType * _simconf, double x, double y, double z );
 
+  virtual materialBase* lookupMaterial( double* pos );
   virtual void addAtomsToLayer( int layer, int n, int Z );
+
+protected:
+  simconfType * simconf;
 };
 
 }

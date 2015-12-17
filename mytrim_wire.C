@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
 
   // initialize sample structure
   sampleWire *sample = new sampleWire( dwire, dwire, 100.0 );
@@ -79,12 +79,12 @@ int main(int argc, char *argv[])
   const int z1 = 29; //Cu
   const int z2 = 22; //Ti
   const int z3 = 47; //Ag
-  trimVacMap *trim = new trimVacMap( sample, z1, z2, z3 ); // GaCW
+  trimVacMap *trim = new trimVacMap(simconf, sample, z1, z2, z3); // GaCW
 
   materialBase *material;
   elementBase *element;
 
-  material = new materialBase( (56.0*8.920 + 38.0*4.507 + 8.0*10.490 )/(56.0+38.0+8.0) ); // rho
+  material = new materialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490 )/(56.0+38.0+8.0) ); // rho
   element = new elementBase;
   element->z = z1; // Cu
   element->m = 63.546;

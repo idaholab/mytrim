@@ -56,20 +56,20 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid( 200.0, 200.0, 200.0 );
+  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
   snprintf( fname, 199, "%s.phon", argv[1] );
   //FILE *phon = fopen( fname, "wt" );
   //trimPhononOut *trim = new trimPhononOut( sample, phon );
   //trimBase *trim = new trimBase( sample );
-  trimBase *trim = new trimPrimaries( sample );
+  trimBase *trim = new trimPrimaries(simconf, sample);
 
   sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
 /*
   // Fe
-  material = new materialBase( 7.87 ); // rho
+  material = new materialBase(simconf, 7.87 ); // rho
   element = new elementBase;
   element->z = 26; // Fe
   element->m = 56.0;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   // ZrO2
-  material = new materialBase( 5.68 ); // rho
+  material = new materialBase(simconf, 5.68 ); // rho
   element = new elementBase;
   element->z = 40; // Zr
   element->m = 91.0;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 */
 
   // ZrO2 Xe 0.01
-  material = new materialBase( 5.68 ); // rho
+  material = new materialBase(simconf, 5.68); // rho
   element = new elementBase;
   element->z = 40; // Zr
   element->m = 90.0;//91?
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
 /*
   // TiO2 precipitate
-  material = new materialBase( 4.23 ); // rho
+  material = new materialBase(simconf, 4.23 ); // rho
   element = new elementBase;
   element->z = 22; // Ti
   element->m = 48.0;
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
    // Y2Ti2O7 precipitate
-  material = new materialBase( 4.6 ); // rho between 4.23 and 5.01
+  material = new materialBase(simconf, 4.6 ); // rho between 4.23 and 5.01
   element = new elementBase;
   element->z = 39; // Y
   element->m = 89.0;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   // xe bubble
-  material = new materialBase( 3.5 ); // rho
+  material = new materialBase(simconf, 3.5 ); // rho
   element = new elementBase;
   element->z = 54; // Xe
   element->m = 132.0;

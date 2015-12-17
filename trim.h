@@ -34,9 +34,11 @@ namespace MyTRIM_NS {
 class trimBase {
 public:
   void trim( ionBase *pka, std::queue<ionBase*> &recoils );
-  trimBase( sampleBase *sample_ ) : sample( sample_ ) {};
+  trimBase(simconfType * simconf_, sampleBase *sample_ ) :
+    simconf(simconf_), sample( sample_ ) {}
 
 protected:
+  simconfType * simconf;
   sampleBase *sample;
   ionBase *pka, *recoil;
   materialBase *material;
@@ -65,7 +67,7 @@ protected:
 //
 class trimPrimaries : public trimBase {
 public:
-  trimPrimaries( sampleBase *sample_ ) : trimBase( sample_ ) {};
+  trimPrimaries(simconfType * simconf_, sampleBase *sample_) : trimBase(simconf_, sample_) {};
 protected:
   virtual int maxGen() { return 1; };
   virtual bool followRecoil() { return (recoil->gen < maxGen()); };
@@ -97,7 +99,7 @@ protected:
 //
 class trimRecoils : public trimPrimaries {
   public:
-    trimRecoils( sampleBase *sample_ ) : trimPrimaries( sample_ ) {};
+    trimRecoils(simconfType * simconf_, sampleBase *sample_) : trimPrimaries(simconf_, sample_) {};
   protected:
     virtual int maxGen() { return 2; };
 };
@@ -108,7 +110,7 @@ class trimRecoils : public trimPrimaries {
 //
 class trimHistory : public trimBase {
 public:
-  trimHistory( sampleBase *sample_ ) : trimBase( sample_ ) {};
+  trimHistory(simconfType * simconf_, sampleBase *sample_) : trimBase(simconf_, sample_) {};
   std::vector<double> pos_hist[3];
 protected:
   virtual bool followRecoil()
@@ -126,7 +128,7 @@ protected:
 //
 class trimDefectLog : public trimBase {
 public:
-  trimDefectLog(sampleBase *sample_, std::ostream &os_) : trimBase(sample_), os(os_) {};
+  trimDefectLog(simconfType * simconf_, sampleBase *sample_, std::ostream &os_) : trimBase(simconf_, sample_), os(os_) {};
 protected:
   std::ostream &os;
 
@@ -154,7 +156,7 @@ class trimVacMap : public trimBase {
   static const int mx = 20, my = 20;
 public:
   int vmap[mx][my][3];
-  trimVacMap( sampleBase *sample_, int z1_, int z2_, int z3_ = -1 ) : trimBase( sample_ ), z1(z1_), z2(z2_), z3(z3_)
+  trimVacMap(simconfType * simconf_, sampleBase *sample_, int z1_, int z2_, int z3_ = -1 ) : trimBase(simconf_, sample_), z1(z1_), z2(z2_), z3(z3_)
   {
     for( int e = 0; e < 3; e++ )
       for( int x = 0; x < mx; x++ )
@@ -186,7 +188,7 @@ protected:
 //
 class trimPhononOut : public trimBase {
 public:
-  trimPhononOut(sampleBase *sample_,  std::ostream &os_) : trimBase( sample_ ), os(os_) {};
+  trimPhononOut(simconfType * simconf_, sampleBase *sample_,  std::ostream &os_) : trimBase(simconf_, sample_ ), os(os_) {};
 protected:
   std::ostream &os;
 

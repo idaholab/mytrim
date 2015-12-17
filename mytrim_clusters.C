@@ -55,20 +55,20 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleClusters *sample = new sampleClusters( 400.0, 400.0, 400.0 );
+  sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
   //sampleClusters *sample = new sampleClusters( 200.0, 200.0, 200.0 );
 
   // initialize trim engine for the sample
   snprintf( fname, 199, "%s.phon", argv[1] );
   //FILE *phon = fopen( fname, "wt" );
   //trimPhononOut *trim = new trimPhononOut( sample, phon );
-  trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimBase(simconf, sample);
   //trimBase *trim = new trimPrimaries( sample );
 
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
   elementBase *element;
 
   // UO2
-  material = new materialBase( 10.0 ); // rho
+  material = new materialBase(simconf, 10.0); // rho
   element = new elementBase;
   element->z = 92; // U
   element->m = 235.0;
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 
   // xe bubble
-  material = new materialBase( 3.5 ); // rho
+  material = new materialBase(simconf, 3.5); // rho
   element = new elementBase;
   element->z = 54; // Xe
   element->m = 132.0;

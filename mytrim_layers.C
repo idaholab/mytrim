@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
   const int nmax = 10000;
   std::cout << "NN " << nmax << " PKAs" << std::endl;
 
-  sampleLayers *sample = new sampleLayers( sx, sy, sz );
+  sampleLayers *sample = new sampleLayers(sx, sy, sz);
   //trimBase *trim = new trimBase( sample );
-  trimBase *trim = new trimRecoils( sample );
+  trimBase *trim = new trimRecoils(simconf, sample);
 
   // Read Materials description from stdin
   int nlayer;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
          << lrho << "g/ccm  n_elements=" << nelem << std::endl;
 
-    material = new materialBase( lrho ); // rho
+    material = new materialBase(simconf, lrho); // rho
 
     for( int j = 0; j < nelem; j++ )
     {

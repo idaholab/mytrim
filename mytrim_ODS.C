@@ -56,20 +56,20 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure []
   //sampleClusters *sample = new sampleClusters( 50000.0, 400.0, 400.0 );
-  sampleClusters *sample = new sampleClusters( 500.0, 1000.0, 1000.0 );
+  sampleClusters *sample = new sampleClusters(500.0, 1000.0, 1000.0);
 
   // initialize trim engine for the sample
   snprintf( fname, 199, "%s.phon", argv[1] );
   //FILE *phon = fopen( fname, "wt" );
   //trimPhononOut *trim = new trimPhononOut( sample, phon );
-  trimBase *trim = new trimBase( sample );
+  trimBase *trim = new trimBase(simconf, sample);
   //trimBase *trim = new trimPrimaries( sample );
 
 
@@ -122,15 +122,15 @@ int main(int argc, char *argv[])
 */
 
   // Cu
-  material = new materialBase( 8.94 ); // rho
+  material = new materialBase(simconf, 8.94); // rho
   element = new elementBase;
   element->z = 29; // Fe
   element->m = 63.0;
   element->t = 1.0;
   element->Edisp = 40.0;
-  material->element.push_back( element );
+  material->element.push_back(element);
   material->prepare(); // all materials added
-  sample->material.push_back( material ); // add material to sample
+  sample->material.push_back(material); // add material to sample
 
 /*
   // ZrO2
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
   sample->material.push_back( material ); // add material to sample
 */
   // TiB2 precipitate
-  material = new materialBase( 4.52 ); // rho
+  material = new materialBase(simconf, 4.52); // rho
   element = new elementBase;
   element->z = 22; // Ti
   element->m = 48.0;

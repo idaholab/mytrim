@@ -6,6 +6,15 @@
 
 using namespace MyTRIM_NS;
 
+sampleDynamic::sampleDynamic(simconfType * simconf_, double x, double y, double z):
+    sampleLayers(x, y, z),
+    simconf(simconf_)
+{
+  bc[0] = CUT;
+  bc[1] = PBC;
+  bc[2] = PBC;
+};
+
 void sampleDynamic::averages( const ionBase *_pka )
 {
   // remember pka, we do not calculate averages right now, but on demand!

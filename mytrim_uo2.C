@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   r250_init( seed<0 ? -seed : seed );
 
   // initialize global parameter structure and read data tables from file
-  simconf = new simconfType;
+  simconfType * simconf = new simconfType;
 
   // initialize sample structure
   sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
@@ -83,19 +83,19 @@ int main(int argc, char *argv[])
   std::stringstream auxoutname;
   switch (mode) {
     case PLAIN:
-      trim = new trimBase(sample);
+      trim = new trimBase(simconf, sample);
       break;
 
     case PHONONS:
       auxoutname << argv[1] << ".phonons";
       auxout.open( auxoutname.str().c_str() );
-      trim = new trimPhononOut(sample, auxout);
+      trim = new trimPhononOut(simconf, sample, auxout);
       break;
 
     case DEFECTS:
       auxoutname << argv[1] << ".defects";
       auxout.open( auxoutname.str().c_str() );
-      trim = new trimDefectLog(sample, auxout);
+      trim = new trimDefectLog(simconf, sample, auxout);
       break;
 
     default:
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
   elementBase *element;
 
   // UO2 TODO: Eidplacement and binding energies!
-  material = new materialBase( 10.0 ); // rho
+  material = new materialBase(simconf, 10.0); // rho
   element = new elementBase;
   element->z = 92; // U
   element->m = 235.0;
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 
   // xe bubble
   int gas_z1 = 54;
-  material = new materialBase( 3.5 ); // rho
+  material = new materialBase(simconf, 3.5); // rho
   element = new elementBase;
   element->z = gas_z1; // Xe
   element->m = 132.0;
