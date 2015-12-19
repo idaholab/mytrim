@@ -44,19 +44,19 @@ using namespace MyTRIM_NS;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 2 ) // 2
+  if (argc != 2) // 2
   {
     std::cerr << "syntax:\n" << argv[0] << " basename" << std::endl;
     return 1;
   }
 
   // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen( "/dev/random", "r" );
+  FILE *urand = fopen("/dev/random", "r");
   int seed;
-  fread( &seed, sizeof(int), 1, urand );
-  fclose( urand );
+  fread(&seed, sizeof(int), 1, urand);
+  fclose(urand);
   seed = 1;
-  r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
+  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   // initialize sample structure
   double sx, sy, sz;
   std::cin >> sx >> sy >> sz;
-  std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "SS " << sx << ' ' << sy << ' ' << sz << std::endl;
 
   sampleDynamic *sample = new sampleDynamic(simconf, sx, sy, sz);
@@ -78,35 +78,35 @@ int main(int argc, char *argv[])
   double lthick, lrho, nelem;
   std::string lename;
   std::cin >> nlayer;
-  std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "n_layers=" << nlayer << std::endl;
 
   materialBase *material;
   elementBase *element;
 
-  for( int i = 0; i < nlayer; i++ )
+  for (int i = 0; i < nlayer; i++)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
-    std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
          << lrho << "g/ccm  n_elements=" << nelem << std::endl;
 
     material = new materialBase(simconf, lrho); // rho
 
-    for( int j = 0; j < nelem; j++ )
+    for (int j = 0; j < nelem; j++)
     {
       element = new elementBase;
       std::cin >> lename >> element->z >> element->m >> element->t;
-      std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       std::cout << "  Element: " << lename << "  Z=" << element->z
            << "  m=" << element->m << "  fraction=" << element->t << std::endl;
-      material->element.push_back( element );
+      material->element.push_back(element);
     }
     std::cout << material << std::endl;
 
     material->prepare(); // all elements added
-    sample->material.push_back( material ); // add material to sample
-    sample->layerThickness.push_back( lthick );
+    sample->material.push_back(material); // add material to sample
+    sample->layerThickness.push_back(lthick);
   }
 
   // create a FIFO for recoils
@@ -121,11 +121,11 @@ int main(int argc, char *argv[])
   // double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
   double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
 
-  snprintf( fname, 199, "%s.Erec", argv[1] );
-  FILE *erec = fopen( fname, "wt" );
+  snprintf(fname, 199, "%s.Erec", argv[1]);
+  FILE *erec = fopen(fname, "wt");
 
-  snprintf( fname, 199, "%s.dist", argv[1] );
-  FILE *rdist = fopen( fname, "wt" );
+  snprintf(fname, 199, "%s.dist", argv[1]);
+  FILE *rdist = fopen(fname, "wt");
 
   double pos1[3];
 
@@ -137,9 +137,9 @@ int main(int argc, char *argv[])
   double sum_r2, opos[3];
 
   // 1000 PKA
-  for( int n = 0; n < 35000; n++ )
+  for (int n = 0; n < 35000; n++)
   {
-    if( n % 100 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+    if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
@@ -159,14 +159,14 @@ int main(int argc, char *argv[])
     ff1->pos[2] = sample->w[2] / 2.0;
 
     ff1->set_ef();
-    recoils.push( ff1 );
+    recoils.push(ff1);
 
-    while( !recoils.empty() )
+    while (!recoils.empty())
     {
       pka = recoils.front();
       recoils.pop();
 
-      sample->averages( pka );
+      sample->averages(pka);
 
       //
       // do ion analysis/processing BEFORE the cascade here
@@ -176,22 +176,22 @@ int main(int argc, char *argv[])
       layer1 = sample->lookupLayer(pka->pos);
 
       // remove from source layer
-      if( pka->gen > 0 )
-        sample->addAtomsToLayer( layer1, -1, pka->z1 );
+      if (pka->gen > 0)
+        sample->addAtomsToLayer(layer1, -1, pka->z1);
 
-      //fprintf( erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1 );
-      //for( int i = 0; i < 3; i++ )
+      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1);
+      //for (int i = 0; i < 3; i++)
       // opos[i] = pka->pos[i];
 
       //
       // follow this ion's trajectory and store recoils
       //
-      trim->trim( pka, recoils );
+      trim->trim(pka, recoils);
 
       // add to destination layer
       layer2 = sample->lookupLayer(pka->pos);
-      if( pka->pos[0] > 0 )
-        sample->addAtomsToLayer( layer2, 1, pka->z1 );
+      if (pka->pos[0] > 0)
+        sample->addAtomsToLayer(layer2, 1, pka->z1);
 
       //
       // do ion analysis/processing AFTER the cascade here
@@ -201,13 +201,13 @@ int main(int argc, char *argv[])
       delete pka;
     }
   }
-  fclose( rdist );
-  fclose( erec );
+  fclose(rdist);
+  fclose(erec);
 
-  for( int i = 0; i < sample->material.size(); i++ )
+  for (int i = 0; i < sample->material.size(); i++)
   {
     std::cout << sample->layerThickness[i] << ' ';
-    for( int j = 0; j < sample->material[i]->element.size(); j++ )
+    for (int j = 0; j < sample->material[i]->element.size(); j++)
     {
       std::cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' ';
     }

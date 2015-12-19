@@ -40,7 +40,7 @@ struct sampleBase {
   virtual materialBase* lookupMaterial(double * pos) = 0;
   virtual double rangeMaterial(double * /* pos */, double * /* dir */) { return 100000.0; };
 
-  sampleBase(double x = 10000.0, double y = 10000.0, double z = 10000.0 );
+  sampleBase(double x = 10000.0, double y = 10000.0, double z = 10000.0);
 };
 
 }

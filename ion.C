@@ -11,7 +11,7 @@ ionBase::ionBase() :
 {
 }
 
-ionBase::ionBase( ionBase* prototype ) : state(MOVING)
+ionBase::ionBase(ionBase* prototype) : state(MOVING)
 {
   ef = prototype->ef; // final energy
   t = prototype->t;   //clock
@@ -21,8 +21,8 @@ ionBase::ionBase( ionBase* prototype ) : state(MOVING)
   e = prototype->e;
 }
 
-ionBase::ionBase( int _z1, double _m1, double _e ) :
-  z1(_z1), m1(_m1), e(_e), state(MOVING)
+ionBase::ionBase(int z1_, Real m1_, Real e_) :
+  z1(z1_), m1(m1_), e(e_), state(MOVING)
 {
   ef = 3.0; // final energy
   t = 0.0; //clock;
@@ -34,17 +34,17 @@ void ionBase::set_ef()
   ef = 3.0;
 
   // final energy TODO: 100Mev*0.00001 = 1keV - do we really want to stop there?!
-  //fmax( 5.0, 0.00001 * e );
+  //fmax(5.0, 0.00001 * e);
 }
 
-void ionBase::parent( ionBase *parent )
+void ionBase::parent(ionBase *parent)
 {
   ef = 3.0; // final energy
 
   gen = parent->gen + 1;
   t = parent->t;
 
-  for( int i = 0; i < 3; i++ )
+  for (unsigned int i = 0; i < 3; i++)
     pos[i] = parent->pos[i];
 }
 

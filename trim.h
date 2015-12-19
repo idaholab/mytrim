@@ -33,9 +33,9 @@ namespace MyTRIM_NS {
 
 class trimBase {
 public:
-  void trim( ionBase *pka, std::queue<ionBase*> &recoils );
-  trimBase(simconfType * simconf_, sampleBase *sample_ ) :
-    simconf(simconf_), sample( sample_ ) {}
+  void trim(ionBase *pka, std::queue<ionBase*> &recoils);
+  trimBase(simconfType * simconf_, sampleBase *sample_) :
+    simconf(simconf_), sample(sample_) {}
 
 protected:
   simconfType * simconf;
@@ -49,7 +49,7 @@ protected:
   // by default only follow recoils with E > 12eV
   virtual bool followRecoil() {
     // TODO: find a better place for this!
-    /*if( pka->md > 0 )
+    /*if (pka->md > 0)
       recoil->md = pka->md +1;
     else
       recoil->md = 0;
@@ -81,10 +81,10 @@ protected:
     {
       // calculate modified kinchin pease data
       // http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
-      double ed = 0.0115 * std::pow( material->az, -7.0/3.0) * recoil->e;
-      double g = 3.4008 * std::pow( ed, 1.0/6.0 ) + 0.40244 * std::pow( ed, 3.0/4.0 ) + ed;
-      double kd = 0.1337 * std::pow( material->az, 2.0/3.0 ) / std::pow( material->am, 0.5); //Z,M
-      double Ev = recoil->e / ( 1.0 + kd * g );
+      double ed = 0.0115 * std::pow(material->az, -7.0/3.0) * recoil->e;
+      double g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+      double kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
+      double Ev = recoil->e / (1.0 + kd * g);
       simconf->vacancies_created += int(0.8 * Ev / (2.0*element->Edisp));
 
       // TODO: this is missing the energy threshold of 2.5Ed!!!!
@@ -156,11 +156,11 @@ class trimVacMap : public trimBase {
   static const int mx = 20, my = 20;
 public:
   int vmap[mx][my][3];
-  trimVacMap(simconfType * simconf_, sampleBase *sample_, int z1_, int z2_, int z3_ = -1 ) : trimBase(simconf_, sample_), z1(z1_), z2(z2_), z3(z3_)
+  trimVacMap(simconfType * simconf_, sampleBase *sample_, int z1_, int z2_, int z3_ = -1) : trimBase(simconf_, sample_), z1(z1_), z2(z2_), z3(z3_)
   {
-    for( int e = 0; e < 3; e++ )
-      for( int x = 0; x < mx; x++ )
-        for( int y = 0; y < my; y++ )
+    for (int e = 0; e < 3; e++)
+      for (int x = 0; x < mx; x++)
+        for (int y = 0; y < my; y++)
           vmap[x][y][e] = 0;
   };
 protected:
@@ -170,15 +170,15 @@ protected:
     // both atoms have enough energy to leave the site
     int x, y;
 
-    x = ( ( recoil->pos[0] * mx ) / sample->w[0] );
-    y = ( ( recoil->pos[1] * my ) / sample->w[1] );
+    x = ((recoil->pos[0] * mx) / sample->w[0]);
+    y = ((recoil->pos[1] * my) / sample->w[1]);
     x -= int(x/mx) * mx;
     y -= int(y/my) * my;
 
     // keep track of vaccancies for the two constituents
-    if( recoil->z1 == z1 ) vmap[x][y][0]++;
-    else if( recoil->z1 == z2 ) vmap[x][y][1]++;
-    else if( recoil->z1 == z3 ) vmap[x][y][2]++;
+    if (recoil->z1 == z1) vmap[x][y][0]++;
+    else if (recoil->z1 == z2) vmap[x][y][1]++;
+    else if (recoil->z1 == z3) vmap[x][y][2]++;
   };
 };
 
@@ -188,14 +188,14 @@ protected:
 //
 class trimPhononOut : public trimBase {
 public:
-  trimPhononOut(simconfType * simconf_, sampleBase *sample_,  std::ostream &os_) : trimBase(simconf_, sample_ ), os(os_) {};
+  trimPhononOut(simconfType * simconf_, sampleBase *sample_,  std::ostream &os_) : trimBase(simconf_, sample_), os(os_) {};
 protected:
   std::ostream &os;
 
   // residual energy of pka coming to a stop
   virtual void checkPKAState() {
     if (pka->state == ionBase::MOVING ||
-        pka->state == ionBase::LOST ) return;
+        pka->state == ionBase::LOST) return;
 
     os << pka->e << ' ' <<  *pka << std::endl;
     simconf->EnucTotal += pka->e;

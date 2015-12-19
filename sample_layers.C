@@ -3,7 +3,7 @@
 
 using namespace MyTRIM_NS;
 
-int sampleLayers::lookupLayer( double* pos )
+int sampleLayers::lookupLayer(double* pos)
 {
   unsigned int i;
   double d = 0.0;
@@ -34,7 +34,7 @@ double sampleLayers::rangeMaterial(double * pos, double * dir)
   const double unrestricted = 1.0e6;
 
   // parallel to layer interfaces
-  if( dir[0] == 0.0 ) return unrestricted;
+  if (dir[0] == 0.0) return unrestricted;
 
   double epsilon = std::abs(1.0e-10 / dir[0]);
 

@@ -42,9 +42,9 @@ using namespace MyTRIM_NS;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 3 )
+  if (argc != 3)
   {
-    fprintf( stderr, "syntax:\n%s element energy[keV]\n",argv[0] );
+    fprintf(stderr, "syntax:\n%s element energy[keV]\n",argv[0]);
     return 1;
   }
 
@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
   double E = atof(argv[2])*1000.0;
 
   // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen( "/dev/random", "r" );
+  FILE *urand = fopen("/dev/random", "r");
   int seed;
-  fread( &seed, sizeof(int), 1, urand );
-  fclose( urand );
-  r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
+  fread(&seed, sizeof(int), 1, urand);
+  fclose(urand);
+  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
   // initialize trim engine for the sample
   trimBase *trim = new trimBase(simconf, sample);
-  //trimBase *trim = new trimPrimaries( sample );
+  //trimBase *trim = new trimPrimaries(sample);
 
   //sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
 
@@ -82,13 +82,13 @@ int main(int argc, char *argv[])
 
   const char *choice[4] = {"Fe", "Si", "Cu", "Au"};
   int i;
-  for(i=0; i<4 && strcmp(choice[i],argv[1])!=0; ++i);
-  if(i==4) {
-    fprintf( stderr, "Element choice not supported: %s\n",argv[1] );
+  for (i=0; i<4 && strcmp(choice[i],argv[1])!=0; ++i);
+  if (i==4) {
+    fprintf(stderr, "Element choice not supported: %s\n",argv[1]);
     return 1;
   }
   double A,Z;
-  switch(i) {
+  switch (i) {
     case 0:
       // Fe
       material = new materialBase(simconf, 7.87); // rho
@@ -99,9 +99,9 @@ int main(int argc, char *argv[])
       element->m = A;
       element->t = 1.0;
       element->Edisp = 25.0;
-      material->element.push_back( element );
+      material->element.push_back(element);
       material->prepare(); // all materials added
-      sample->material.push_back( material ); // add material to sample
+      sample->material.push_back(material); // add material to sample
       break;
     case 1:
       // Si
@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
       element->m = A;
       element->t = 1.0;
       element->Edisp = 25.0;
-      material->element.push_back( element );
+      material->element.push_back(element);
       material->prepare(); // all materials added
-      sample->material.push_back( material ); // add material to sample
+      sample->material.push_back(material); // add material to sample
       break;
     case 2:
       // Cu
@@ -127,9 +127,9 @@ int main(int argc, char *argv[])
       element->m = A;
       element->t = 1.0;
       element->Edisp = 25.0;
-      material->element.push_back( element );
+      material->element.push_back(element);
       material->prepare(); // all materials added
-      sample->material.push_back( material ); // add material to sample
+      sample->material.push_back(material); // add material to sample
       break;
     case 3:
       // Au
@@ -141,9 +141,9 @@ int main(int argc, char *argv[])
       element->m = A;
       element->t = 1.0;
       element->Edisp = 25.0;
-      material->element.push_back( element );
+      material->element.push_back(element);
       material->prepare(); // all materials added
-      sample->material.push_back( material ); // add material to sample
+      sample->material.push_back(material); // add material to sample
       break;
   }
 
@@ -170,9 +170,9 @@ int main(int argc, char *argv[])
   double sqd = 0.0, sqd2 = 0.0;
 
   // main loop
-  for( int n = 0; n < nstep; n++ )
+  for (int n = 0; n < nstep; n++)
   {
-    if( n % 10 == 0 ) fprintf( stderr, "pka #%d\n", n+1 );
+    if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     ff1 = new ionBase;
     ff1->gen = 0; // generation (0 = PKA)
@@ -192,28 +192,28 @@ int main(int argc, char *argv[])
     ff1->pos[2] = sample->w[2] / 2.0;
 
     ff1->set_ef();
-    recoils.push( ff1 );
+    recoils.push(ff1);
 
-    while( !recoils.empty() )
+    while (!recoils.empty())
     {
       pka = recoils.front();
       recoils.pop();
-      sample->averages( pka );
+      sample->averages(pka);
 
       // store position
-      if( pka->gen > 0 )
-        for( int i = 0; i < 3; i++ )
+      if (pka->gen > 0)
+        for (int i = 0; i < 3; i++)
           pos2[i] = pka->pos[i];
 
       // follow this ion's trajectory and store recoils
-      trim->trim( pka, recoils );
+      trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
-      if( pka->gen > 0 )
-        for( int i = 0; i < 3; i++ )
+      if (pka->gen > 0)
+        for (int i = 0; i < 3; i++)
           sqd += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]);
-      else if( pka->gen > 1 )
-        for( int i = 0; i < 3; i++ )
+      else if (pka->gen > 1)
+        for (int i = 0; i < 3; i++)
           sqd2 += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]);
 
       // done with this recoil
@@ -222,30 +222,30 @@ int main(int argc, char *argv[])
   }
 
   // output full damage data
-  printf( "total sum of square displacements: %g Ang^2\n", sqd );
-  printf( "%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep );
+  printf("total sum of square displacements: %g Ang^2\n", sqd);
+  printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
   double surf = sample->w[1] * sample->w[2];
   double natom = v_sam * sample->material[0]->arho;
-  printf( "volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)\n",
-          v_sam, s_sam, natom, simconf->vacancies_created / ( natom * nstep/s_sam ) );
-  printf( "sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g\nnvac = %d", sqd/(simconf->vacancies_created/natom), sqd/simconf->vacancies_created, sqd2/simconf->vacancies_created,simconf->vacancies_created  );
+  printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)\n",
+          v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));
+  printf("sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g\nnvac = %d", sqd/(simconf->vacancies_created/natom), sqd/simconf->vacancies_created, sqd2/simconf->vacancies_created,simconf->vacancies_created );
 
 /*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
   // just for the PKA
   double Zatoms = 26.0, Matoms = 56.0;
   double Epka = 5.0e6;
-  double ed = 0.0115 * pow( Zatoms, -7.0/3.0) * Epka;
-  double g = 3.4008 * pow( ed, 1.0/6.0 ) + 0.40244 * pow( ed, 3.0/4.0 ) + ed;
-  double kd = 0.1337 * pow( Zatoms, 2.0/3.0 ) / pow( Matoms, 0.5); //Z,M
-  double Ev = Epka / ( 1.0 + kd * g );
+  double ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
+  double g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+  double kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
+  double Ev = Epka / (1.0 + kd * g);
   double Ed = 40.0;
-  printf( "%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
-          100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed) );
+  printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
+          100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed));
 
   // do Kinchin-Pease for all primary recoils
-  printf( "%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
-          simconf->KP_vacancies, simconf->KP_vacancies / 100.0 );
+  printf("%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
+          simconf->KP_vacancies, simconf->KP_vacancies / 100.0);
 */
   return EXIT_SUCCESS;
 }

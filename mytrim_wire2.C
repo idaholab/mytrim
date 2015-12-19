@@ -46,7 +46,7 @@ using namespace MyTRIM_NS;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if( argc != 8 )
+  if (argc != 8)
   {
     std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << std::endl;
     return 1;
@@ -55,28 +55,28 @@ int main(int argc, char *argv[])
   double theta = atof(argv[2]) * M_PI/180.0; // 0 = parallel to wire
   double diameter  = 10.0*atof(argv[3]);
   double length  = 11000.0; // 1.1 mu
-  bool burried = ( atoi(argv[4]) != 0 );
+  bool burried = (atoi(argv[4]) != 0);
   double mult = atof(argv[5]);
-  bool xyz_out  = ( atoi(argv[6]) != 0 );
-  bool ldat_out = ( atoi(argv[7]) != 0 );
+  bool xyz_out  = (atoi(argv[6]) != 0);
+  bool ldat_out = (atoi(argv[7]) != 0);
 
   // ion series
   const int nstep = 5;
   double ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
   int ion_count[nstep];
   ionBase* ion_prototype[nstep];
-  ion_prototype[0] = new ionBase(  5, 11.0 , 320.0e3 ); // Z,m,E
-  ion_prototype[1] = new ionBase(  5, 11.0 , 220.0e3 ); // Z,m,E
-  ion_prototype[2] = new ionBase(  5, 11.0 , 160.0e3 ); // Z,m,E
-  ion_prototype[3] = new ionBase(  5, 11.0 , 120.0e3 ); // Z,m,E
-  ion_prototype[4] = new ionBase( 15, 31.0 , 250.0e3 ); // Z,m,E
+  ion_prototype[0] = new ionBase( 5, 11.0 , 320.0e3); // Z,m,E
+  ion_prototype[1] = new ionBase( 5, 11.0 , 220.0e3); // Z,m,E
+  ion_prototype[2] = new ionBase( 5, 11.0 , 160.0e3); // Z,m,E
+  ion_prototype[3] = new ionBase( 5, 11.0 , 120.0e3); // Z,m,E
+  ion_prototype[4] = new ionBase(15, 31.0 , 250.0e3); // Z,m,E
 
   // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen( "/dev/random", "r" );
+  FILE *urand = fopen("/dev/random", "r");
   int seed;
-  fread( &seed, sizeof(int), 1, urand );
-  fclose( urand );
-  r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
+  fread(&seed, sizeof(int), 1, urand);
+  fclose(urand);
+  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -84,20 +84,20 @@ int main(int argc, char *argv[])
 
   // initialize sample structure
   sampleWire *sample;
-  if( burried )
-    sample = new sampleBurriedWire( diameter, diameter, length );
+  if (burried)
+    sample = new sampleBurriedWire(diameter, diameter, length);
   else
   {
-    sample = new sampleWire( diameter, diameter, length );
+    sample = new sampleWire(diameter, diameter, length);
     sample->bc[2] = sampleWire::CUT;
   }
 
   // calculate actual ion numbers
-  for( int s = 0; s < nstep; ++s )
+  for (int s = 0; s < nstep; ++s)
   {
     double A; // irradiated area in Ang^2
-    if( burried )
-      A =( length + sample->w[0] ) * ( length + sample->w[1] );
+    if (burried)
+      A =(length + sample->w[0]) * (length + sample->w[1]);
     else
       A = cos(theta) * M_PI * 0.25 * sample->w[0] * sample->w[1] + //   slanted top face
           sin(theta) * length * sample->w[0];                      // + projected side
@@ -110,8 +110,8 @@ int main(int argc, char *argv[])
   // initialize trim engine for the sample
 /*  const int z1 = 31;
   const int z2 = 33;
-  trimVacMap *trim = new trimVacMap( sample, z1, z2 ); // GaAs*/
-  //trimBase *trim = new trimBase( sample );
+  trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs*/
+  //trimBase *trim = new trimBase(sample);
   trimBase *trim = new trimPrimaries(simconf, sample);
 
   materialBase *material;
@@ -123,9 +123,9 @@ int main(int argc, char *argv[])
   element->z = 14; // Si
   element->m = 28.0;
   element->t = 1.0;
-  material->element.push_back( element );
+  material->element.push_back(element);
   material->prepare(); // all materials added
-  sample->material.push_back( material ); // add material to sample
+  sample->material.push_back(material); // add material to sample
 
   // SiO2 (material[1] for the cover layer in SampleBurriedWire)
   material = new materialBase(simconf, 2.634); // rho
@@ -133,14 +133,14 @@ int main(int argc, char *argv[])
   element->z = 14; // Si
   element->m = 28.0;
   element->t = 1.0;
-  material->element.push_back( element );
+  material->element.push_back(element);
   element = new elementBase;
   element->z = 8; // O
   element->m = 16.0;
   element->t = 2.0;
-  material->element.push_back( element );
+  material->element.push_back(element);
   material->prepare(); // all materials added
-  sample->material.push_back( material ); // add material to sample
+  sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
@@ -150,11 +150,11 @@ int main(int argc, char *argv[])
   int jumps;
   double dif[3];
 
-  //snprintf( fname, 199, "%s.Erec", argv[1] );
-  //FILE *erec = fopen( fname, "wt" );
+  //snprintf(fname, 199, "%s.Erec", argv[1]);
+  //FILE *erec = fopen(fname, "wt");
 
-  //snprintf( fname, 199, "%s.dist", argv[1] );
-  //FILE *rdist = fopen( fname, "wt" );
+  //snprintf(fname, 199, "%s.dist", argv[1]);
+  //FILE *rdist = fopen(fname, "wt");
 
   ionBase *pka;
 
@@ -163,10 +163,10 @@ int main(int argc, char *argv[])
   int lx = 100; // 100 bins
   int dl = length/double(lx);
   lbins[1] = new int[lx]; // P z=15
-  for( int i = 0; i < 2; ++i )
+  for (int i = 0; i < 2; ++i)
   {
     lbins[i] = new int[lx]; // 0=B (z=5), 1=P (z=15)
-    for( int l = 0; l < lx; ++l )
+    for (int l = 0; l < lx; ++l)
       lbins[i][l] = 0;
   }
 
@@ -174,35 +174,35 @@ int main(int argc, char *argv[])
   int xyz_lines = 0;
   std::stringstream xyz_data;
 
-  for( int s = 0; s < nstep; ++s )
+  for (int s = 0; s < nstep; ++s)
   {
-    for( int n = 0; n < ion_count[s]; ++n )
+    for (int n = 0; n < ion_count[s]; ++n)
     {
-      if( n % 10000 == 0 )
+      if (n % 10000 == 0)
         std::cerr << "pka #" << n+1 << std::endl;
 
       // generate new PKA from prototype ion
-      pka = new ionBase( ion_prototype[s] );
+      pka = new ionBase(ion_prototype[s]);
       pka->gen = 0; // generation (0 = PKA)
       pka->tag = -1;
 
       pka->dir[0] = 0.0;
-      pka->dir[1] = sin( theta );
-      pka->dir[2] = cos( theta );
+      pka->dir[1] = sin(theta);
+      pka->dir[2] = cos(theta);
 
-      v_norm( pka->dir );
+      v_norm(pka->dir);
 
-      if( burried )
+      if (burried)
       {
         // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
         // TODO: take theta into account!
-        pka->pos[0] = ( dr250() - 0.5 ) * ( length + sample->w[0] );
-        pka->pos[1] = ( dr250() - 0.5 ) * ( length + sample->w[1] );
+        pka->pos[0] = (dr250() - 0.5) * (length + sample->w[0]);
+        pka->pos[1] = (dr250() - 0.5) * (length + sample->w[1]);
         pka->pos[2] = -250.0; // overcoat thickness
       }
       else
       {
-        if( theta == 0.0 )
+        if (theta == 0.0)
         {
           // 0 degrees => start on top of wire!
           pka->pos[2] = 0.0;
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
           {
             pka->pos[0] = dr250() * sample->w[0];
             pka->pos[1] = dr250() * sample->w[1];
-          } while( sample->lookupMaterial(pka->pos ) == 0 );
+          } while (sample->lookupMaterial(pka->pos) == 0);
         }
         else
         {
@@ -222,63 +222,63 @@ int main(int argc, char *argv[])
             {
               vpos[0] = dr250() * sample->w[0];
               vpos[1] = 0.0;
-              vpos[2] = ( dr250() * ( length + diameter/tan(theta) ) ) - diameter/tan(theta);
+              vpos[2] = (dr250() * (length + diameter/tan(theta))) - diameter/tan(theta);
 
-              t = ( 1.0 - sqrt( 1.0 - sqr( 2*vpos[0]/diameter - 1.0 ) ) ) * diameter/(2.0*pka->dir[1]);
+              t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->dir[1]);
 
               // if we start beyond wire length (that would be inside the substrate) then retry
-            } while( t*pka->dir[2] + vpos[2] >= length );
+            } while (t*pka->dir[2] + vpos[2] >= length);
 
             // if first intersection with cylinder is at z<0 then check if we hit the top face instead
-            if( t*pka->dir[2] + vpos[2] < 0.0 )
+            if (t*pka->dir[2] + vpos[2] < 0.0)
               t = -vpos[2]/pka->dir[2];
 
             // start PKA at calculated intersection point
-            for( int i = 0; i < 3; i++ )
+            for (int i = 0; i < 3; i++)
                 pka->pos[i] = t*pka->dir[i] + vpos[i];
 
-          } while( sample->lookupMaterial(pka->pos ) == 0 );
+          } while (sample->lookupMaterial(pka->pos) == 0);
         }
       }
       //cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << std::endl;
       //continue;
 
       pka->set_ef();
-      recoils.push( pka );
+      recoils.push(pka);
 
-      while( !recoils.empty() )
+      while (!recoils.empty())
       {
         pka = recoils.front();
         recoils.pop();
-        sample->averages( pka );
+        sample->averages(pka);
 
         // do ion analysis/processing BEFORE the cascade here
 
-        if( pka->z1 == ion_prototype[s]->z1  )
+        if (pka->z1 == ion_prototype[s]->z1 )
         {
-          //printf(  "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2] );
+          //printf( "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
         }
 
         // follow this ion's trajectory and store recoils
-        trim->trim( pka, recoils );
+        trim->trim(pka, recoils);
 
         // do ion analysis/processing AFTER the cascade here
 
         // ion is in the wire
-        if(  sample->lookupMaterial( pka->pos ) == sample->material[0] )
+        if ( sample->lookupMaterial(pka->pos) == sample->material[0])
         {
           int l = pka->pos[2] / dl;
-          if( l >=0 && l < lx )
+          if (l >=0 && l < lx)
           {
-            if( xyz_out )
+            if (xyz_out)
             {
               xyz_data << simconf->scoef[pka->z1-1].sym << ' '
                       << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << std::endl;
               xyz_lines++;
             }
 
-            if( ldat_out )
-              lbins[ ( pka->z1 == 5 ) ? 0 : 1 ][l]++;
+            if (ldat_out)
+              lbins[ (pka->z1 == 5) ? 0 : 1 ][l]++;
           }
         }
 
@@ -289,23 +289,23 @@ int main(int argc, char *argv[])
   }
 
   // write xyz file
-  if( xyz_out )
+  if (xyz_out)
   {
     std::stringstream xyz_name;
     xyz_name << argv[1] << ".xyz";
-    std::ofstream xyz( xyz_name.str().c_str() );
+    std::ofstream xyz(xyz_name.str().c_str());
     xyz << xyz_lines << std::endl << std::endl << xyz_data.str();
     xyz.close();
   }
 
   // write lbins file (atoms per nm^3)
-  if( ldat_out )
+  if (ldat_out)
   {
     std::stringstream ldat_name;
     ldat_name << argv[1] << ".ldat";
-    std::ofstream ldat( ldat_name.str().c_str() );
+    std::ofstream ldat(ldat_name.str().c_str());
     double dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
-    for( int l = 0; l < lx; ++l )
+    for (int l = 0; l < lx; ++l)
       ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << std::endl;
     ldat.close();
   }

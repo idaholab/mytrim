@@ -55,14 +55,14 @@ struct materialBase {
   void prepare();
 
   // compute pka dependent averages
-  void average( const ionBase *pka );
-  double getrstop( const ionBase *pka );
+  void average(const ionBase *pka);
+  double getrstop(const ionBase *pka);
 
   virtual elementBase * getElement(unsigned int nn) { return element[nn]; }
 
 protected:
-  double rpstop( int z2, double e );
-  double rstop( const ionBase *ion, int z2 );
+  double rpstop(int z2, double e);
+  double rstop(const ionBase *ion, int z2);
 
   simconfType * simconf;
 };

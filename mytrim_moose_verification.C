@@ -42,11 +42,11 @@ using namespace MyTRIM_NS;
 int main(int argc, char *argv[])
 {
   // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen( "/dev/random", "r" );
+  FILE *urand = fopen("/dev/random", "r");
   int seed;
-  fread( &seed, sizeof(int), 1, urand );
-  fclose( urand );
-  r250_init( seed<0 ? -seed : seed ); // random generator goes haywire with neg. seed
+  fread(&seed, sizeof(int), 1, urand);
+  fclose(urand);
+  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -71,9 +71,9 @@ int main(int argc, char *argv[])
   element->z = 20;
   element->m = 40.0;
   element->t = 1.0;
-  material->element.push_back( element );
+  material->element.push_back(element);
   material->prepare(); // all materials added
-  sample->material.push_back( material ); // add material to sample
+  sample->material.push_back(material); // add material to sample
 
   const int nstep = 10000;
 
@@ -106,16 +106,16 @@ int main(int argc, char *argv[])
     recoils.push(pka);
   }
 
-  while( !recoils.empty() )
+  while (!recoils.empty())
   {
     pka = recoils.front();
     recoils.pop();
-    sample->averages( pka );
+    sample->averages(pka);
 
     pka->pos[2] = 100.0;
     pka->dir[2] = 0.0;
 
-    trim->trim( pka, recoils );
+    trim->trim(pka, recoils);
 
     printf("%f %f %f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
 

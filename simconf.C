@@ -16,7 +16,7 @@ namespace MyTRIM_NS {
 
 using namespace MyTRIM_NS;
 
-simconfType::simconfType( double _alfa )
+simconfType::simconfType(double _alfa)
 {
   ed = 25.0; // displacement energy
   alfa = _alfa; // angle of incidence (degrees)
@@ -45,8 +45,8 @@ simconfType::simconfType( double _alfa )
 
 void simconfType::read_snuc()
 {
-  FILE *sf = fopen( MYTRIM_DATA_DIR"/SNUC03.dat", "rt" );
-  if( sf == 0 )
+  FILE *sf = fopen(MYTRIM_DATA_DIR"/SNUC03.dat", "rt");
+  if (sf == 0)
   {
 #ifdef MYTRIM_ENABLED
     mooseError("Unable to open " << MYTRIM_DATA_DIR"/SNUC03.dat");
@@ -55,15 +55,15 @@ void simconfType::read_snuc()
     exit(1);
 #endif
   }
-  for( int i = 0; i < 92; i++ )
-    for( int j = i; j < 92; j++ )
+  for (int i = 0; i < 92; i++)
+    for (int j = i; j < 92; j++)
     {
-      fscanf( sf, "%*d %*d %lf %lf %lf %lf\n",
-        &snuc[j][i][0], &snuc[j][i][1], &snuc[j][i][2], &snuc[j][i][3] );
-      for( int n = 0; n < 4; n++ )
+      fscanf(sf, "%*d %*d %lf %lf %lf %lf\n",
+        &snuc[j][i][0], &snuc[j][i][1], &snuc[j][i][2], &snuc[j][i][3]);
+      for (int n = 0; n < 4; n++)
         snuc[i][j][n] = snuc[j][i][n];
     }
-  fclose( sf );
+  fclose(sf);
 }
 
 void simconfType::read_scoef()
@@ -71,28 +71,28 @@ void simconfType::read_scoef()
   char buf[2001];
   FILE *sf;
 
-  sf = fopen( MYTRIM_DATA_DIR"/SCOEF.95A", "rt" );
-  fgets( buf, 2000, sf ); // header
-  fgets( buf, 2000, sf ); // header
-  for( int i = 0; i < 92; i++ )
+  sf = fopen(MYTRIM_DATA_DIR"/SCOEF.95A", "rt");
+  fgets(buf, 2000, sf); // header
+  fgets(buf, 2000, sf); // header
+  for (int i = 0; i < 92; i++)
   {
-    fscanf( sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    fscanf(sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
       &scoef[i].mm1, &scoef[i].m1, &scoef[i].mnat,
       &scoef[i].rho, &scoef[i].atrho, &scoef[i].vfermi, &scoef[i].heat,
       &pcoef[i][0], &pcoef[i][1], &pcoef[i][2], &pcoef[i][3],
-      &pcoef[i][4], &pcoef[i][5], &pcoef[i][6], &pcoef[i][7] );
+      &pcoef[i][4], &pcoef[i][5], &pcoef[i][6], &pcoef[i][7]);
   }
-  fclose( sf );
+  fclose(sf);
 
-  sf = fopen( MYTRIM_DATA_DIR"/SLFCTR.dat", "rt" );
-  fgets( buf, 2000, sf ); // header
-  for( int i = 0; i < 92; i++ )
-    fscanf( sf, "%*d %lf\n", &scoef[i].lfctr );
-  fclose( sf );
+  sf = fopen(MYTRIM_DATA_DIR"/SLFCTR.dat", "rt");
+  fgets(buf, 2000, sf); // header
+  for (int i = 0; i < 92; i++)
+    fscanf(sf, "%*d %lf\n", &scoef[i].lfctr);
+  fclose(sf);
 
-  sf = fopen( MYTRIM_DATA_DIR"/ELNAME.dat", "rt" );
-  for( int i = 0; i < 92; i++ )
-    fscanf( sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name );
+  sf = fopen(MYTRIM_DATA_DIR"/ELNAME.dat", "rt");
+  for (int i = 0; i < 92; i++)
+    fscanf(sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name);
 
-  fclose( sf );
+  fclose(sf);
 }

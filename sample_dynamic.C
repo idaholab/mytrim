@@ -15,33 +15,33 @@ sampleDynamic::sampleDynamic(simconfType * simconf_, double x, double y, double 
   bc[2] = PBC;
 }
 
-void sampleDynamic::averages( const ionBase *_pka )
+void sampleDynamic::averages(const ionBase *_pka)
 {
   // remember pka, we do not calculate averages right now, but on demand!
   pka = _pka;
 
   // reset update status, to trigger on-demand updates
   int i = material.size();
-  while( i > 0 ) material[--i]->dirty = true;
+  while (i > 0) material[--i]->dirty = true;
 }
 
-materialBase*  sampleDynamic::lookupMaterial( double* pos )
+materialBase*  sampleDynamic::lookupMaterial(double* pos)
 {
   //std::cout << "lookuplayer" << std::endl;
   materialBase* m = material[lookupLayer(pos)];
   //std::cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << std::endl;
 
   // on-demand update
-  if( m->dirty )
+  if (m->dirty)
   {
     //std::cout << "on demand aver" << std::endl;
-    m->average( pka );
+    m->average(pka);
     //std::cout << m << ' ' << m->arho << ' ' << m->am << ' ' << m->az << ' ' << m->mu << std::endl;
   }
   return m;
 }
 
-void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
+void sampleDynamic::addAtomsToLayer(int layer, int n, int Z)
 {
   unsigned int i, ne = material[layer]->element.size();
   double rnorm = 0.0; // volume of one atom with the fractional composition of the layer at natural density
@@ -69,13 +69,13 @@ void sampleDynamic::addAtomsToLayer( int layer, int n, int Z )
   // number of atoms in layer
   int nl    = material[layer]->arho * w[1] * w[2] * layerThickness[layer];
 
-  // mass change of layer ( g/mole = g/(0.6022*10^24))
+  // mass change of layer (g/mole = g/(0.6022*10^24))
   double ma = 0.6022 * material[layer]->element[ne]->m * double(n);
 
   // keep density consistent...
-  layerThickness[layer] += ma / ( material[layer]->rho * w[1] * w[2] );
+  layerThickness[layer] += ma / (material[layer]->rho * w[1] * w[2]);
 
-  // change stoichiometry (arho 1/ang^3 * ang^3 )
+  // change stoichiometry (arho 1/ang^3 * ang^3)
   if (material[layer]->element[ne]->t*nl + double(n) < 0.0)
   {
     std::cout << "Crap, t*nl=" << material[layer]->element[ne]->t*nl << ", but n=" << n << std::endl;

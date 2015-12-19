@@ -2,19 +2,20 @@
 #define MYTRIM_ION_H
 
 #include <iostream>
+#include "simconf.h"
 
 namespace MyTRIM_NS {
 
 struct ionBase {
   // atomic number, mass, and kinetic energy of the ion
   int z1;
-  double m1, e;
+  Real m1, e;
 
   // normalized velocity vector, and position
-  double dir[3], pos[3];
+  Real dir[3], pos[3];
 
   // internal clock (needed for visualization)
-  double t;
+  Real t;
 
   // recoil generation number, unique ID
   int gen, id;
@@ -23,7 +24,7 @@ struct ionBase {
   int tag;
 
   // final energy up to which this recoil will be followed
-  double ef;
+  Real ef;
 
   // state of the recoil:
   //   MOVING          ion is still being tracked
@@ -35,11 +36,11 @@ struct ionBase {
   static const int DELETE = -1;
 
   ionBase();
-  ionBase( ionBase* prototype );
-  ionBase( int _z1, double _m1, double _e );
+  ionBase(ionBase* prototype);
+  ionBase(int z1_, Real m1_, Real e_);
   virtual ~ionBase() {};
 
-  virtual void parent( ionBase* parent );
+  virtual void parent(ionBase* parent);
   virtual ionBase* spawnRecoil();
 
   void set_ef();
@@ -49,7 +50,7 @@ std::ostream& operator << (std::ostream& os, const ionBase &i); /// Serialize io
 
 
 struct ionMDtag : public ionBase {
-  // generation after first ion falling into the MD energy gap ( 200eV - 12000eV ) TODO: move to subclass?
+  // generation after first ion falling into the MD energy gap (200eV - 12000eV) TODO: move to subclass?
   int md;
 
   // overwrite this tor return recoil ion objects of type ionMDtag
