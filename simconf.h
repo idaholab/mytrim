@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef MYTRIM_SIMCONF_H
 #define MYTRIM_SIMCONF_H
 
-// building from within magpie
+// building from within MOOSE/Magpie?
 #ifdef MYTRIM_ENABLED
 #include "MooseError.h"
 #include "MooseTypes.h"

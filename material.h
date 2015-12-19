@@ -31,38 +31,38 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 namespace MyTRIM_NS {
 
 struct materialBase {
-  double rho;
+  Real rho;
 
   // set in prepare
-  double am, az; // average mass and atomic number
-  double arho;
+  Real am, az; // average mass and atomic number
+  Real arho;
 
   // set in average
-  double mu;
-  double a, f, epsdg;
-  double fd, kd;
+  Real mu;
+  Real a, f, epsdg;
+  Real fd, kd;
 
-  double pmax;
+  Real pmax;
 
   int tag;
   bool dirty;
 
   std::vector<elementBase*> element;
 
-  materialBase(simconfType * simconf_, double rho_);
+  materialBase(simconfType * simconf_, Real rho_);
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
 
   // compute pka dependent averages
   void average(const ionBase *pka);
-  double getrstop(const ionBase *pka);
+  Real getrstop(const ionBase *pka);
 
   virtual elementBase * getElement(unsigned int nn) { return element[nn]; }
 
 protected:
-  double rpstop(int z2, double e);
-  double rstop(const ionBase *ion, int z2);
+  Real rpstop(int z2, Real e);
+  Real rstop(const ionBase *ion, int z2);
 
   simconfType * simconf;
 };

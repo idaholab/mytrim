@@ -27,23 +27,23 @@ namespace MyTRIM_NS {
 
 struct sampleClusters : sampleBase {
 
-  double sd, kd[3]; // half the spatial diagonal of a hash block, hash block size
+  Real sd, kd[3]; // half the spatial diagonal of a hash block, hash block size
   int *sh, kn[3]; // spatial hash and its dimensions
 
   int *cl, cn, cnm; // cluster linklist, actual number of clusters (incl. ghosts) and number reserved
-  double *c[4]; // three arrays for cluster x,y,z,r^2 coordinates
-  double cmr; // maximum cluster radius in the sample
+  Real *c[4]; // three arrays for cluster x,y,z,r^2 coordinates
+  Real cmr; // maximum cluster radius in the sample
 
-  sampleClusters(double x = 10000.0, double y = 10000.0, double z = 10000.0);
+  sampleClusters(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 
-  virtual materialBase* lookupMaterial(double* pos);
+  virtual materialBase* lookupMaterial(Real* pos);
 
-  int lookupCluster(double* pos, double dr = 0.0);
+  int lookupCluster(Real* pos, Real dr = 0.0);
   void initSpatialhash(int x, int y, int z);
   void clearSpatialHash();
   void clearClusters();
-  void addCluster(double x, double y, double z, double r);
-  void addRandomClusters(unsigned int n, double r, double dr = 0.0);
+  void addCluster(Real x, Real y, Real z, Real r);
+  void addRandomClusters(unsigned int n, Real r, Real dr = 0.0);
 protected:
   void reallocClusters(int n);
 };

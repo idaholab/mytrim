@@ -52,17 +52,17 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  double theta = atof(argv[2]) * M_PI/180.0; // 0 = parallel to wire
-  double diameter  = 10.0*atof(argv[3]);
-  double length  = 11000.0; // 1.1 mu
+  Real theta = atof(argv[2]) * M_PI/180.0; // 0 = parallel to wire
+  Real diameter  = 10.0*atof(argv[3]);
+  Real length  = 11000.0; // 1.1 mu
   bool burried = (atoi(argv[4]) != 0);
-  double mult = atof(argv[5]);
+  Real mult = atof(argv[5]);
   bool xyz_out  = (atoi(argv[6]) != 0);
   bool ldat_out = (atoi(argv[7]) != 0);
 
   // ion series
   const int nstep = 5;
-  double ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
+  Real ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
   int ion_count[nstep];
   ionBase* ion_prototype[nstep];
   ion_prototype[0] = new ionBase( 5, 11.0 , 320.0e3); // Z,m,E
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   // calculate actual ion numbers
   for (int s = 0; s < nstep; ++s)
   {
-    double A; // irradiated area in Ang^2
+    Real A; // irradiated area in Ang^2
     if (burried)
       A =(length + sample->w[0]) * (length + sample->w[1]);
     else
@@ -145,10 +145,10 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  double norm;
-  double jmp = 2.7; // diffusion jump distance
+  Real norm;
+  Real jmp = 2.7; // diffusion jump distance
   int jumps;
-  double dif[3];
+  Real dif[3];
 
   //snprintf(fname, 199, "%s.Erec", argv[1]);
   //FILE *erec = fopen(fname, "wt");
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
   // map concentration along length
   int *lbins[2];
   int lx = 100; // 100 bins
-  int dl = length/double(lx);
+  int dl = length/Real(lx);
   lbins[1] = new int[lx]; // P z=15
   for (int i = 0; i < 2; ++i)
   {
@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
         else
         {
           // start on side _or_ top!
-          double vpos[3], t;
+          Real vpos[3], t;
           do
           {
             do
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
     std::stringstream ldat_name;
     ldat_name << argv[1] << ".ldat";
     std::ofstream ldat(ldat_name.str().c_str());
-    double dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
+    Real dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
     for (int l = 0; l < lx; ++l)
       ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << std::endl;
     ldat.close();

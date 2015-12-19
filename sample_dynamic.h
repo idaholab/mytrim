@@ -33,9 +33,9 @@ struct sampleDynamic : sampleLayers {
 
   virtual void averages(const ionBase *_pka);
 
-  sampleDynamic(simconfType * _simconf, double x, double y, double z);
+  sampleDynamic(simconfType * _simconf, Real x, Real y, Real z);
 
-  virtual materialBase* lookupMaterial(double* pos);
+  virtual materialBase* lookupMaterial(Real* pos);
   virtual void addAtomsToLayer(int layer, int n, int Z);
 
 protected:

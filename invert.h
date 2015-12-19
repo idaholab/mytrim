@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef MYTRIM_INVERT_H
 #define MYTRIM_INVERT_H
 
+#include "simconf.h"
 #include <cmath>
 
 namespace MyTRIM_NS {
@@ -28,11 +29,11 @@ namespace MyTRIM_NS {
 class inverter
 {
 protected :
-  double maxx, maxf, tol;
+  Real maxx, maxf, tol;
 
 public :
-  virtual double f(double x) = 0;
-  double x(double f);
+  virtual Real f(Real x) = 0;
+  Real x(Real f);
 
   inverter() { maxx = 0.0; }
 };
@@ -41,19 +42,19 @@ public :
 class massInverter : public inverter
 {
 public:
-  virtual double f(double x);
+  virtual Real f(Real x);
 
   massInverter() { maxx = 235.0; tol = 1e-7; maxf = f(maxx); }
 };
 
 class energyInverter : public inverter
 {
- double A;
+ Real A;
 public:
-  virtual double f(double x);
+  virtual Real f(Real x);
 
   energyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
-  void setMass(double _A) {
+  void setMass(Real _A) {
     A = _A;
     maxf = f(maxx);
   }

@@ -27,12 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 namespace MyTRIM_NS {
 
 struct sampleLayers : sampleBase {
-  std::vector<double> layerThickness;
+  std::vector<Real> layerThickness;
 
-  sampleLayers(double x, double y, double z): sampleBase(x, y, z) {};
-  virtual int lookupLayer(double* pos);
-  virtual materialBase* lookupMaterial(double* pos);
-  virtual double rangeMaterial(double* pos, double* dir);
+  sampleLayers(Real x, Real y, Real z): sampleBase(x, y, z) {};
+  virtual int lookupLayer(Real* pos);
+  virtual materialBase* lookupMaterial(Real* pos);
+  virtual Real rangeMaterial(Real* pos, Real* dir);
 };
 
 }

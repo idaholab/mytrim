@@ -3,10 +3,10 @@
 
 using namespace MyTRIM_NS;
 
-int sampleLayers::lookupLayer(double* pos)
+int sampleLayers::lookupLayer(Real* pos)
 {
   unsigned int i;
-  double d = 0.0;
+  Real d = 0.0;
 
   for (i = 0; i < layerThickness.size(); ++i)
   {
@@ -20,23 +20,23 @@ int sampleLayers::lookupLayer(double* pos)
   return i;
 }
 
-materialBase*  sampleLayers::lookupMaterial(double * pos)
+materialBase*  sampleLayers::lookupMaterial(Real * pos)
 {
   return material[lookupLayer(pos)];
 }
 
 
-double sampleLayers::rangeMaterial(double * pos, double * dir)
+Real sampleLayers::rangeMaterial(Real * pos, Real * dir)
 {
   // assume dir is a normalized vector
-  double d = 0.0;
+  Real d = 0.0;
   unsigned int i;
-  const double unrestricted = 1.0e6;
+  const Real unrestricted = 1.0e6;
 
   // parallel to layer interfaces
   if (dir[0] == 0.0) return unrestricted;
 
-  double epsilon = std::abs(1.0e-10 / dir[0]);
+  Real epsilon = std::abs(1.0e-10 / dir[0]);
 
   // outside film
   if (pos[0] < 0.0)

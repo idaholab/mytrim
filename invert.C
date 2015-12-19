@@ -4,12 +4,12 @@
 
 using namespace MyTRIM_NS;
 
-double inverter::x(double f1)
+Real inverter::x(Real f1)
 {
-  double f2, x1 = maxx / 2.0;
-  double w = maxx / 4.0;
+  Real f2, x1 = maxx / 2.0;
+  Real w = maxx / 4.0;
 
-  // no point in doing more than 32 iterationd for double (precission)
+  // no point in doing more than 32 iterationd for Real (precission)
   for (int i = 0; i < 32; i++)
   {
     f2 = f(x1) / maxf;
@@ -24,7 +24,7 @@ double inverter::x(double f1)
   return x1;
 }
 
-double massInverter::f(double x)
+Real massInverter::f(Real x)
 {
   return (  100.088
            + 0.112798 * erff(-5.56257 + 0.0471405 * x)
@@ -35,8 +35,8 @@ double massInverter::f(double x)
         ) / 200.1756;
 }
 
-double energyInverter::f(double x)
+Real energyInverter::f(Real x)
 {
-  double x1 = x / (1.0 - A / 234.0);
+  Real x1 = x / (1.0 - A / 234.0);
   return (-0.00014122 + (0.00014122 -7.12299E-7 * x1) * std::exp(0.0886603 * x1)) / 127.216;
 }

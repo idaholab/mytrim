@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
       return 1;
   }
 
-  //double r = 10.0;
-  double r = atof(argv[2]); //10.0;
-  double Cbf = atof(argv[3]);
+  //Real r = 10.0;
+  Real r = atof(argv[2]); //10.0;
+  Real Cbf = atof(argv[3]);
   int Nev = atoi(argv[4]);
 
   //sample->bc[0] = CUT; // no pbc in x dir
@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
                            int(sample->w[2] / r) - 1);
 
 
-  // double atp = 0.1; // 10at% Mo 90at%Cu
-  double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  double v_cl = 4.0/3.0 * M_PI * cub(r);
+  // Real atp = 0.1; // 10at% Mo 90at%Cu
+  Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
+  Real v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
-  double N_UO2 = material->arho;
+  Real N_UO2 = material->arho;
 
   // xe bubble
   int gas_z1 = 54;
@@ -168,21 +168,21 @@ int main(int argc, char *argv[])
   N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * std::pow(r,3.0));
   std::cout << "N_UO2 = " << N_UO2 << std::endl;
 
-  double N_gas = sample->cn * material->arho * 4.0/3.0 * M_PI * std::pow(r,3.0);
+  Real N_gas = sample->cn * material->arho * 4.0/3.0 * M_PI * std::pow(r,3.0);
   std::cout << "N_gas = " << N_gas << " (arho=" << material->arho << ")\n";
 
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  double norm;
-  double jmp = 2.7; // diffusion jump distance
+  Real norm;
+  Real jmp = 2.7; // diffusion jump distance
   int jumps;
-  double dif[3];
+  Real dif[3];
 
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  double A1, A2, Etot, E1, E2;
+  Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  double pos1[3];
+  Real pos1[3];
 
   ionMDtag *ff1, *ff2, *pka;
 
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
               << "A2=" << A1 << " Z2=" << Z2 << " (" << E2 << " MeV)\n";
 
     // total energy of this fission event
-    double Efiss = ff1->e + ff2->e;
+    Real Efiss = ff1->e + ff2->e;
 
     while (!recoils.empty())
     {

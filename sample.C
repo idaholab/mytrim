@@ -2,7 +2,7 @@
 
 using namespace MyTRIM_NS;
 
-sampleBase::sampleBase(double x, double y, double z)
+sampleBase::sampleBase(Real x, Real y, Real z)
 {
   w[0] = x; w[1] = y; w[2] = z;
   for (unsigned int i = 0; i < 3; ++i)

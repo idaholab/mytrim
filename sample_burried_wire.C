@@ -7,7 +7,7 @@
 
 using namespace MyTRIM_NS;
 
-sampleBurriedWire::sampleBurriedWire(double x, double y, double z)  : sampleWire(x, y, z)
+sampleBurriedWire::sampleBurriedWire(Real x, Real y, Real z)  : sampleWire(x, y, z)
 {
  bc[0] = INF;
  bc[1] = INF;
@@ -15,7 +15,7 @@ sampleBurriedWire::sampleBurriedWire(double x, double y, double z)  : sampleWire
 }
 
 // look if we are within dr of the wire axis
-materialBase* sampleBurriedWire::lookupMaterial(double* pos)
+materialBase* sampleBurriedWire::lookupMaterial(Real* pos)
 {
   // cover layer
   if (pos[2] < 0.0 && pos[2] >= -250.0)

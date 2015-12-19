@@ -81,10 +81,10 @@ protected:
     {
       // calculate modified kinchin pease data
       // http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
-      double ed = 0.0115 * std::pow(material->az, -7.0/3.0) * recoil->e;
-      double g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-      double kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
-      double Ev = recoil->e / (1.0 + kd * g);
+      Real ed = 0.0115 * std::pow(material->az, -7.0/3.0) * recoil->e;
+      Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+      Real kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
+      Real Ev = recoil->e / (1.0 + kd * g);
       simconf->vacancies_created += int(0.8 * Ev / (2.0*element->Edisp));
 
       // TODO: this is missing the energy threshold of 2.5Ed!!!!
@@ -111,7 +111,7 @@ class trimRecoils : public trimPrimaries {
 class trimHistory : public trimBase {
 public:
   trimHistory(simconfType * simconf_, sampleBase *sample_) : trimBase(simconf_, sample_) {};
-  std::vector<double> pos_hist[3];
+  std::vector<Real> pos_hist[3];
 protected:
   virtual bool followRecoil()
   {
@@ -205,7 +205,7 @@ protected:
   // (make sure it keeps its binding enrgy and dissipate emeining E)
   virtual void dissipateRecoilEnergy()
   {
-    double Edep = recoil->e + element->Elbind;
+    Real Edep = recoil->e + element->Elbind;
     os << Edep << ' ' <<  *recoil << std::endl;
     simconf->EnucTotal += Edep;
   };

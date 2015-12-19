@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
   //trimBase *trim = new trimPrimaries(sample);
 
 
-  //double r = 10.0;
-  double r = atof(argv[2]); //10.0;
-  double Cbf = atof(argv[3]);
+  //Real r = 10.0;
+  Real r = atof(argv[2]); //10.0;
+  Real Cbf = atof(argv[3]);
 
   sample->bc[0] = sampleBase::INF; // no PBC in x (just clusterless matrix)
   sample->initSpatialhash(int(sample->w[0] / r) - 1,
@@ -83,9 +83,9 @@ int main(int argc, char *argv[])
                            int(sample->w[2] / r) - 1);
 
 
-  // double atp = 0.1; // 10at% Mo 90at%Cu
-  double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  double v_cl = 4.0/3.0 * M_PI * cub(r);
+  // Real atp = 0.1; // 10at% Mo 90at%Cu
+  Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
+  Real v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
 
   n_cl = v_sam * 1.5e-7 * Cbf ; // Allen08 1.5e-4/nm^3
@@ -218,12 +218,12 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  double norm;
-  double jmp = 2.7; // diffusion jump distance
+  Real norm;
+  Real jmp = 2.7; // diffusion jump distance
   int jumps;
-  double dif[3], dif2[3];
+  Real dif[3], dif2[3];
 
-  double A1, A2, Etot, E1, E2;
+  Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
@@ -232,14 +232,14 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  double pos1[3], pos2[3];
+  Real pos1[3], pos2[3];
 
   ionMDtag *ff1, *pka;
   int id = 1;
 
-  double A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
-  //double A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
-  //double A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
+  Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
+  //Real A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  //Real A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
   // 1000 ions
   for (int n = 0; n < nstep; n++)
@@ -373,13 +373,13 @@ int main(int argc, char *argv[])
 /*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
   // just for the PKA
-  double Zatoms = 26.0, Matoms = 56.0;
-  double Epka = 5.0e6;
-  double ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
-  double g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-  double kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
-  double Ev = Epka / (1.0 + kd * g);
-  double Ed = 40.0;
+  Real Zatoms = 26.0, Matoms = 56.0;
+  Real Epka = 5.0e6;
+  Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
+  Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
+  Real Ev = Epka / (1.0 + kd * g);
+  Real Ed = 40.0;
   printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed));
 

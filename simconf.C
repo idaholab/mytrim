@@ -16,7 +16,7 @@ namespace MyTRIM_NS {
 
 using namespace MyTRIM_NS;
 
-simconfType::simconfType(double _alfa)
+simconfType::simconfType(Real _alfa)
 {
   ed = 25.0; // displacement energy
   alfa = _alfa; // angle of incidence (degrees)

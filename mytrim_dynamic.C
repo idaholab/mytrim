@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  double sx, sy, sz;
+  Real sx, sy, sz;
   std::cin >> sx >> sy >> sz;
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "SS " << sx << ' ' << sy << ' ' << sz << std::endl;
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 
   // Read Materials description from stdin
   int nlayer;
-  double lthick, lrho, nelem;
+  Real lthick, lrho, nelem;
   std::string lename;
   std::cin >> nlayer;
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -112,14 +112,14 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  double norm;
-  double jmp = 2.7; // diffusion jump distance
+  Real norm;
+  Real jmp = 2.7; // diffusion jump distance
   int jumps;
-  double dif[3];
+  Real dif[3];
 
-  // double A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  // double A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
-  double A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
+  // Real A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  // Real A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
+  Real A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
   FILE *erec = fopen(fname, "wt");
@@ -127,14 +127,14 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  double pos1[3];
+  Real pos1[3];
 
   ionBase *ff1, *ff2, *pka;
   int id = 1;
   int layer1, layer2;
 
   int nrec = 0;
-  double sum_r2, opos[3];
+  Real sum_r2, opos[3];
 
   // 1000 PKA
   for (int n = 0; n < 35000; n++)

@@ -55,12 +55,12 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  double epka  = atof(argv[2]);
-  double theta = atof(argv[3]) * M_PI/180.0; // 0 = perpendicular to wire
+  Real epka  = atof(argv[2]);
+  Real theta = atof(argv[3]) * M_PI/180.0; // 0 = perpendicular to wire
   int numpka  = atoi(argv[4]);
   int   zpka  = atoi(argv[5]);
-  double mpka  = atof(argv[6]);
-  double dwire  = atof(argv[7])*20.0;
+  Real mpka  = atof(argv[6]);
+  Real dwire  = atof(argv[7])*20.0;
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
@@ -106,10 +106,10 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  double norm;
-  double jmp = 2.7; // diffusion jump distance
+  Real norm;
+  Real jmp = 2.7; // diffusion jump distance
   int jumps;
-  double dif[3];
+  Real dif[3];
 
   //snprintf(fname, 199, "%s.Erec", argv[1]);
   //FILE *erec = fopen(fname, "wt");
@@ -209,8 +209,8 @@ int main(int argc, char *argv[])
     {
       for (int x = 0; x <= mx; x++)
       {
-        double x1 = double(x)/double(mx)*sample->w[0];
-        double y1 = double(y)/double(my)*sample->w[1];
+        Real x1 = Real(x)/Real(mx)*sample->w[0];
+        Real y1 = Real(y)/Real(my)*sample->w[1];
         fprintf(intf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? imap[x][y][e] : 0);
         fprintf(vacf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? trim->vmap[x][y][e] : 0);
         fprintf(netf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? (imap[x][y][e] - trim->vmap[x][y][e]) : 0);

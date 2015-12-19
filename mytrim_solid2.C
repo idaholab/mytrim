@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
 
   sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
 
-  // double atp = 0.1; // 10at% Mo 90at%Cu
-  double v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  double s_sam = sample->w[1] * sample->w[2];
+  // Real atp = 0.1; // 10at% Mo 90at%Cu
+  Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
+  Real s_sam = sample->w[1] * sample->w[2];
 
   materialBase *material;
   elementBase *element;
@@ -184,15 +184,15 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  double norm;
-  double jmp = 2.7; // diffusion jump distance
+  Real norm;
+  Real jmp = 2.7; // diffusion jump distance
   int jumps;
-  double dif[3], dif2[3];
+  Real dif[3], dif2[3];
 
   massInverter *m = new massInverter;
   energyInverter *e = new energyInverter;
 
-  double A1, A2, Etot, E1, E2;
+  Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
@@ -201,15 +201,15 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  double pos1[3], pos2[3];
+  Real pos1[3], pos2[3];
 
   ionBase *ff1, *pka;
   int id = 1;
 
-  //double A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
-  double A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
-  //double A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
-  //double A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
+  //Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
+  Real A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
+  //Real A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
+  //Real A = 56.0, E = 5.0e6; int Z = 26; // 5MeV Fe
 
   // main loop
   for (int n = 0; n < nstep; n++)
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
       // pka is O or Ti
       //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
       // pka is Xe
-      double oerec = pka->e;
+      Real oerec = pka->e;
 
       if (pka->z1 == 542)
       {
@@ -302,21 +302,21 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
-  double surf = sample->w[1] * sample->w[2];
-  double natom = v_sam * sample->material[0]->arho;
+  Real surf = sample->w[1] * sample->w[2];
+  Real natom = v_sam * sample->material[0]->arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)",
           v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));
 
 /*
   // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
   // just for the PKA
-  double Zatoms = 26.0, Matoms = 56.0;
-  double Epka = 5.0e6;
-  double ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
-  double g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-  double kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
-  double Ev = Epka / (1.0 + kd * g);
-  double Ed = 40.0;
+  Real Zatoms = 26.0, Matoms = 56.0;
+  Real Epka = 5.0e6;
+  Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
+  Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
+  Real Ev = Epka / (1.0 + kd * g);
+  Real Ed = 40.0;
   printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
           100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed));
 

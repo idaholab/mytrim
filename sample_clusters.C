@@ -8,7 +8,7 @@
 
 using namespace MyTRIM_NS;
 
-sampleClusters::sampleClusters(double x, double y, double z) :
+sampleClusters::sampleClusters(Real x, Real y, Real z) :
     sampleBase(x, y, z)
 {
   sh = 0;
@@ -18,7 +18,7 @@ sampleClusters::sampleClusters(double x, double y, double z) :
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-materialBase* sampleClusters::lookupMaterial(double * pos)
+materialBase* sampleClusters::lookupMaterial(Real * pos)
 {
   int l = lookupCluster(pos, 0.0);
 
@@ -31,9 +31,9 @@ materialBase* sampleClusters::lookupMaterial(double * pos)
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-int sampleClusters::lookupCluster(double * pos, double dr)
+int sampleClusters::lookupCluster(Real * pos, Real dr)
 {
-  double dif[3], r2;
+  Real dif[3], r2;
   int k[3], k1[3], k2[3], j[3], l, ks;
 
   // spatial hash center and span
@@ -108,7 +108,7 @@ void sampleClusters::initSpatialhash(int x, int y, int z)
   sd = 0.0;
   for (int i = 0; i < 3; i++)
   {
-    kd[i] = w[i] / double(kn[i]);
+    kd[i] = w[i] / Real(kn[i]);
     sd += kd[i];
   }
   sd = 0.5 * std::sqrt(sd);
@@ -127,7 +127,7 @@ void sampleClusters::reallocClusters(int n)
     cl = (int*)realloc(cl, sizeof(int) * n);
     for (int i = 0; i < 4; i++)
     {
-      c[i] = (double*)realloc(c[i], sizeof(double) * n);
+      c[i] = (Real*)realloc(c[i], sizeof(Real) * n);
     }
     for (int j = cnm; j < n; j++) cl[j] = -1;
     cnm = n;
@@ -141,10 +141,10 @@ void sampleClusters::clearClusters()
   for (int i = 0; i < cnm; i++) cl[i] = -1;
 }
 
-void sampleClusters::addCluster(double x, double y, double z, double r)
+void sampleClusters::addCluster(Real x, Real y, Real z, Real r)
 {
   int k[3], l;
-  //double cb[4];
+  //Real cb[4];
 
   if (cn >= cnm) reallocClusters(cnm + cnm/10 + 10); // get 10% more slots plus 10
   c[0][cn] = x; c[1][cn] = y; c[2][cn] = z; c[3][cn] = r;
@@ -172,9 +172,9 @@ void sampleClusters::addCluster(double x, double y, double z, double r)
 }
 
 // add non-overlapping clusters with a minimum surface-surface separation of dr
-void sampleClusters::addRandomClusters(unsigned int n, double r, double dr)
+void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr)
 {
-  double npos[3];
+  Real npos[3];
 
   reallocClusters(n + n/10); //allocate 10% more for ghost bubbles (get more later if needed)
 

@@ -21,22 +21,22 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
   recoil_queue_ptr = &recoils;
 
   //e = pka.e;
-  double pl = 0.0;
-  double max = 0.0;
-  //double e0kev = pka->e / 1000.0;
+  Real pl = 0.0;
+  Real max = 0.0;
+  //Real e0kev = pka->e / 1000.0;
   int ic = 0;
   unsigned int nn; //, ie;
-  double r1, r2, hh;
-  double eps, eeg, ls, p, b, r, see, dee;
-  double s2, c2, ct, st;
-  double rr, ex1, ex2, ex3, ex4, v ,v1;
-  double fr, fr1, q, roc, sqe;
-  double cc, aa, ff, co, delta;
-  double den;
-  double rdir[3], perp[3], norm, psi;
+  Real r1, r2, hh;
+  Real eps, eeg, ls, p, b, r, see, dee;
+  Real s2, c2, ct, st;
+  Real rr, ex1, ex2, ex3, ex4, v ,v1;
+  Real fr, fr1, q, roc, sqe;
+  Real cc, aa, ff, co, delta;
+  Real den;
+  Real rdir[3], perp[3], norm, psi;
 
-  double p1, p2;
-  //double range;
+  Real p1, p2;
+  //Real range;
 
   // generate random number for use in the first loop iteration only!
   r1 = dr250();
@@ -328,10 +328,10 @@ void trimBase::vacancyCreation()
   if (recoil->gen == 1)
   {
     // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
-    double ed = 0.0115 * std::pow(material->az, -7.0/3.0) * recoil->e;
-    double g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-    double kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
-    double Ev = recoil->e / (1.0 + kd * g);
+    Real ed = 0.0115 * std::pow(material->az, -7.0/3.0) * recoil->e;
+    Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+    Real kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
+    Real Ev = recoil->e / (1.0 + kd * g);
     simconf->KP_vacancies += 0.8 * Ev / (2.0 * element->Edisp);
     // should be something like material->Edisp (average?)
   }
@@ -340,14 +340,14 @@ void trimBase::vacancyCreation()
 
 
 /*
-materialBase* sampleType::lookupLayer(const double* pos)
+materialBase* sampleType::lookupLayer(const Real* pos)
 {
-  double dif[3];
+  Real dif[3];
 
   dif[0] = pos[0] - 100.0;
   dif[1] = pos[1];
   dif[2] = pos[2];
-  double r2 = v_dot(dif, dif);
+  Real r2 = v_dot(dif, dif);
   if (r2 < 2500.0) // r<50.0
     return material[1];
   else

@@ -2,7 +2,7 @@
 
 using namespace MyTRIM_NS;
 
-materialBase*  sampleSolid::lookupMaterial(double * /* pos */)
+materialBase*  sampleSolid::lookupMaterial(Real * /* pos */)
 {
   return material[0];
 }
