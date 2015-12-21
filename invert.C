@@ -9,7 +9,7 @@ Real inverter::x(Real f1)
   Real f2, x1 = maxx / 2.0;
   Real w = maxx / 4.0;
 
-  // no point in doing more than 32 iterationd for Real (precission)
+  // no point in doing more than 32 iterations for Real (precission)
   for (int i = 0; i < 32; i++)
   {
     f2 = f(x1) / maxf;
@@ -27,11 +27,11 @@ Real inverter::x(Real f1)
 Real massInverter::f(Real x)
 {
   return (  100.088
-           + 0.112798 * erff(-5.56257 + 0.0471405 * x)
-           + 37.4781 * erff(-19.3772 + 0.137386 * x)
-           + 37.4781 * erff(-13.0462 + 0.137386 * x)
-           + 12.5094 * erff(-30.8853 + 0.229537 * x)
-           + 12.5094 * erff(-23.2853 + 0.229537 * x)
+           + 0.112798 * std::erf(-5.56257 + 0.0471405 * x)
+           + 37.4781 * std::erf(-19.3772 + 0.137386 * x)
+           + 37.4781 * std::erf(-13.0462 + 0.137386 * x)
+           + 12.5094 * std::erf(-30.8853 + 0.229537 * x)
+           + 12.5094 * std::erf(-23.2853 + 0.229537 * x)
         ) / 200.1756;
 }
 
