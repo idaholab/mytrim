@@ -1,4 +1,4 @@
-MyTRIM
+MyTRIM [![Build Status](https://travis-ci.org/idaholab/mytrim.svg?branch=master)](https://travis-ci.org/idaholab/mytrim) 
 ======
 
 Three dimensional binary collision Monte Carlo library for sampling ion
