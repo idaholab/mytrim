@@ -252,8 +252,8 @@ int main(int argc, char *argv[])
     ff1->md = 0;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E;
 
     ff1->dir[0] = 1;
@@ -277,11 +277,11 @@ int main(int argc, char *argv[])
       //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      //if (pka->z1 == 54)
+      //if (pka->_Z == 54)
       // pka is B or Ti
-      if (pka->z1 == 5 || pka->z1 == 22)
+      if (pka->_Z == 5 || pka->_Z == 22)
       {
         if (pka->gen > 0)
         {
@@ -300,12 +300,12 @@ int main(int argc, char *argv[])
             //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i]);
           }
 //printf("\n");
-//if (pka->z1 == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
+//if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
 	}
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       //pka->md = id++;
 
       trim->trim(pka, recoils);
@@ -313,11 +313,11 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      //if (pka->z1 == 54)
+      //if (pka->_Z == 54)
       // pka is B or Ti
-      if (pka->z1 == 5 || pka->z1 == 22)
+      if (pka->_Z == 5 || pka->_Z == 22)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
             dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
             dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
           }
-          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->z1, pka->pos[0], pka->pos[1], pka->pos[2], std::sqrt(v_dot(dif2, dif2)));
+          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->_Z, pka->pos[0], pka->pos[1], pka->pos[2], std::sqrt(v_dot(dif2, dif2)));
         }
 
 

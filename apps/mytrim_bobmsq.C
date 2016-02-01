@@ -179,8 +179,8 @@ int main(int argc, char *argv[])
     ff1->tag = -1;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E;
 
     ff1->dir[0] = 1;

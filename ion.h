@@ -7,9 +7,14 @@
 namespace MyTRIM_NS {
 
 struct ionBase {
-  // atomic number, mass, and kinetic energy of the ion
-  int z1;
-  Real m1, e;
+  /// atomic number
+  int _Z;
+
+  /// mass
+  Real _m;
+
+  /// kinetic energy
+  Real e;
 
   // normalized velocity vector, and position
   Real dir[3], pos[3];
@@ -28,8 +33,8 @@ struct ionBase {
 
   // state of the recoil:
   //   MOVING          ion is still being tracked
-  //   REPLACEMENT     pka->z1 == element->z && pka->e < element->Edisp
-  //   SUBSTITUTIONAL  pka->z1 != element->z && pka->e < element->Edisp
+  //   REPLACEMENT     pka->_Z == element->z && pka->e < element->Edisp
+  //   SUBSTITUTIONAL  pka->_Z != element->z && pka->e < element->Edisp
   //   INTERSTITIAL    no recoil spawned and pke->e < pka->ef
   //   LOST            ion has left the sample
   enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } state;
@@ -37,7 +42,7 @@ struct ionBase {
 
   ionBase();
   ionBase(ionBase* prototype);
-  ionBase(int z1_, Real m1_, Real e_);
+  ionBase(int Z, Real m, Real e_);
   virtual ~ionBase() {};
 
   virtual void parent(ionBase* parent);
