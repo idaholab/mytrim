@@ -186,9 +186,9 @@ int main(int argc, char *argv[])
     do
     {
       for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
-      norm = v_dot(ff1->dir, ff1->dir);
+      norm = ff1->dir.size_sq();
     }
-    while (norm <= 0.0001);
+    while (norm <= 0.0001 || norm > 0.25);
 
     /*
     norm = 1.0;
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
     ff1->dir[1] = 0.0;
     ff1->dir[2] = 0.0;
     */
-    v_scale(ff1->dir, 1.0 / std::sqrt(norm));
+    ff1->dir /= std::sqrt(norm);
 
     // random origin (outside cluster!)
     do {
