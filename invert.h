@@ -32,8 +32,8 @@ protected :
   Real maxx, maxf, tol;
 
 public :
-  virtual Real f(Real x) = 0;
-  Real x(Real f);
+  virtual Real f(Real x) const = 0;
+  Real x(Real f) const;
 
   inverter() { maxx = 0.0; }
 };
@@ -42,7 +42,7 @@ public :
 class massInverter : public inverter
 {
 public:
-  virtual Real f(Real x);
+  virtual Real f(Real x) const;
 
   massInverter() { maxx = 235.0; tol = 1e-7; maxf = f(maxx); }
 };
@@ -51,7 +51,7 @@ class energyInverter : public inverter
 {
  Real A;
 public:
-  virtual Real f(Real x);
+  virtual Real f(Real x) const;
 
   energyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
   void setMass(Real _A) {

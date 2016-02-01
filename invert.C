@@ -1,18 +1,15 @@
 #include "invert.h"
-
 #include <stdio.h>
-
-
 
 using namespace MyTRIM_NS;
 
-Real inverter::x(Real f1)
+Real inverter::x(Real f1) const
 {
   Real f2, x1 = maxx / 2.0;
   Real w = maxx / 4.0;
 
   // no point in doing more than 32 iterations for Real (precission)
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < 32; ++i)
   {
     f2 = f(x1) / maxf;
     if (std::abs(f2 - f1) <= tol) break;
@@ -26,7 +23,7 @@ Real inverter::x(Real f1)
   return x1;
 }
 
-Real massInverter::f(Real x)
+Real massInverter::f(Real x) const
 {
   return (  100.088
            + 0.112798 * erff(-5.56257 + 0.0471405 * x)
@@ -37,7 +34,7 @@ Real massInverter::f(Real x)
         ) / 200.1756;
 }
 
-Real energyInverter::f(Real x)
+Real energyInverter::f(Real x) const
 {
   Real x1 = x / (1.0 - A / 234.0);
   return (-0.00014122 + (0.00014122 -7.12299E-7 * x1) * std::exp(0.0886603 * x1)) / 127.216;
