@@ -47,14 +47,14 @@ void materialBase::prepare()
 // make sure layers are prepare'd first!
 void materialBase::average(const ionBase * pka)
 {
-  mu = pka->m1 / am;
+  mu = pka->_m / am;
 
   // universal or firsov screening length
-  a = .5292 * .8853 / (std::pow(Real(pka->z1), 0.23) + std::pow(az, 0.23));
-  //a = .5292 * .8853 / std::pow(pow(Real(pka.z1), 0.5) + std::pow(az, 0.5), 2.0/3.0);
+  a = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(az, 0.23));
+  //a = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(az, 0.5), 2.0/3.0);
 
   // mean flight path0
-  f = a * am / (az * Real(pka->z1) * 14.4 * (pka->m1 + am));
+  f = a * am / (az * Real(pka->_Z) * 14.4 * (pka->_m + am));
   //eps0 = e0 * f;
   epsdg = simconf->tmin * f * std::pow(1.0 + mu, 2.0) / (4.0 * mu);
 
@@ -64,12 +64,12 @@ void materialBase::average(const ionBase * pka)
 
   for (unsigned int i = 0; i < element.size(); ++i)
   {
-    element[i]->my = pka->m1 / element[i]->m;
+    element[i]->my = pka->_m / element[i]->m;
     element[i]->ec = 4.0 * element[i]->my / std::pow(1.0 + element[i]->my, 2.0);
-    element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->z1), 0.23) + std::pow(element[i]->z, 0.23));
-    //ai = .5292 * .8853 / std::pow(pow(Real(pka.z1), 0.5) + std::pow(element[i].z, 0.5), 2.0/3.0);
+    element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(element[i]->z, 0.23));
+    //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(element[i].z, 0.5), 2.0/3.0);
     element[i]->fi = element[i]->ai * element[i]->m /
-                     (Real(pka->z1) * Real(element[i]->z) * 14.4 * (pka->m1 + element[i]->m));
+                     (Real(pka->_Z) * Real(element[i]->z) * 14.4 * (pka->_m + element[i]->m));
   }
 
   dirty = false;
@@ -116,7 +116,7 @@ Real materialBase::rstop(const ionBase * ion, int z2)
   Real e, vrmin, yrmin, v, vr, yr, vmin, m1;
   Real a, b, q, q1, l, l0, l1;
   Real zeta;
-  int z1 = ion->z1;
+  int z1 = ion->_Z;
   Real fz1 = Real(z1), fz2 = Real(z2);
   Real eee, sp, power;
   Real se;
@@ -127,10 +127,10 @@ Real materialBase::rstop(const ionBase * ion, int z2)
   Real vfermi = simconf->scoef[z2-1].vfermi;
   //Real atrho = simconf->scoef[z2-1].atrho;
 
-  if (ion->m1 == 0.0)
+  if (ion->_m == 0.0)
     m1 = mm1;
   else
-    m1 = ion->m1;
+    m1 = ion->_m;
 
   e = 0.001 * ion->e / m1;
 

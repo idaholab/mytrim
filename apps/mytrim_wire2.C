@@ -254,7 +254,7 @@ int main(int argc, char *argv[])
 
         // do ion analysis/processing BEFORE the cascade here
 
-        if (pka->z1 == ion_prototype[s]->z1 )
+        if (pka->_Z == ion_prototype[s]->_Z )
         {
           //printf( "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
         }
@@ -272,13 +272,13 @@ int main(int argc, char *argv[])
           {
             if (xyz_out)
             {
-              xyz_data << simconf->scoef[pka->z1-1].sym << ' '
+              xyz_data << simconf->scoef[pka->_Z-1].sym << ' '
                       << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << std::endl;
               xyz_lines++;
             }
 
             if (ldat_out)
-              lbins[ (pka->z1 == 5) ? 0 : 1 ][l]++;
+              lbins[ (pka->_Z == 5) ? 0 : 1 ][l]++;
           }
         }
 

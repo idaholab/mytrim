@@ -225,8 +225,8 @@ int main(int argc, char *argv[])
     Z1 = round((A1 * 92.0) / 235.0);
     Z2 = 92 - Z1;
 
-    ff1->z1 = Z1;
-    ff1->m1 = A1;
+    ff1->_Z = Z1;
+    ff1->_m = A1;
     ff1->e  = E1 * 1.0e6;
 
     do
@@ -248,8 +248,8 @@ int main(int argc, char *argv[])
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
 
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
+    ff2->_Z = Z2;
+    ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
     ff2->md = 0;
 
@@ -269,7 +269,7 @@ int main(int argc, char *argv[])
       sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
-      if (pka->z1 == gas_z1)
+      if (pka->_Z == gas_z1)
       {
 	      // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
@@ -299,7 +299,7 @@ int main(int argc, char *argv[])
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       trim->trim(pka, recoils);
 
       // printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is GAS
-      if (pka->z1 == gas_z1)
+      if (pka->_Z == gas_z1)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);

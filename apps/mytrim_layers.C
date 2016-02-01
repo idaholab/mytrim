@@ -149,8 +149,8 @@ int main(int argc, char *argv[])
     ff1->tag = -1;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E;
 
     ff1->dir[0] = 1;
@@ -172,18 +172,18 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
 
       for (int i = 0; i < 3; i++)
         opos[i] = pka->pos[i];
 
       // follow this ion's trajectory and store recoils
-      //if (pka->z1 == 29 || pka->z1 == Z)
-      //if (pka->z1 == 29 || pka->z1 == Z)
+      //if (pka->_Z == 29 || pka->_Z == Z)
+      //if (pka->_Z == 29 || pka->_Z == Z)
       trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
-      if (pka->z1 != Z)
+      if (pka->_Z != Z)
       {
         for (int i = 0; i < 3; i++)
           sum_r2 += sqr(opos[i] - pka->pos[i]);
@@ -191,8 +191,8 @@ int main(int argc, char *argv[])
       }
 
       // pka is O or Ag
-      //if (pka->z1 == 29 && pka->pos[0] >= 500.0)
-      if (pka->z1 == 29)
+      //if (pka->_Z == 29 && pka->pos[0] >= 500.0)
+      if (pka->_Z == 29)
       {
         // output
         printf("RP %f %d %d\n", pka->pos[0], n,  pka->gen);

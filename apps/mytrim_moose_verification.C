@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
     pka = new MyTRIM_NS::ionBase;
     pka->gen = 0;  // generation (0 = PKA)
     pka->tag = 0; // tag holds the element type
-    pka->z1 = 20;
-    pka->m1 = 40;
+    pka->_Z = 20;
+    pka->_m = 40;
     pka->e  = 300;
 
     pka->dir[0] = 0.0;

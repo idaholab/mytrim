@@ -186,11 +186,11 @@ int main(int argc, char *argv[])
 
     Z2 = 92 - Z1;
 
-    ff1->z1 = Z1;
-    ff1->m1 = A1;
+    ff1->_Z = Z1;
+    ff1->_m = A1;
     ff1->e  = E1 * 1.0e6;
-//     ff1->z1 = 53;
-//     ff1->m1 = 127;
+//     ff1->_Z = 53;
+//     ff1->_m = 127;
 //     ff1->e  = 70.0 * 1.0e6;
 
     do
@@ -222,8 +222,8 @@ int main(int argc, char *argv[])
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
 
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
+    ff2->_Z = Z2;
+    ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
 
     ff2->set_ef();
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if (pka->z1 == 54 )
+      if (pka->_Z == 54 )
       {
 	// mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
 	if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
@@ -261,22 +261,22 @@ int main(int argc, char *argv[])
 	    //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i]);
           }
 	  //printf("\n");
-//if (pka->z1 == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
+//if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
 	}
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       //pka->md = id++;
 
-//printf("\nstart %f %f %f %d %d %d\n", pka->pos[0], pka->pos[1], pka->pos[2],  pka->z1, pka->md, pka->id);
+//printf("\nstart %f %f %f %d %d %d\n", pka->pos[0], pka->pos[1], pka->pos[2],  pka->_Z, pka->md, pka->id);
       trim->trim(pka, recoils);
-//fprintf(phon, "%f %f %f %f %d %d\n", pka->e, pka->pos[0], pka->pos[1], pka->pos[2], pka->z1, pka->id);
+//fprintf(phon, "%f %f %f %f %d %d\n", pka->e, pka->pos[0], pka->pos[1], pka->pos[2], pka->_Z, pka->id);
 
       // do ion analysis/processing AFTER the cascade here
 
       // pka is Xe
-      if (pka->z1 == 54 )
+      if (pka->_Z == 54 )
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
