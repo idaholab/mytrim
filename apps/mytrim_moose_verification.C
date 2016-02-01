@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   // create a bunch of ions
   MyTRIM_NS::ionBase * pka;

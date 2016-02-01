@@ -6,7 +6,19 @@
 
 namespace MyTRIM_NS {
 
-struct ionBase {
+class ionBase
+{
+public:
+  ionBase();
+  ionBase(ionBase* prototype);
+  ionBase(int Z, Real m, Real e_);
+  virtual ~ionBase() {};
+
+  virtual void parent(ionBase* parent);
+  virtual ionBase* spawnRecoil();
+
+  void set_ef();
+
   /// atomic number
   int _Z;
 
@@ -39,31 +51,24 @@ struct ionBase {
   //   LOST            ion has left the sample
   enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } state;
   static const int DELETE = -1;
-
-  ionBase();
-  ionBase(ionBase* prototype);
-  ionBase(int Z, Real m, Real e_);
-  virtual ~ionBase() {};
-
-  virtual void parent(ionBase* parent);
-  virtual ionBase* spawnRecoil();
-
-  void set_ef();
 };
 
-std::ostream& operator << (std::ostream& os, const ionBase &i); /// Serialize ion into text stream
+/// Serialize ion into text stream
+std::ostream& operator << (std::ostream& os, const ionBase &i);
 
 
-struct ionMDtag : public ionBase {
-  // generation after first ion falling into the MD energy gap (200eV - 12000eV) TODO: move to subclass?
+class ionMDtag : public ionBase
+{
+public:
+  /// overwrite this to return recoil ion objects of type ionMDtag
+  virtual ionBase* spawnRecoil();
+
+  /// generation after first ion falling into the MD energy gap (200eV - 12000eV) TODO: move to subclass?
   int md;
-
-  // overwrite this tor return recoil ion objects of type ionMDtag
-  virtual ionBase* spawnRecoil();
 };
 
-std::ostream& operator << (std::ostream& os, const ionMDtag &p); /// Serialize ion into text stream
-
+/// Serialize ion into text stream
+std::ostream& operator << (std::ostream& os, const ionMDtag &p);
 }
 
 #endif

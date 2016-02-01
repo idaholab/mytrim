@@ -155,8 +155,8 @@ int main(int argc, char *argv[])
 
   Real norm;
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
