@@ -25,8 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifdef MYTRIM_ENABLED
 #include "MooseError.h"
 #include "MooseTypes.h"
+#include "libmesh/point.h"
 #else
 typedef double Real;
+#include "point.h"
 #endif
 
 namespace MyTRIM_NS {

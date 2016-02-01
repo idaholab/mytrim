@@ -164,10 +164,10 @@ int main(int argc, char *argv[])
     do
     {
       for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
-      norm = v_dot(ff1->dir, ff1->dir);
+      norm = ff1->dir.size_sq();
     }
-    while (norm <= 0.0001);
-    v_scale(ff1->dir, 1.0 / std::sqrt(norm));
+    while (norm <= 0.0001 || norm > 0.25);
+    ff1->dir /= std::sqrt(norm);
 
     for (int i = 0; i < 3; i++) ff1->pos[i] = dr250() * sample->w[i];
 

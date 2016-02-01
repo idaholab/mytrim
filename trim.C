@@ -33,7 +33,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
   Real fr, fr1, q, roc, sqe;
   Real cc, aa, ff, co, delta;
   Real den;
-  Real rdir[3], perp[3], norm, psi;
+  Point rdir, perp;
+  Real norm, psi;
 
   Real p1, p2;
   //Real range;
@@ -234,22 +235,24 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     // there is a cleverer way by using the azimuthal angle of scatter...
     do
     {
-      for (int i = 0; i < 3; i++) rdir[i] = dr250() - 0.5;
-      v_cross(pka->dir, rdir, perp);
-      norm = std::sqrt(v_dot(perp, perp));
-    }
-    while (norm == 0.0);
-    v_scale(perp, 1.0 / norm);
+      do
+      {
+        for (int i = 0; i < 3; ++i)
+          rdir[i] = 2.0 * dr250() - 1.0;
+      } while (rdir.size_sq() > 1.0);
 
-    psi = atan(st / (ct + element->my));
-    v_scale(pka->dir, std::cos(psi));
+      v_cross(pka->dir, rdir, perp);
+      norm = perp.size();
+    } while (norm == 0.0);
+
+    perp /= norm;
+
+    psi = std::atan2(st, ct + element->my);
+    pka->dir *= std::cos(psi);
 
     // calculate new direction, subtract from old dir (stored in recoil)
-    for (int i = 0; i < 3; i++)
-    {
-      pka->dir[i] += perp[i] * std::sin(psi);
-      recoil->dir[i] -= pka->dir[i] * p2;
-    }
+    pka->dir += perp * std::sin(psi);
+    recoil->dir -= pka->dir * p2;
 
     // end cascade if a CUT boundary is crossed
     for (int i = 0; i < 3; i++) {
