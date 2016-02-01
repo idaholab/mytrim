@@ -189,8 +189,8 @@ int main(int argc, char *argv[])
   int jumps;
   Real dif[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;

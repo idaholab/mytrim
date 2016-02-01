@@ -26,38 +26,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-class inverter
+class Inverter
 {
-protected :
-  Real maxx, maxf, tol;
-
 public :
-  virtual Real f(Real x) const = 0;
+  Inverter() : maxx(0.0), maxf(0.0), tol(1e-13) {}
+
+  /// Evaluate inverse of function (iteratively)
   Real x(Real f) const;
 
-  inverter() { maxx = 0.0; }
+protected :
+  /// Evaluate function
+  virtual Real f(Real x) const = 0;
+
+  Real maxx, maxf, tol;
 };
 
 
-class massInverter : public inverter
+class MassInverter : public Inverter
 {
 public:
-  virtual Real f(Real x) const;
+  MassInverter() { maxx = 235.0; tol = 1e-7; maxf = f(maxx); }
 
-  massInverter() { maxx = 235.0; tol = 1e-7; maxf = f(maxx); }
+protected:
+  virtual Real f(Real x) const;
 };
 
-class energyInverter : public inverter
-{
- Real A;
-public:
-  virtual Real f(Real x) const;
 
-  energyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
-  void setMass(Real _A) {
-    A = _A;
+class EnergyInverter : public Inverter
+{
+public:
+  EnergyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
+
+  void setMass(Real A) {
+    _A = A;
     maxf = f(maxx);
   }
+
+protected:
+  virtual Real f(Real x) const;
+
+private:
+  Real _A;
 };
 
 }
