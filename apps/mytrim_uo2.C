@@ -60,15 +60,25 @@ int main(int argc, char *argv[])
 
   // run mode
   enum RunMode { PLAIN, PHONONS, DEFECTS };
-  //RunMode mode = DEFECTS;
-  RunMode mode = PHONONS;
+  RunMode mode = PLAIN;
+  //RunMode mode = PHONONS;
 
-  // seed random number generator from system entropy pool
-  // we internally use the libc random function (not r250c, which is not threadsafe)
+  // set seed
   int seed;
-  FILE *urand = fopen("/dev/random", "r");
-  fread(&seed, sizeof(int), 1, urand);
-  fclose(urand);
+  char * seedenv = getenv("MYTRIM_SEED");
+  if (seedenv)
+  {
+    // use the number provided in the environment variable MYTRIM_SEED
+    seed = atoi(seedenv);
+  }
+  else
+  {
+    // seed random number generator from system entropy pool
+    // we internally use the libc random function (not r250c, which is not threadsafe)
+    FILE *urand = fopen("/dev/random", "r");
+    fread(&seed, sizeof(int), 1, urand);
+    fclose(urand);
+  }
   r250_init(seed<0 ? -seed : seed);
 
   // initialize global parameter structure and read data tables from file
@@ -242,6 +252,7 @@ int main(int argc, char *argv[])
     ff2->_Z = Z2;
     ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
+    ff2->md = 0;
 
     ff2->set_ef();
     recoils.push(ff2);

@@ -1,5 +1,6 @@
 #include <cmath>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 //#include <stdlib.h>
 #include <iostream>
@@ -43,15 +44,24 @@ simconfType::simconfType(Real _alfa)
   read_scoef();
 }
 
-void simconfType::read_snuc()
+void
+simconfType::read_snuc()
 {
-  FILE *sf = fopen(MYTRIM_DATA_DIR"/SNUC03.dat", "rt");
+  char * data_dir_env = getenv("MYTRIM_DATADIR");
+  const unsigned int nbuf = 2000;
+  char buffer[nbuf];
+  if (data_dir_env  == 0)
+    data_dir_env = strdup(MYTRIM_DATA_DIR);
+  FILE *sf;
+
+  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SNUC03.dat");
+  sf = fopen(buffer, "rt");
   if (sf == 0)
   {
 #ifdef MYTRIM_ENABLED
-    mooseError("Unable to open " << MYTRIM_DATA_DIR"/SNUC03.dat");
+    mooseError("Unable to open " << data_dir_env << "/SNUC03.dat");
 #else
-    std::cerr << "Unable to open " << MYTRIM_DATA_DIR"/SNUC03.dat" << std::endl;
+    std::cerr << "Unable to open " << data_dir_env << "/SNUC03.dat" << std::endl;
     exit(1);
 #endif
   }
@@ -66,14 +76,20 @@ void simconfType::read_snuc()
   fclose(sf);
 }
 
-void simconfType::read_scoef()
+void
+simconfType::read_scoef()
 {
-  char buf[2001];
+  char * data_dir_env = getenv("MYTRIM_DATADIR");
+  const unsigned int nbuf = 2000;
+  char buffer[nbuf];
+  if (data_dir_env  == 0)
+    data_dir_env = strdup(MYTRIM_DATA_DIR);
   FILE *sf;
 
-  sf = fopen(MYTRIM_DATA_DIR"/SCOEF.95A", "rt");
-  fgets(buf, 2000, sf); // header
-  fgets(buf, 2000, sf); // header
+  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SCOEF.95A");
+  sf = fopen(buffer, "rt");
+  fgets(buffer, nbuf, sf); // header
+  fgets(buffer, nbuf, sf); // header
   for (int i = 0; i < 92; i++)
   {
     fscanf(sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
@@ -84,15 +100,16 @@ void simconfType::read_scoef()
   }
   fclose(sf);
 
-  sf = fopen(MYTRIM_DATA_DIR"/SLFCTR.dat", "rt");
-  fgets(buf, 2000, sf); // header
+  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SLFCTR.dat");
+  sf = fopen(buffer, "rt");
+  fgets(buffer, nbuf, sf); // header
   for (int i = 0; i < 92; i++)
     fscanf(sf, "%*d %lf\n", &scoef[i].lfctr);
   fclose(sf);
 
-  sf = fopen(MYTRIM_DATA_DIR"/ELNAME.dat", "rt");
+  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "ELNAME.dat");
+  sf = fopen(buffer, "rt");
   for (int i = 0; i < 92; i++)
     fscanf(sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name);
-
   fclose(sf);
 }

@@ -31,7 +31,15 @@ typedef double Real;
 #include "point.h"
 #endif
 
+#include <stdlib.h>
+
 namespace MyTRIM_NS {
+
+// random numbers
+const Real drm = Real(RAND_MAX)+1.0;
+inline Real dr250() { return Real(rand())/drm; }
+inline void r250_init(int s) { srand(s); }
+
 
 // ZBL coefficients a,b,c,d for all element pairs from Z=1..92
 struct scoefLine {
