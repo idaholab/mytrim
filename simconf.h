@@ -36,8 +36,8 @@ namespace MyTRIM_NS {
 #else
 // building standalone (for Travis CI tests)
 typedef double Real;
-#include "point.h"
-#include "cxx11random.h"
+#include "shim/point.h"
+#include "shim/cxx11random.h"
 #endif
 
 namespace MyTRIM_NS {
