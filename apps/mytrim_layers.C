@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
   std::cout << "n_layers=" << nlayer << std::endl;
 
   materialBase *material;
-  elementBase *element;
+  ElementBase *element;
   for (int i = 0; i < nlayer; i++)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
@@ -98,11 +98,11 @@ int main(int argc, char *argv[])
 
     for (int j = 0; j < nelem; j++)
     {
-      element = new elementBase;
-      std::cin >> lename >> element->z >> element->m >> element->t;
+      element = new ElementBase;
+      std::cin >> lename >> element->_Z >> element->_m >> element->_t;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::cout << "  Element: " << lename << "  Z=" << element->z
-           << "  m=" << element->m << "  fraction=" << element->t << std::endl;
+      std::cout << "  Element: " << lename << "  Z=" << element->_Z
+           << "  m=" << element->_m << "  fraction=" << element->_t << std::endl;
       material->element.push_back(element);
     }
 

@@ -42,7 +42,7 @@ protected:
   sampleBase *sample;
   ionBase *pka, *recoil;
   materialBase *material;
-  elementBase *element;
+  ElementBase *element;
   std::queue<ionBase*> *recoil_queue_ptr;
   bool terminate;
 
@@ -85,10 +85,10 @@ protected:
       Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
       Real kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
       Real Ev = recoil->e / (1.0 + kd * g);
-      simconf->vacancies_created += int(0.8 * Ev / (2.0*element->Edisp));
+      simconf->vacancies_created += int(0.8 * Ev / (2.0*element->_Edisp));
 
       // TODO: this is missing the energy threshold of 2.5Ed!!!!
-      // TODO: should be something like material->Edisp (average?)
+      // TODO: should be something like material->_Edisp (average?)
     }
   }
 };
@@ -205,15 +205,15 @@ protected:
   // (make sure it keeps its binding enrgy and dissipate emeining E)
   virtual void dissipateRecoilEnergy()
   {
-    Real Edep = recoil->e + element->Elbind;
+    Real Edep = recoil->e + element->_Elbind;
     os << Edep << ' ' <<  *recoil << std::endl;
     simconf->EnucTotal += Edep;
   };
 
   // dissipate lattice binding energy where recoil branches off
   virtual bool followRecoil() {
-    os << element->Elbind << ' ' <<  *recoil << std::endl;
-    simconf->EnucTotal += element->Elbind;
+    os << element->_Elbind << ' ' <<  *recoil << std::endl;
+    simconf->EnucTotal += element->_Elbind;
     return true;
   }
 };

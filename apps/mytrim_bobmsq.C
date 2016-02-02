@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
   Real s_sam = sample->w[1] * sample->w[2];
 
   materialBase *material;
-  elementBase *element;
+  ElementBase *element;
 
   const char *choice[4] = {"Fe", "Si", "Cu", "Au"};
   int i;
@@ -91,13 +91,13 @@ int main(int argc, char *argv[])
     case 0:
       // Fe
       material = new materialBase(simconf, 7.87); // rho
-      element = new elementBase;
+      element = new ElementBase;
       Z = 26.0;
       A = 56.0;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
@@ -105,13 +105,13 @@ int main(int argc, char *argv[])
     case 1:
       // Si
       material = new materialBase(simconf, 2.33); // rho
-      element = new elementBase;
+      element = new ElementBase;
       Z = 14.0;
       A = 28.0;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
@@ -119,13 +119,13 @@ int main(int argc, char *argv[])
     case 2:
       // Cu
       material = new materialBase(simconf, 8.89); // rho
-      element = new elementBase;
+      element = new ElementBase;
       Z = 29.0;
       A = 63.5;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
@@ -133,13 +133,13 @@ int main(int argc, char *argv[])
     case 3:
       // Au
       material = new materialBase(simconf, 19.32); // rho
-      element = new elementBase;
+      element = new ElementBase;
       Z = 79.0;
       A = 197.0;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample

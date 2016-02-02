@@ -23,22 +23,22 @@ void materialBase::prepare()
   // get total stoichiometry
   for (unsigned int i = 0; i < element.size(); ++i)
   {
-    if (element[i]->t < 0.0)
-      element[i]->t = 0.0;
-    tt += element[i]->t;
+    if (element[i]->_t < 0.0)
+      element[i]->_t = 0.0;
+    tt += element[i]->_t;
   }
 
   // normalize relative probabilities to 1
   for (unsigned int i = 0; i < element.size(); ++i)
-    element[i]->t /= tt;
+    element[i]->_t /= tt;
 
   // average
   am = 0.0;
   az = 0.0;
   for (unsigned int i = 0; i < element.size(); ++i)
   {
-    am += element[i]->m * element[i]->t;
-    az += Real(element[i]->z) * element[i]->t;
+    am += element[i]->_m * element[i]->_t;
+    az += Real(element[i]->_Z) * element[i]->_t;
   }
 
   arho = rho * 0.6022 / am; //[TRI00310] atoms/Ang^3
@@ -64,12 +64,12 @@ void materialBase::average(const ionBase * pka)
 
   for (unsigned int i = 0; i < element.size(); ++i)
   {
-    element[i]->my = pka->_m / element[i]->m;
+    element[i]->my = pka->_m / element[i]->_m;
     element[i]->ec = 4.0 * element[i]->my / std::pow(1.0 + element[i]->my, 2.0);
-    element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(element[i]->z, 0.23));
+    element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(element[i]->_Z, 0.23));
     //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(element[i].z, 0.5), 2.0/3.0);
-    element[i]->fi = element[i]->ai * element[i]->m /
-                     (Real(pka->_Z) * Real(element[i]->z) * 14.4 * (pka->_m + element[i]->m));
+    element[i]->fi = element[i]->ai * element[i]->_m /
+                     (Real(pka->_Z) * Real(element[i]->_Z) * 14.4 * (pka->_m + element[i]->_m));
   }
 
   dirty = false;
@@ -80,7 +80,7 @@ Real materialBase::getrstop(const ionBase * pka)
 {
   Real se = 0.0;
   for (unsigned int i = 0; i < element.size(); ++i)
-    se += rstop(pka, element[i]->z) * element[i]->t * arho;
+    se += rstop(pka, element[i]->_Z) * element[i]->_t * arho;
 
   return se;
 }

@@ -5,16 +5,18 @@
 
 namespace MyTRIM_NS {
 
-struct elementBase {
-  int z;
-  Real m, t; // mass and relative amount
+class ElementBase
+{
+public:
+  ElementBase();
 
-  Real Edisp, Elbind; // displacement energy and lattice binding energy
+  int _Z;
+  Real _m, _t; // mass and relative amount
+
+  Real _Edisp, _Elbind; // displacement energy and lattice binding energy
 
   // calculated
   Real my, ec, ai, fi;
-
-  elementBase();
 };
 
 }

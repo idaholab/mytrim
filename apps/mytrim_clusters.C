@@ -99,30 +99,30 @@ int main(int argc, char *argv[])
   fprintf(stderr, "sample built.\n");
 
   materialBase *material;
-  elementBase *element;
+  ElementBase *element;
 
   // UO2
   material = new materialBase(simconf, 10.0); // rho
-  element = new elementBase;
-  element->z = 92; // U
-  element->m = 235.0;
-  element->t = 1.0;
+  element = new ElementBase;
+  element->_Z = 92; // U
+  element->_m = 235.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 16; // O
-  element->m = 32.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 16; // O
+  element->_m = 32.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // xe bubble
   material = new materialBase(simconf, 3.5); // rho
-  element = new elementBase;
-  element->z = 54; // Xe
-  element->m = 132.0;
-  element->t = 1.0;
-//  element->t = 0.002;
+  element = new ElementBase;
+  element->_Z = 54; // Xe
+  element->_m = 132.0;
+  element->_t = 1.0;
+//  element->_t = 0.002;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample

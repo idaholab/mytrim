@@ -117,7 +117,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     hh = dr250(); // selects element inside material to scatter from
     for (nn = 0; nn < material->element.size(); ++nn)
     {
-      hh -= material->element[nn]->t;
+      hh -= material->element[nn]->_t;
       if (hh <= 0) break;
     }
     element = material->getElement(nn);
@@ -227,9 +227,9 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     recoil->e = den;
 
     // recoil loses the lattice binding energy
-    recoil->e -= element->Elbind;
-    recoil->_m = element->m;
-    recoil->_Z = element->z;
+    recoil->e -= element->_Elbind;
+    recoil->_m = element->_m;
+    recoil->_Z = element->_Z;
 
     // create a random vector perpendicular to pka.dir
     // there is a cleverer way by using the azimuthal angle of scatter...
@@ -269,7 +269,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     // decide on the fate of recoil and pka
     //
     if (pka->state != ionBase::LOST) {
-      if (recoil->e > element->Edisp) {
+      if (recoil->e > element->_Edisp) {
         // non-physics based descision on recoil following
         if (followRecoil()) {
           v_norm(recoil->dir);
@@ -287,14 +287,14 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
         }
 
         // will the knock-on get trapped at the recoil atom site?
-        // (TODO: make sure that pka->ef < element->Edisp for all elements!)
+        // (TODO: make sure that pka->ef < element->_Edisp for all elements!)
         // did we create a vacancy by knocking out the recoil atom?
-        if (pka->e > element->Edisp) {
+        if (pka->e > element->_Edisp) {
           // yes, because the knock-on can escape, too!
           vacancyCreation();
         } else {
           // nope, the pka gets stuck at that site as...
-          if (pka->_Z == element->z)
+          if (pka->_Z == element->_Z)
             pka->state = ionBase::REPLACEMENT;
           else
             pka->state = ionBase::SUBSTITUTIONAL;
@@ -337,8 +337,8 @@ void trimBase::vacancyCreation()
     Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
     Real kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
     Real Ev = recoil->e / (1.0 + kd * g);
-    simconf->KP_vacancies += 0.8 * Ev / (2.0 * element->Edisp);
-    // should be something like material->Edisp (average?)
+    simconf->KP_vacancies += 0.8 * Ev / (2.0 * element->_Edisp);
+    // should be something like material->_Edisp (average?)
   }
   */
 }

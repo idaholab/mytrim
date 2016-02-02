@@ -47,7 +47,7 @@ struct materialBase {
   int tag;
   bool dirty;
 
-  std::vector<elementBase*> element;
+  std::vector<ElementBase*> element;
 
   materialBase(simconfType * simconf_, Real rho_);
 
@@ -58,7 +58,7 @@ struct materialBase {
   void average(const ionBase *pka);
   Real getrstop(const ionBase *pka);
 
-  virtual elementBase * getElement(unsigned int nn) { return element[nn]; }
+  virtual ElementBase * getElement(unsigned int nn) { return element[nn]; }
 
 protected:
   Real rpstop(int z2, Real e);

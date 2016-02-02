@@ -78,31 +78,31 @@ int main(int argc, char *argv[])
   Real s_sam = sample->w[1] * sample->w[2];
 
   materialBase *material;
-  elementBase *element;
+  ElementBase *element;
 
 /*
   // Fe
   material = new materialBase(simconf, 7.87); // rho
-  element = new elementBase;
-  element->z = 26; // Fe
-  element->m = 56.0;
-  element->t = 1.0;
-  element->Edisp = 40.0;
+  element = new ElementBase;
+  element->_Z = 26; // Fe
+  element->_m = 56.0;
+  element->_t = 1.0;
+  element->_Edisp = 40.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // ZrO2
   material = new materialBase(simconf, 5.68); // rho
-  element = new elementBase;
-  element->z = 40; // Zr
-  element->m = 91.0;
-  element->t = 1.0;
+  element = new ElementBase;
+  element->_Z = 40; // Zr
+  element->_m = 91.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
@@ -110,20 +110,20 @@ int main(int argc, char *argv[])
 
   // ZrO2 Xe 0.01
   material = new materialBase(simconf, 5.68); // rho
-  element = new elementBase;
-  element->z = 40; // Zr
-  element->m = 90.0;//91?
-  element->t = 1.0;
+  element = new ElementBase;
+  element->_Z = 40; // Zr
+  element->_m = 90.0;//91?
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
-/*  element = new elementBase;
-  element->z = 54; // Xe
-  element->m = 132.0;
-  element->t = 0.01;
+/*  element = new ElementBase;
+  element->_Z = 54; // Xe
+  element->_m = 132.0;
+  element->_t = 0.01;
   material->element.push_back(element);*/
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
@@ -131,48 +131,48 @@ int main(int argc, char *argv[])
 /*
   // TiO2 precipitate
   material = new materialBase(simconf, 4.23); // rho
-  element = new elementBase;
-  element->z = 22; // Ti
-  element->m = 48.0;
-  element->t = 1.0;
+  element = new ElementBase;
+  element->_Z = 22; // Ti
+  element->_m = 48.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
    // Y2Ti2O7 precipitate
   material = new materialBase(simconf, 4.6); // rho between 4.23 and 5.01
-  element = new elementBase;
-  element->z = 39; // Y
-  element->m = 89.0;
-  element->t = 2.0;
-  element->Edisp = 57.0;
+  element = new ElementBase;
+  element->_Z = 39; // Y
+  element->_m = 89.0;
+  element->_t = 2.0;
+  element->_Edisp = 57.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 22; // Ti
-  element->m = 48.0;
-  element->t = 2.0;
-  element->Edisp = 57.0;
+  element = new ElementBase;
+  element->_Z = 22; // Ti
+  element->_m = 48.0;
+  element->_t = 2.0;
+  element->_Edisp = 57.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 7.0;
-  element->Edisp = 57.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 7.0;
+  element->_Edisp = 57.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
   // xe bubble
   material = new materialBase(simconf, 3.5); // rho
-  element = new elementBase;
-  element->z = 54; // Xe
-  element->m = 132.0;
-  element->t = 1.0;
+  element = new ElementBase;
+  element->_Z = 54; // Xe
+  element->_m = 132.0;
+  element->_t = 1.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample

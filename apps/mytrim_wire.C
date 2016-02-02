@@ -82,23 +82,23 @@ int main(int argc, char *argv[])
   trimVacMap *trim = new trimVacMap(simconf, sample, z1, z2, z3); // GaCW
 
   materialBase *material;
-  elementBase *element;
+  ElementBase *element;
 
   material = new materialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490)/(56.0+38.0+8.0)); // rho
-  element = new elementBase;
-  element->z = z1; // Cu
-  element->m = 63.546;
-  element->t = 56.0;
+  element = new ElementBase;
+  element->_Z = z1; // Cu
+  element->_m = 63.546;
+  element->_t = 56.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = z2; // Ti
-  element->m = 47.867;
-  element->t = 38.0;
+  element = new ElementBase;
+  element->_Z = z2; // Ti
+  element->_m = 47.867;
+  element->_t = 38.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = z3; // Ag
-  element->m = 107.87;
-  element->t = 8.0;
+  element = new ElementBase;
+  element->_Z = z3; // Ag
+  element->_m = 107.87;
+  element->_t = 8.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
