@@ -89,6 +89,7 @@ void r250_init(int seed)
     for (j = 0; j < 250; j++)     /* Set some of the MS bits to 1 */
         if (myrand() > 16384)
             r250_buffer[j] |= 0x8000;
+
     msb = 0x8000;       /* To turn on the diagonal bit   */
     mask = 0xffff;      /* To turn off the leftmost bits */
     for (j = 0; j < 16; j++)
