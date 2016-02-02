@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   }
   r250_init(seed<0 ? -seed : seed);
 
-  std::cout << "DEBUG " << sizeof(int) << ' ' << sizeof(unsigned int) << ' ' << sizeof(unsigned) << ' ' << seed << ' ' << dr250() << ',' << dr250() << '\n';
+  std::cout << "DEBUG " << dr250() << ' ' << dr250() << ' ' << dr250() << ' ' << dr250() << '\n';
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -304,6 +304,8 @@ int main(int argc, char *argv[])
       // follow this ion's trajectory and store recoils
       // printf("%f\t%d\n", pka->e, pka->_Z);
       trim->trim(pka, recoils);
+
+      // printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
 
       // do ion analysis/processing AFTER the cascade here
 

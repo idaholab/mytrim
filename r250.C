@@ -170,6 +170,7 @@ double dr250()
         r250_index = 0;
     else
         r250_index++;
+
     return new_rand / 65536.;   /* Return a number in [0.0 to 1.0) */
 }
 

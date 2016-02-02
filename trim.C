@@ -60,7 +60,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     material->pmax = material->a / (eeg + std::sqrt(eeg) + 0.125 * std::pow(eeg, 0.1));
 
     ls = 1.0 / (M_PI * std::pow(material->pmax, 2.0) * material->arho);
-    if (ic==1) ls = r1 * fmin(ls, simconf->cw);
+    if (ic == 1)
+      ls = r1 * std::min(ls, simconf->cw);
 
     // correct for maximum available range in current material by increasing maximum impact parameter
     #ifdef RANGECORRECT
@@ -146,21 +147,21 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     {
       // first guess at ion c.p.a. [TRI02780]
       r = b;
-      rr = -2.7 * logf(eps * b);
+      rr = -2.7 * std::log(eps * b);
       if (rr >= b)
       {
         r = rr;
-        rr = -2.7 * logf(eps * rr);
+        rr = -2.7 * std::log(eps * rr);
         if (rr >= b) r = rr;
       }
 
       do
       {
         // universal potential
-        ex1 = 0.18175 * exp(-3.1998 * r);
-        ex2 = 0.50986 * exp(-0.94229 * r);
-        ex3 = 0.28022 * exp(-0.4029 * r);
-        ex4 = 0.028171 * exp(-0.20162 * r);
+        ex1 = 0.18175 * std::exp(-3.1998 * r);
+        ex2 = 0.50986 * std::exp(-0.94229 * r);
+        ex3 = 0.28022 * std::exp(-0.4029 * r);
+        ex4 = 0.028171 * std::exp(-0.20162 * r);
         v = (ex1 + ex2 + ex3 + ex4) / r;
         v1 = -(v + 3.1998 *ex1 + 0.94229 * ex2 + 0.4029 * ex3 + 0.20162 * ex4) / r;
 
