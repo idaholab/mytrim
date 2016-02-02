@@ -5,24 +5,27 @@
 using namespace MyTRIM_NS;
 
 ionBase::ionBase() :
-  t(0.0),  // clock
-  ef(3.0), // final energy
-  state(MOVING)
+    t(0.0),  // clock
+    ef(3.0), // final energy
+    state(MOVING)
 {
 }
 
-ionBase::ionBase(ionBase* prototype) : state(MOVING)
+ionBase::ionBase(ionBase* prototype) :
+    _Z(prototype->_Z),
+    _m(prototype->_m),
+    e(prototype->e),
+    state(MOVING)
 {
   ef = prototype->ef; // final energy
   t = prototype->t;   //clock
-
-  z1 = prototype->z1;
-  m1 = prototype->m1;
-  e = prototype->e;
 }
 
-ionBase::ionBase(int z1_, Real m1_, Real e_) :
-  z1(z1_), m1(m1_), e(e_), state(MOVING)
+ionBase::ionBase(int Z, Real m, Real e_) :
+    _Z(Z),
+    _m(m),
+    e(e_),
+    state(MOVING)
 {
   ef = 3.0; // final energy
   t = 0.0; //clock;
@@ -60,7 +63,7 @@ namespace MyTRIM_NS {
   std::ostream& operator << (std::ostream& os, const ionBase &i)
   {
     os << i.pos[0] << ' ' << i.pos[1] << ' ' << i.pos[2] << ' '
-       << i.z1 << ' ' << i.m1 << ' ' << i.e << ' '
+       << i._Z << ' ' << i._m << ' ' << i.e << ' '
        << i.t << ' '
        << i.id << ' ' << i.gen << ' ' << i.tag << ' ';
     return os;

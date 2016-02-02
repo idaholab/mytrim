@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
   fclose(urand);
   seed = 1;
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
@@ -112,11 +112,6 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
   // Real A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
   // Real A = 131.0, E = 3.0e4; int Z = 54; // 30keV Xe
   Real A = 131.0, E = 1.0e4; int Z = 54; // 30keV Xe
@@ -127,14 +122,11 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  Real pos1[3];
-
-  ionBase *ff1, *ff2, *pka;
-  int id = 1;
+  ionBase *ff1, *pka;
   int layer1, layer2;
 
   int nrec = 0;
-  Real sum_r2, opos[3];
+  Real sum_r2 = 0.0;
 
   // 1000 PKA
   for (int n = 0; n < 35000; n++)
@@ -146,8 +138,8 @@ int main(int argc, char *argv[])
     ff1->tag = -1;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E * (3-((n*3)/35000));
 
     ff1->dir[0] = 1;
@@ -177,9 +169,9 @@ int main(int argc, char *argv[])
 
       // remove from source layer
       if (pka->gen > 0)
-        sample->addAtomsToLayer(layer1, -1, pka->z1);
+        sample->addAtomsToLayer(layer1, -1, pka->_Z);
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
       //for (int i = 0; i < 3; i++)
       // opos[i] = pka->pos[i];
 
@@ -191,7 +183,7 @@ int main(int argc, char *argv[])
       // add to destination layer
       layer2 = sample->lookupLayer(pka->pos);
       if (pka->pos[0] > 0)
-        sample->addAtomsToLayer(layer2, 1, pka->z1);
+        sample->addAtomsToLayer(layer2, 1, pka->_Z);
 
       //
       // do ion analysis/processing AFTER the cascade here
@@ -204,10 +196,10 @@ int main(int argc, char *argv[])
   fclose(rdist);
   fclose(erec);
 
-  for (int i = 0; i < sample->material.size(); i++)
+  for (unsigned int i = 0; i < sample->material.size(); i++)
   {
     std::cout << sample->layerThickness[i] << ' ';
-    for (int j = 0; j < sample->material[i]->element.size(); j++)
+    for (unsigned int j = 0; j < sample->material[i]->element.size(); j++)
     {
       std::cout << sample->material[i]->element[j]->z << ' ' << sample->material[i]->element[j]->t << ' ';
     }

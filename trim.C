@@ -102,7 +102,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     #endif
 
     // advance clock pathlength/velocity
-    pka->t += 10.1811859 * (ls - simconf->tau) / std::sqrt(2.0 * pka->e / pka->m1);
+    pka->t += 10.1811859 * (ls - simconf->tau) / std::sqrt(2.0 * pka->e / pka->_m);
 
     // time in fs! m in u, l in Ang, e in eV
     // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
@@ -203,10 +203,10 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     simconf->EelTotal += dee;
 
     // momentum transfer
-    p1 = std::sqrt(2.0 * pka->m1 * pka->e); // momentum before collision
+    p1 = std::sqrt(2.0 * pka->_m * pka->e); // momentum before collision
     if (den > pka->e) den = pka->e; // avoid negative energy
     pka->e -= den;
-    p2 = std::sqrt(2.0 * pka->m1 * pka->e); // momentum after collision
+    p2 = std::sqrt(2.0 * pka->_m * pka->e); // momentum after collision
 
     // track maximum electronic energy loss TODO: might want to track max(see)!
     if (dee>max) max = dee;
@@ -227,8 +227,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
 
     // recoil loses the lattice binding energy
     recoil->e -= element->Elbind;
-    recoil->m1 = element->m;
-    recoil->z1 = element->z;
+    recoil->_m = element->m;
+    recoil->_Z = element->z;
 
     // create a random vector perpendicular to pka.dir
     // there is a cleverer way by using the azimuthal angle of scatter...
@@ -289,7 +289,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
           vacancyCreation();
         } else {
           // nope, the pka gets stuck at that site as...
-          if (pka->z1 == element->z)
+          if (pka->_Z == element->z)
             pka->state = ionBase::REPLACEMENT;
           else
             pka->state = ionBase::SUBSTITUTIONAL;

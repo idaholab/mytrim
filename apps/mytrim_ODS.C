@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
   fclose(urand);
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
+  //Real v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
 
   n_cl = v_sam * 1.5e-7 * Cbf ; // Allen08 1.5e-4/nm^3
@@ -218,13 +218,7 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
   Real dif[3], dif2[3];
-
-  Real A1, A2, Etot, E1, E2;
-  int Z1, Z2;
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
   FILE *erec = fopen(fname, "wt");
@@ -235,7 +229,6 @@ int main(int argc, char *argv[])
   Real pos1[3], pos2[3];
 
   ionMDtag *ff1, *pka;
-  int id = 1;
 
   Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
   //Real A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
@@ -252,8 +245,8 @@ int main(int argc, char *argv[])
     ff1->md = 0;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E;
 
     ff1->dir[0] = 1;
@@ -277,11 +270,11 @@ int main(int argc, char *argv[])
       //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      //if (pka->z1 == 54)
+      //if (pka->_Z == 54)
       // pka is B or Ti
-      if (pka->z1 == 5 || pka->z1 == 22)
+      if (pka->_Z == 5 || pka->_Z == 22)
       {
         if (pka->gen > 0)
         {
@@ -300,12 +293,12 @@ int main(int argc, char *argv[])
             //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i]);
           }
 //printf("\n");
-//if (pka->z1 == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
+//if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
 	}
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       //pka->md = id++;
 
       trim->trim(pka, recoils);
@@ -313,11 +306,11 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      //if (pka->z1 == 54)
+      //if (pka->_Z == 54)
       // pka is B or Ti
-      if (pka->z1 == 5 || pka->z1 == 22)
+      if (pka->_Z == 5 || pka->_Z == 22)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
@@ -330,7 +323,7 @@ int main(int argc, char *argv[])
             dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
             dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
           }
-          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->z1, pka->pos[0], pka->pos[1], pka->pos[2], std::sqrt(v_dot(dif2, dif2)));
+          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->_Z, pka->pos[0], pka->pos[1], pka->pos[2], std::sqrt(v_dot(dif2, dif2)));
         }
 
 

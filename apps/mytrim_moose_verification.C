@@ -39,12 +39,12 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int main(int, char **)
 {
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
   fclose(urand);
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
@@ -75,13 +75,8 @@ int main(int argc, char *argv[])
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
-  const int nstep = 10000;
-
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
-
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
 
   // create a bunch of ions
   MyTRIM_NS::ionBase * pka;
@@ -90,8 +85,8 @@ int main(int argc, char *argv[])
     pka = new MyTRIM_NS::ionBase;
     pka->gen = 0;  // generation (0 = PKA)
     pka->tag = 0; // tag holds the element type
-    pka->z1 = 20;
-    pka->m1 = 40;
+    pka->_Z = 20;
+    pka->_m = 40;
     pka->e  = 300;
 
     pka->dir[0] = 0.0;

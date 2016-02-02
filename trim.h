@@ -176,9 +176,9 @@ protected:
     y -= int(y/my) * my;
 
     // keep track of vaccancies for the two constituents
-    if (recoil->z1 == z1) vmap[x][y][0]++;
-    else if (recoil->z1 == z2) vmap[x][y][1]++;
-    else if (recoil->z1 == z3) vmap[x][y][2]++;
+    if (recoil->_Z == z1) vmap[x][y][0]++;
+    else if (recoil->_Z == z2) vmap[x][y][1]++;
+    else if (recoil->_Z == z3) vmap[x][y][2]++;
   };
 };
 

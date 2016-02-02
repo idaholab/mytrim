@@ -45,7 +45,6 @@ using namespace MyTRIM_NS;
 
 int main(int argc, char *argv[])
 {
-  char fname[200];
   if (argc != 8)
   {
     std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << std::endl;
@@ -74,7 +73,7 @@ int main(int argc, char *argv[])
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
   fclose(urand);
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
@@ -108,9 +107,10 @@ int main(int argc, char *argv[])
   }
 
   // initialize trim engine for the sample
-/*  const int z1 = 31;
-  const int z2 = 33;
-  trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs*/
+  /*  const int z1 = 31;
+      const int z2 = 33;
+      trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs
+  */
   //trimBase *trim = new trimBase(sample);
   trimBase *trim = new trimPrimaries(simconf, sample);
 
@@ -144,17 +144,6 @@ int main(int argc, char *argv[])
 
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
-
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
-  //snprintf(fname, 199, "%s.Erec", argv[1]);
-  //FILE *erec = fopen(fname, "wt");
-
-  //snprintf(fname, 199, "%s.dist", argv[1]);
-  //FILE *rdist = fopen(fname, "wt");
 
   ionBase *pka;
 
@@ -254,7 +243,7 @@ int main(int argc, char *argv[])
 
         // do ion analysis/processing BEFORE the cascade here
 
-        if (pka->z1 == ion_prototype[s]->z1 )
+        if (pka->_Z == ion_prototype[s]->_Z )
         {
           //printf( "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
         }
@@ -272,13 +261,13 @@ int main(int argc, char *argv[])
           {
             if (xyz_out)
             {
-              xyz_data << simconf->scoef[pka->z1-1].sym << ' '
+              xyz_data << simconf->scoef[pka->_Z-1].sym << ' '
                       << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << std::endl;
               xyz_lines++;
             }
 
             if (ldat_out)
-              lbins[ (pka->z1 == 5) ? 0 : 1 ][l]++;
+              lbins[ (pka->_Z == 5) ? 0 : 1 ][l]++;
           }
         }
 

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     // seed random number generator from system entropy pool
     // we internally use the libc random function (not r250c, which is not threadsafe)
     FILE *urand = fopen("/dev/random", "r");
-    if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+    if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
     fclose(urand);
   }
   r250_init(seed<0 ? -seed : seed);
@@ -125,11 +125,10 @@ int main(int argc, char *argv[])
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
+  //Real v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
-  //fprintf(stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0);
   std::cerr << "adding " << n_cl << " clusters...\n";
 
   // cluster surfaces must be at least 25.0 Ang apart
@@ -143,7 +142,6 @@ int main(int argc, char *argv[])
   fclose(ccf);
 
   std::cerr << "sample built.\n";
-  //return 0;
 
   materialBase *material;
   elementBase *element;
@@ -185,12 +183,10 @@ int main(int argc, char *argv[])
   std::queue<ionBase*> recoils;
 
   Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
   Real dif[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
@@ -225,8 +221,8 @@ int main(int argc, char *argv[])
     Z1 = round((A1 * 92.0) / 235.0);
     Z2 = 92 - Z1;
 
-    ff1->z1 = Z1;
-    ff1->m1 = A1;
+    ff1->_Z = Z1;
+    ff1->_m = A1;
     ff1->e  = E1 * 1.0e6;
 
     do
@@ -248,8 +244,8 @@ int main(int argc, char *argv[])
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
 
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
+    ff2->_Z = Z2;
+    ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
     ff2->md = 0;
 
@@ -269,7 +265,7 @@ int main(int argc, char *argv[])
       sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
-      if (pka->z1 == gas_z1)
+      if (pka->_Z == gas_z1)
       {
 	      // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
@@ -299,7 +295,7 @@ int main(int argc, char *argv[])
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       trim->trim(pka, recoils);
 
       // printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
@@ -307,7 +303,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is GAS
-      if (pka->z1 == gas_z1)
+      if (pka->_Z == gas_z1)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);

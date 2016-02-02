@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
   fclose(urand);
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
@@ -184,16 +184,7 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3], dif2[3];
-
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
-
-  Real A1, A2, Etot, E1, E2;
-  int Z1, Z2;
+  Real dif2[3];
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
   FILE *erec = fopen(fname, "wt");
@@ -201,10 +192,9 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  Real pos1[3], pos2[3];
+  Real pos2[3];
 
   ionBase *ff1, *pka;
-  int id = 1;
 
   //Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
   Real A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
@@ -221,8 +211,8 @@ int main(int argc, char *argv[])
     ff1->tag = -1;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E;
 
     ff1->dir[0] = 1;
@@ -246,11 +236,11 @@ int main(int argc, char *argv[])
       //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
       Real oerec = pka->e;
 
-      if (pka->z1 == 542)
+      if (pka->_Z == 542)
       {
         if (pka->gen > 0)
         {
@@ -265,7 +255,7 @@ int main(int argc, char *argv[])
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       //pka->md = id++;
 
       trim->trim(pka, recoils);
@@ -274,9 +264,9 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      if (pka->z1 == 542)
+      if (pka->_Z == 542)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
@@ -286,7 +276,7 @@ int main(int argc, char *argv[])
         {
           dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
         }
-        fprintf(rdist, "%d %f %f %f %f %f\n", pka->z1, pos2[0], pos2[1], pos2[2], std::sqrt(v_dot(dif2, dif2)), oerec);
+        fprintf(rdist, "%d %f %f %f %f %f\n", pka->_Z, pos2[0], pos2[1], pos2[2], std::sqrt(v_dot(dif2, dif2)), oerec);
 
       }
 
@@ -302,7 +292,6 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
-  Real surf = sample->w[1] * sample->w[2];
   Real natom = v_sam * sample->material[0]->arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)",
           v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));

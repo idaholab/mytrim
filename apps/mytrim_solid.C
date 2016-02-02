@@ -42,16 +42,16 @@ using namespace MyTRIM_NS;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if (argc != 4) // 2
+  if (argc != 3) // 2
   {
-    fprintf(stderr, "syntax:\n%s basename r Cbfactor\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n", argv[0]);
+    fprintf(stderr, "syntax:\n%s basename r\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n", argv[0]);
     return 1;
   }
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
+  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
   fclose(urand);
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
@@ -65,19 +65,6 @@ int main(int argc, char *argv[])
   sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
 
   trimBase *trim = new trimBase(simconf, sample);
-
-
-  //Real r = 10.0;
-  Real r = atof(argv[2]); //10.0;
-  Real Cbf = atof(argv[3]);
-
-
-  // Real atp = 0.1; // 10at% Mo 90at%Cu
-  Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
-  int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
-
-  n_cl = 1;//v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
 
   materialBase *material;
   elementBase *element;
@@ -106,12 +93,8 @@ int main(int argc, char *argv[])
   std::queue<ionBase*> recoils;
 
   Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
@@ -122,10 +105,7 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  Real pos1[3];
-
-  ionMDtag *ff1, *ff2, *pka;
-  int id = 1;
+  ionMDtag *ff1, *pka;
 
   // 5 fission events
   for (int n = 0; n < 10; n++) // 10 ff
@@ -153,12 +133,12 @@ int main(int argc, char *argv[])
 
     Z2 = 92 - Z1;
 
-    /* ff1->z1 = Z1;
-    ff1->m1 = A1;
+    /* ff1->_Z = Z1;
+    ff1->_m = A1;
     ff1->e  = E1 * 1.0e6; */
 
-    ff1->z1 = 53;
-    ff1->m1 = 127;
+    ff1->_Z = 53;
+    ff1->_m = 127;
     ff1->e  = 70.0 * 1.0e6;
 
     do
@@ -181,8 +161,8 @@ int main(int argc, char *argv[])
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
 
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
+    ff2->_Z = Z2;
+    ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
 
     ff2->set_ef();
@@ -198,7 +178,7 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if (pka->z1 == 54 )
+      if (pka->_Z == 54 )
       {
         // mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
         if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
@@ -218,7 +198,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is Xe
-      if (pka->z1 == 54 )
+      if (pka->_Z == 54 )
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
