@@ -48,7 +48,7 @@ void ionBase::parent(ionBase *parent)
   t = parent->t;
 
   for (unsigned int i = 0; i < 3; i++)
-    pos[i] = parent->pos[i];
+    pos(i) = parent->pos(i);
 }
 
 ionBase* ionBase::spawnRecoil()
@@ -62,7 +62,7 @@ ionBase* ionBase::spawnRecoil()
 namespace MyTRIM_NS {
   std::ostream& operator << (std::ostream& os, const ionBase &i)
   {
-    os << i.pos[0] << ' ' << i.pos[1] << ' ' << i.pos[2] << ' '
+    os << i.pos(0) << ' ' << i.pos(1) << ' ' << i.pos(2) << ' '
        << i._Z << ' ' << i._m << ' ' << i.e << ' '
        << i.t << ' '
        << i.id << ' ' << i.gen << ' ' << i.tag << ' ';

@@ -14,10 +14,10 @@ sampleWire::sampleWire(Real x, Real y, Real z)  : sampleBase(x, y, z)
 }
 
 // look if we are within dr of the wire axis
-materialBase* sampleWire::lookupMaterial(Real* pos)
+materialBase* sampleWire::lookupMaterial(Point & pos)
 {
-  Real x = (pos[0] / w[0]) * 2.0 - 1.0;
-  Real y = (pos[1] / w[1]) * 2.0 - 1.0;
+  Real x = (pos(0) / w[0]) * 2.0 - 1.0;
+  Real y = (pos(1) / w[1]) * 2.0 - 1.0;
 
   if ((x*x + y*y) > 1.0) return 0;
   return material[0];

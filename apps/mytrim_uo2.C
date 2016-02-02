@@ -227,14 +227,16 @@ int main(int argc, char *argv[])
 
     do
     {
-      for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
-      norm = v_dot(ff1->dir, ff1->dir);
+      for (int i = 0; i < 3; i++)
+        ff1->dir(i) = dr250() - 0.5;
+      norm = ff1->dir.size_sq();
     }
-    while (norm <= 0.0001);
-    v_scale(ff1->dir, 1.0 / std::sqrt(norm));
+    while (norm <= 0.0001 /*|| norm > 0.25 */);
+    //while (norm <= 0.0001 || norm > 0.25); // This will fail the test
+    ff1->dir /= std::sqrt(norm);
 
     // random origin
-    for (int i = 0; i < 3; i++) ff1->pos[i] = dr250() * sample->w[i];
+    for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -242,7 +244,7 @@ int main(int argc, char *argv[])
     ff2 = new ionMDtag(*ff1); // copy constructor
 
     // reverse direction
-    for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
+    for (int i = 0; i < 3; i++) ff2->dir(i) *= -1.0;
 
     ff2->_Z = Z2;
     ff2->_m = A2;
@@ -282,13 +284,13 @@ int main(int argc, char *argv[])
         {
           for (int i = 0; i < 3; i++)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
+            dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
 
             if (sample->bc[i] == sampleBase::PBC)
               dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
 
-            pos1[i] = pka->pos[i] + dif[i];
-            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i]);
+            pos1[i] = pka->pos(i) + dif[i];
+            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
           }
 	        //printf("\n");
         }
@@ -298,7 +300,7 @@ int main(int argc, char *argv[])
       // printf("%f\t%d\n", pka->e, pka->_Z);
       trim->trim(pka, recoils);
 
-      // printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
+      // printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -306,15 +308,15 @@ int main(int argc, char *argv[])
       if (pka->_Z == gas_z1)
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
+        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0) {
           for (int i = 0; i < 3; i++)
-            dif[i] = pos1[i] - pka->pos[i];
+            dif[i] = pos1[i] - pka->pos(i);
 
           fprintf(rdist, "%f %d %f %f %f\n", std::sqrt(v_dot(dif, dif)),
-                   pka->md, pka->pos[0], pka->pos[1], pka->pos[2]);
+                   pka->md, pka->pos(0), pka->pos(1), pka->pos(2));
         }
       }
 

@@ -29,7 +29,7 @@ public:
   Real e;
 
   // normalized velocity vector, and position
-  Real dir[3], pos[3];
+  Point dir, pos;
 
   // internal clock (needed for visualization)
   Real t;

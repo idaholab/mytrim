@@ -37,8 +37,8 @@ struct sampleBase {
   sampleBoundary bc[3]; // boundary conditions
 
   virtual void averages(const ionBase  * pka);
-  virtual materialBase* lookupMaterial(Real * pos) = 0;
-  virtual Real rangeMaterial(Real * /* pos */, Real * /* dir */) { return 100000.0; };
+  virtual materialBase* lookupMaterial(Point & pos) = 0;
+  virtual Real rangeMaterial(Point & /* pos */, Point & /* dir */) { return 100000.0; };
 
   sampleBase(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 };

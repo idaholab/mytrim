@@ -15,14 +15,14 @@ sampleBurriedWire::sampleBurriedWire(Real x, Real y, Real z)  : sampleWire(x, y,
 }
 
 // look if we are within dr of the wire axis
-materialBase* sampleBurriedWire::lookupMaterial(Real* pos)
+materialBase* sampleBurriedWire::lookupMaterial(Point & pos)
 {
   // cover layer
-  if (pos[2] < 0.0 && pos[2] >= -250.0)
+  if (pos(2) < 0.0 && pos(2) >= -250.0)
     return material[1];
 
   // above sample or inside substrate
-  if (pos[2] > w[2] || pos[2] < -250.0 )
+  if (pos(2) > w[2] || pos(2) < -250.0 )
     return 0;
 
   // in wire layer

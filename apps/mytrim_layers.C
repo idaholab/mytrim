@@ -125,7 +125,8 @@ int main(int argc, char *argv[])
 
   ionBase *ff1, *pka;
   int nrec = 0;
-  Real sum_r2 = 0.0, opos[3];
+  Real sum_r2 = 0.0;
+  Point opos;
 
   // 1000 PKA
   for (int n = 0; n < nmax; n++)
@@ -141,13 +142,13 @@ int main(int argc, char *argv[])
     ff1->_m = A;
     ff1->e  = E;
 
-    ff1->dir[0] = 1;
-    ff1->dir[1] = 0;
-    ff1->dir[2] = 0;
+    ff1->dir(0) = 1;
+    ff1->dir(1) = 0;
+    ff1->dir(2) = 0;
 
-    ff1->pos[0] = 0;
-    ff1->pos[1] = sample->w[1] / 2.0;
-    ff1->pos[2] = sample->w[2] / 2.0;
+    ff1->pos(0) = 0;
+    ff1->pos(1) = sample->w[1] / 2.0;
+    ff1->pos(2) = sample->w[2] / 2.0;
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -162,8 +163,7 @@ int main(int argc, char *argv[])
 
       //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
 
-      for (int i = 0; i < 3; i++)
-        opos[i] = pka->pos[i];
+      opos = pka->pos;
 
       // follow this ion's trajectory and store recoils
       //if (pka->_Z == 29 || pka->_Z == Z)
@@ -173,17 +173,16 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
       if (pka->_Z != Z)
       {
-        for (int i = 0; i < 3; i++)
-          sum_r2 += sqr(opos[i] - pka->pos[i]);
+        sum_r2 += (opos - pka->pos).size_sq();
         nrec++;
       }
 
       // pka is O or Ag
-      //if (pka->_Z == 29 && pka->pos[0] >= 500.0)
+      //if (pka->_Z == 29 && pka->pos(0) >= 500.0)
       if (pka->_Z == 29)
       {
         // output
-        printf("RP %f %d %d\n", pka->pos[0], n,  pka->gen);
+        printf("RP %f %d %d\n", pka->pos(0), n,  pka->gen);
       }
 
       // done with this recoil

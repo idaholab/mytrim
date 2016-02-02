@@ -142,13 +142,13 @@ int main(int argc, char *argv[])
     ff1->_m = A;
     ff1->e  = E * (3-((n*3)/35000));
 
-    ff1->dir[0] = 1;
-    ff1->dir[1] = 0;
-    ff1->dir[2] = 0;
+    ff1->dir(0) = 1;
+    ff1->dir(1) = 0;
+    ff1->dir(2) = 0;
 
-    ff1->pos[0] = 0;
-    ff1->pos[1] = sample->w[1] / 2.0;
-    ff1->pos[2] = sample->w[2] / 2.0;
+    ff1->pos(0) = 0;
+    ff1->pos(1) = sample->w[1] / 2.0;
+    ff1->pos(2) = sample->w[2] / 2.0;
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 
       //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
       //for (int i = 0; i < 3; i++)
-      // opos[i] = pka->pos[i];
+      // opos(i) = pka->pos(i);
 
       //
       // follow this ion's trajectory and store recoils
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
 
       // add to destination layer
       layer2 = sample->lookupLayer(pka->pos);
-      if (pka->pos[0] > 0)
+      if (pka->pos(0) > 0)
         sample->addAtomsToLayer(layer2, 1, pka->_Z);
 
       //

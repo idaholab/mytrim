@@ -115,9 +115,9 @@ public:
 protected:
   virtual bool followRecoil()
   {
-    pos_hist[0].push_back(pka->pos[0]);
-    pos_hist[1].push_back(pka->pos[1]);
-    pos_hist[2].push_back(pka->pos[2]);
+    pos_hist[0].push_back(pka->pos(0));
+    pos_hist[1].push_back(pka->pos(1));
+    pos_hist[2].push_back(pka->pos(2));
     return true;
   };
 };
@@ -170,8 +170,8 @@ protected:
     // both atoms have enough energy to leave the site
     int x, y;
 
-    x = ((recoil->pos[0] * mx) / sample->w[0]);
-    y = ((recoil->pos[1] * my) / sample->w[1]);
+    x = ((recoil->pos(0) * mx) / sample->w[0]);
+    y = ((recoil->pos(1) * my) / sample->w[1]);
     x -= int(x/mx) * mx;
     y -= int(y/my) * my;
 

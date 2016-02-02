@@ -31,8 +31,8 @@ public:
   Point(Real x, Real y, Real z);
 
   /// component access for backwards compatibility
-  Real & operator[] (unsigned int i);
-  const Real & operator[] (unsigned int i) const;
+  Real & operator() (unsigned int i);
+  const Real & operator() (unsigned int i) const;
 
   /// distance squared form the origin
   Real size_sq() { return data[0]*data[0] + data[1]*data[1] + data[2]*data[2]; }

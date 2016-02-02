@@ -215,13 +215,13 @@ int main(int argc, char *argv[])
     ff1->_m = A;
     ff1->e  = E;
 
-    ff1->dir[0] = 1;
-    ff1->dir[1] = 0;
-    ff1->dir[2] = 0;
+    ff1->dir(0) = 1;
+    ff1->dir(1) = 0;
+    ff1->dir(2) = 0;
 
-    ff1->pos[0] = 0;
-    ff1->pos[1] = sample->w[1] / 2.0;
-    ff1->pos[2] = sample->w[2] / 2.0;
+    ff1->pos(0) = 0;
+    ff1->pos(1) = sample->w[1] / 2.0;
+    ff1->pos(2) = sample->w[2] / 2.0;
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < 3; i++)
         {
-          pos2[i] = pka->pos[i];
+          pos2[i] = pka->pos(i);
         }
       }
 
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
       //pka->md = id++;
 
       trim->trim(pka, recoils);
-      fprintf(rdist, "%f 1\n", pka->pos[0]);
+      fprintf(rdist, "%f 1\n", pka->pos(0));
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -269,12 +269,12 @@ int main(int argc, char *argv[])
       if (pka->_Z == 542)
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
+        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
         for (int i = 0; i < 3; i++)
         {
-          dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
+          dif2[i] = pos2[i] - pka->pos(i); // total distance it moved
         }
         fprintf(rdist, "%d %f %f %f %f %f\n", pka->_Z, pos2[0], pos2[1], pos2[2], std::sqrt(v_dot(dif2, dif2)), oerec);
 

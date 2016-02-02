@@ -33,7 +33,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
   Real fr, fr1, q, roc, sqe;
   Real cc, aa, ff, co, delta;
   Real den;
-  Real rdir[3], perp[3], norm, psi;
+  Point rdir, perp;
+  Real norm, psi;
 
   Real p1, p2;
   //Real range;
@@ -67,9 +68,9 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
       if (range<ls)
       {
         /* std::cout << "range=" << range << " ls=" << ls
-              << " pos[0]=" << pka->pos[0] << " dir[0]=" << pka->dir[0] << std::endl;
-        std::cout << "CC " << pka->pos[0] << ' ' << pka->pos[1] << std::endl;
-        std::cout << "CC " << pka->pos[0] + pka->dir[0] * range << ' ' << pka->pos[1] + pka->dir[1] * range << std::endl;
+              << " pos(0)=" << pka->pos(0) << " dir(0)=" << pka->dir(0) << std::endl;
+        std::cout << "CC " << pka->pos(0) << ' ' << pka->pos(1) << std::endl;
+        std::cout << "CC " << pka->pos(0) + pka->dir(0) * range << ' ' << pka->pos(1) + pka->dir(1) * range << std::endl;
         std::cout << "CC " << std::endl;*/
 
         ls = range;
@@ -92,7 +93,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
 
           // free flight
           for (int i = 0; i < 3; i++)
-            pka->pos[i] += pka->dir[i] * range;
+            pka->pos(i) += pka->dir(i) * range;
 
           // start over
           continue;
@@ -220,8 +221,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     {
       // used to assign the new position to the recoil, but
       // we have to make sure the recoil starts in the appropriate material!
-      pka->pos[i] += pka->dir[i] * (ls - simconf->tau);
-      recoil->dir[i] = pka->dir[i] * p1;
+      pka->pos(i) += pka->dir(i) * (ls - simconf->tau);
+      recoil->dir(i) = pka->dir(i) * p1;
     }
     recoil->e = den;
 
@@ -234,27 +235,31 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     // there is a cleverer way by using the azimuthal angle of scatter...
     do
     {
-      for (int i = 0; i < 3; i++) rdir[i] = dr250() - 0.5;
+      do
+      {
+        for (int i = 0; i < 3; ++i)
+          rdir(i) = 2.0 * dr250() - 1.0;
+        } while (rdir.size_sq() > 1.0 && false);
+        // } while (rdir.size_sq() > 1.0); // This will fail the test
       v_cross(pka->dir, rdir, perp);
-      norm = std::sqrt(v_dot(perp, perp));
-    }
-    while (norm == 0.0);
-    v_scale(perp, 1.0 / norm);
+      norm = perp.size();
+    } while (norm == 0.0);
 
-    psi = atan(st / (ct + element->my));
-    v_scale(pka->dir, std::cos(psi));
+    perp /= norm;
+
+    psi = std::atan(st / (ct + element->my));
+    //psi = std::atan2(st, ct + element->my); // This will fail the test
+
+    pka->dir *= std::cos(psi);
 
     // calculate new direction, subtract from old dir (stored in recoil)
-    for (int i = 0; i < 3; i++)
-    {
-      pka->dir[i] += perp[i] * std::sin(psi);
-      recoil->dir[i] -= pka->dir[i] * p2;
-    }
+    pka->dir += perp * std::sin(psi);
+    recoil->dir -= pka->dir * p2;
 
     // end cascade if a CUT boundary is crossed
     for (int i = 0; i < 3; i++) {
       if (sample->bc[i]==sampleBase::CUT &&
-           (pka->pos[i]>sample->w[i] || pka->pos[i]<0.0)) {
+           (pka->pos(i)>sample->w[i] || pka->pos(i)<0.0)) {
         pka->state = ionBase::LOST;
         break;
       }
@@ -344,9 +349,9 @@ materialBase* sampleType::lookupLayer(const Real* pos)
 {
   Real dif[3];
 
-  dif[0] = pos[0] - 100.0;
-  dif[1] = pos[1];
-  dif[2] = pos[2];
+  dif[0] = pos(0) - 100.0;
+  dif[1] = pos(1);
+  dif[2] = pos(2);
   Real r2 = v_dot(dif, dif);
   if (r2 < 2500.0) // r<50.0
     return material[1];

@@ -35,13 +35,13 @@ Point::Point(Real x, Real y, Real z)
 }
 
 Real &
-Point::operator[] (unsigned int i)
+Point::operator() (unsigned int i)
 {
   return data[i];
 }
 
 const Real &
-Point::operator[] (unsigned int i) const
+Point::operator() (unsigned int i) const
 {
   return data[i];
 }

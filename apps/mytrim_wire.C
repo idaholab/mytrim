@@ -127,17 +127,17 @@ int main(int argc, char *argv[])
     pka->_m = mpka;
     pka->e  = epka;
 
-    pka->dir[0] = 0.0;
-    pka->dir[1] = -cos(theta);
-    pka->dir[2] = sin(theta);
+    pka->dir(0) = 0.0;
+    pka->dir(1) = -cos(theta);
+    pka->dir(2) = sin(theta);
 
     v_norm(pka->dir);
 
-    pka->pos[0] = dr250() * sample->w[0];
-    pka->pos[2] = dr250() * sample->w[2];
+    pka->pos(0) = dr250() * sample->w[0];
+    pka->pos(2) = dr250() * sample->w[2];
 
     // wire surface
-    pka->pos[1] = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->pos[0] / sample->w[0]) * 2.0 - 1.0))) - 0.5;
+    pka->pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;
 
     pka->set_ef();
     recoils.push(pka);
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 
       if (pka->_Z == zpka )
       {
-        //printf( "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
+        //printf( "p1 %f\t%f\t%f\n", pka->pos(0), pka->pos(1), pka->pos(2));
       }
 
       // follow this ion's trajectory and store recoils
@@ -165,8 +165,8 @@ int main(int argc, char *argv[])
       if ( sample->lookupMaterial(pka->pos) != 0)
       {
         int x, y;
-        x = ((pka->pos[0] * mx) / sample->w[0]);
-        y = ((pka->pos[1] * my) / sample->w[1]);
+        x = ((pka->pos(0) * mx) / sample->w[0]);
+        y = ((pka->pos(1) * my) / sample->w[1]);
         x -= int(x/mx) * mx;
         y -= int(y/my) * my;
 

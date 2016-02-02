@@ -18,7 +18,7 @@ sampleClusters::sampleClusters(Real x, Real y, Real z) :
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-materialBase* sampleClusters::lookupMaterial(Real * pos)
+materialBase* sampleClusters::lookupMaterial(Point & pos)
 {
   int l = lookupCluster(pos, 0.0);
 
@@ -31,7 +31,7 @@ materialBase* sampleClusters::lookupMaterial(Real * pos)
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-int sampleClusters::lookupCluster(Real * pos, Real dr)
+int sampleClusters::lookupCluster(Point & pos, Real dr)
 {
   Real dif[3], r2;
   int k[3], k1[3], k2[3], j[3], l, ks;
@@ -40,8 +40,8 @@ int sampleClusters::lookupCluster(Real * pos, Real dr)
   // if pos>w || pos<0 drop out early when bc[] = CUT or return material[0]
   for (unsigned int i = 0; i<3; ++i)
   {
-    k[i] = floor((pos[i] * kn[i]) / w[i]);
-    if (pos[i] < 0.0 || pos[i] >= w[i])
+    k[i] = std::floor((pos(i) * kn[i]) / w[i]);
+    if (pos(i) < 0.0 || pos(i) >= w[i])
     {
       switch (bc[i])
       {
@@ -81,9 +81,9 @@ int sampleClusters::lookupCluster(Real * pos, Real dr)
           {
             for (unsigned int i = 0; i<3; ++i)
             {
-              dif[i] = pos[i] - c[i][l];
+              dif[i] = pos(i) - c[i][l];
               if (bc[i] == PBC)
-                dif[i] -= round(dif[i] / w[i]) *w[i];
+                dif[i] -= ::round(dif[i] / w[i]) * w[i];
             }
             r2 = v_dot(dif, dif);
             //printf(" trying cluster %d, dif=(%f,%f,%f), r2=%f\n", l,dif[0],dif[1],dif[2],r2);
@@ -174,7 +174,7 @@ void sampleClusters::addCluster(Real x, Real y, Real z, Real r)
 // add non-overlapping clusters with a minimum surface-surface separation of dr
 void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr)
 {
-  Real npos[3];
+  Point npos;
 
   reallocClusters(n + n/10); //allocate 10% more for ghost bubbles (get more later if needed)
 
@@ -182,11 +182,11 @@ void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr)
   {
     while (true)
     {
-      for (unsigned int j = 0; j < 3; ++j) npos[j] = dr250() * w[j];
+      for (unsigned int j = 0; j < 3; ++j) npos(j) = dr250() * w[j];
 
       if (lookupCluster(npos, dr + r) == -1)
       {
-        addCluster(npos[0], npos[1], npos[2], r);
+        addCluster(npos(0), npos(1), npos(2), r);
         break;
       }
       //else fprintf(stderr, "rejected, too close\n");
