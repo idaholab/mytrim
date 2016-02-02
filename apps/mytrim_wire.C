@@ -104,9 +104,9 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
-  ionBase *pka;
+  IonBase *pka;
 
   const int mx = 20, my = 20;
   int imap[mx][my][3];
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   {
     if (n % 1000 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    pka = new ionBase;
+    pka = new IonBase;
     pka->gen = 0; // generation (0 = PKA)
     pka->tag = -1;
     pka->_Z = zpka; // S
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     // wire surface
     pka->pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;
 
-    pka->set_ef();
+    pka->setEf();
     recoils.push(pka);
 
     while (!recoils.empty())

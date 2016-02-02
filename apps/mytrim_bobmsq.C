@@ -150,10 +150,10 @@ int main(int argc, char *argv[])
 
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   Real pos2[3];
-  ionBase *ff1, *pka;
+  IonBase *ff1, *pka;
 
   // squared displacement
   Real sqd = 0.0, sqd2 = 0.0;
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
   {
     if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    ff1 = new ionBase;
+    ff1 = new IonBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->id = simconf->id++;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     ff1->pos(1) = sample->w[1] / 2.0;
     ff1->pos(2) = sample->w[2] / 2.0;
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
     while (!recoils.empty())

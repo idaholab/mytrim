@@ -6,18 +6,18 @@
 
 namespace MyTRIM_NS {
 
-class ionBase
+class IonBase
 {
 public:
-  ionBase();
-  ionBase(ionBase* prototype);
-  ionBase(int Z, Real m, Real e_);
-  virtual ~ionBase() {};
+  IonBase();
+  IonBase(IonBase* prototype);
+  IonBase(int Z, Real m, Real e_);
+  virtual ~IonBase() {};
 
-  virtual void parent(ionBase* parent);
-  virtual ionBase* spawnRecoil();
+  virtual void parent(IonBase* parent);
+  virtual IonBase* spawnRecoil();
 
-  void set_ef();
+  void setEf();
 
   /// atomic number
   int _Z;
@@ -54,24 +54,24 @@ public:
 };
 
 /// Serialize ion into text stream
-std::ostream& operator << (std::ostream& os, const ionBase &i);
+std::ostream& operator << (std::ostream& os, const IonBase &i);
 
 
-class ionMDtag : public ionBase
+class IonMDTag : public IonBase
 {
 public:
-  ionMDtag() : ionBase(), md(0) {}
-  ionMDtag(ionMDtag * prototype) : ionBase(prototype), md(prototype->md) {}
+  IonMDTag() : IonBase(), md(0) {}
+  IonMDTag(IonMDTag * prototype) : IonBase(prototype), md(prototype->md) {}
 
-  /// overwrite this to return recoil ion objects of type ionMDtag
-  virtual ionBase* spawnRecoil();
+  /// overwrite this to return recoil ion objects of type IonMDTag
+  virtual IonBase* spawnRecoil();
 
   /// generation after first ion falling into the MD energy gap (200eV - 12000eV) TODO: move to subclass?
   int md;
 };
 
 /// Serialize ion into text stream
-std::ostream& operator << (std::ostream& os, const ionMDtag &p);
+std::ostream& operator << (std::ostream& os, const IonMDTag &p);
 }
 
 #endif

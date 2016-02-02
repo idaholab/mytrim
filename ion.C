@@ -4,14 +4,14 @@
 
 using namespace MyTRIM_NS;
 
-ionBase::ionBase() :
+IonBase::IonBase() :
     t(0.0),  // clock
     ef(3.0), // final energy
     state(MOVING)
 {
 }
 
-ionBase::ionBase(ionBase* prototype) :
+IonBase::IonBase(IonBase* prototype) :
     _Z(prototype->_Z),
     _m(prototype->_m),
     e(prototype->e),
@@ -21,7 +21,7 @@ ionBase::ionBase(ionBase* prototype) :
   t = prototype->t;   //clock
 }
 
-ionBase::ionBase(int Z, Real m, Real e_) :
+IonBase::IonBase(int Z, Real m, Real e_) :
     _Z(Z),
     _m(m),
     e(e_),
@@ -31,7 +31,8 @@ ionBase::ionBase(int Z, Real m, Real e_) :
   t = 0.0; //clock;
 }
 
-void ionBase::set_ef()
+void
+IonBase::setEf()
 {
   // stop following an ion if it's energy falls below 5.0eV
   ef = 3.0;
@@ -40,7 +41,8 @@ void ionBase::set_ef()
   //fmax(5.0, 0.00001 * e);
 }
 
-void ionBase::parent(ionBase *parent)
+void
+IonBase::parent(IonBase *parent)
 {
   ef = 3.0; // final energy
 
@@ -51,16 +53,17 @@ void ionBase::parent(ionBase *parent)
     pos(i) = parent->pos(i);
 }
 
-ionBase* ionBase::spawnRecoil()
+IonBase*
+IonBase::spawnRecoil()
 {
-  ionBase *recoil = new ionBase;
+  IonBase *recoil = new IonBase;
   recoil->parent(this);
   return recoil;
 }
 
 // output operator (implement for derived classes if necessary)
 namespace MyTRIM_NS {
-  std::ostream& operator << (std::ostream& os, const ionBase &i)
+  std::ostream& operator << (std::ostream& os, const IonBase &i)
   {
     os << i.pos(0) << ' ' << i.pos(1) << ' ' << i.pos(2) << ' '
        << i._Z << ' ' << i._m << ' ' << i.e << ' '
@@ -71,18 +74,19 @@ namespace MyTRIM_NS {
 }
 
 
-ionBase* ionMDtag::spawnRecoil()
+IonBase*
+IonMDTag::spawnRecoil()
 {
-  ionBase *recoil = new ionMDtag;
+  IonBase *recoil = new IonMDTag;
   recoil->parent(this);
   return recoil;
 }
 
 namespace MyTRIM_NS {
   // leverage the parent class output and augment it
-  std::ostream& operator << (std::ostream& os, const ionMDtag &i)
+  std::ostream& operator << (std::ostream& os, const IonMDTag &i)
   {
-    os << (static_cast<const ionBase &>(i)) <<  i.md << ' ';
+    os << (static_cast<const IonBase &>(i)) <<  i.md << ' ';
     return os;
   }
 }

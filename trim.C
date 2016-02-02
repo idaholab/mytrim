@@ -12,7 +12,7 @@ using namespace MyTRIM_NS;
 //
 
 // does a single ion cascade
-void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
+void trimBase::trim(IonBase *pka_, std::queue<IonBase*> &recoils)
 {
   // simconf should already be initialized
   pka = pka_;
@@ -260,7 +260,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     for (int i = 0; i < 3; i++) {
       if (sample->bc[i]==sampleBase::CUT &&
            (pka->pos(i)>sample->w[i] || pka->pos(i)<0.0)) {
-        pka->state = ionBase::LOST;
+        pka->state = IonBase::LOST;
         break;
       }
     }
@@ -268,7 +268,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     //
     // decide on the fate of recoil and pka
     //
-    if (pka->state != ionBase::LOST) {
+    if (pka->state != IonBase::LOST) {
       if (recoil->e > element->_Edisp) {
         // non-physics based descision on recoil following
         if (followRecoil()) {
@@ -283,7 +283,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
         } else {
           // this recoil could have left its lattice site, but we chose
           // not to follow it (simulation of PKAs only)
-          recoil->id = ionBase::DELETE;
+          recoil->id = IonBase::DELETE;
         }
 
         // will the knock-on get trapped at the recoil atom site?
@@ -295,24 +295,24 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
         } else {
           // nope, the pka gets stuck at that site as...
           if (pka->_Z == element->_Z)
-            pka->state = ionBase::REPLACEMENT;
+            pka->state = IonBase::REPLACEMENT;
           else
-            pka->state = ionBase::SUBSTITUTIONAL;
+            pka->state = IonBase::SUBSTITUTIONAL;
         }
       } else {
         // this recoil will not leave its lattice site
         dissipateRecoilEnergy();
-        recoil->id  = ionBase::DELETE;;
+        recoil->id  = IonBase::DELETE;;
 
         // if the PKA has no energy left, put it to rest here as an interstitial
         if (pka->e < pka->ef) {
-          pka->state = ionBase::INTERSTITIAL;
+          pka->state = IonBase::INTERSTITIAL;
         }
       }
     }
 
     // delete recoil if it was not queued
-    if (recoil->id  == ionBase::DELETE) delete recoil;
+    if (recoil->id  == IonBase::DELETE) delete recoil;
 
     // act on the pka state change
     checkPKAState();
@@ -321,7 +321,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     if (simconf->fullTraj)
       std::cout << pka->state << ' ' << *pka << std::endl;
 
-  } while (pka->state == ionBase::MOVING);
+  } while (pka->state == IonBase::MOVING);
 }
 
 void trimBase::vacancyCreation()

@@ -76,13 +76,13 @@ int main(int, char **)
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   // create a bunch of ions
-  MyTRIM_NS::ionBase * pka;
+  MyTRIM_NS::IonBase * pka;
   for (unsigned int i = 0; i < 1000; ++i)
   {
-    pka = new MyTRIM_NS::ionBase;
+    pka = new MyTRIM_NS::IonBase;
     pka->gen = 0;  // generation (0 = PKA)
     pka->tag = 0; // tag holds the element type
     pka->_Z = 20;
@@ -97,7 +97,7 @@ int main(int, char **)
     pka->pos(1) = 0.01;
     pka->pos(2) = 100.0;
 
-    pka->set_ef();
+    pka->setEf();
     recoils.push(pka);
   }
 

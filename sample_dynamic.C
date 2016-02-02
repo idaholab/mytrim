@@ -15,7 +15,7 @@ sampleDynamic::sampleDynamic(simconfType * simconf_, Real x, Real y, Real z):
   bc[2] = PBC;
 }
 
-void sampleDynamic::averages(const ionBase *_pka)
+void sampleDynamic::averages(const IonBase *_pka)
 {
   // remember pka, we do not calculate averages right now, but on demand!
   pka = _pka;

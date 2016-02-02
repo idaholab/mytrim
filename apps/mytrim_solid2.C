@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
 
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   Real dif2[3];
 
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 
   Real pos2[3];
 
-  ionBase *ff1, *pka;
+  IonBase *ff1, *pka;
 
   //Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
   Real A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
   {
     if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    ff1 = new ionBase;
+    ff1 = new IonBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->id = simconf->id++;
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
     ff1->pos(1) = sample->w[1] / 2.0;
     ff1->pos(2) = sample->w[2] / 2.0;
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
     while (!recoils.empty())

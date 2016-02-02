@@ -9,7 +9,7 @@ sampleBase::sampleBase(Real x, Real y, Real z)
     bc[i] = PBC;
 }
 
-void sampleBase::averages(const ionBase * pka)
+void sampleBase::averages(const IonBase * pka)
 {
   for (unsigned int i = 0; i < material.size(); ++i)
     material[i]->average(pka);

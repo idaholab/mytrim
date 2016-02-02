@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   Real norm;
   MassInverter *m = new MassInverter;
@@ -105,14 +105,14 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  ionMDtag *ff1, *pka;
+  IonMDTag *ff1, *pka;
 
   // 5 fission events
   for (int n = 0; n < 10; n++) // 10 ff
   {
     if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    ff1 = new ionMDtag;
+    ff1 = new IonMDTag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->md = 0;
@@ -151,11 +151,11 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
 /*
-    ff2 = new ionBase(*ff1); // copy constructor
+    ff2 = new IonBase(*ff1); // copy constructor
     //ff1->id = simconf->id++;
 
     // reverse direction
@@ -165,14 +165,14 @@ int main(int argc, char *argv[])
     ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
 
-    ff2->set_ef();
+    ff2->setEf();
     recoils.push(ff2);
 
     fprintf(stderr, "A1=%f Z1=%d (%f MeV)\tA2=%f Z2=%d (%f MeV)\n", A1, Z1, E1, A2, Z2, E2);
 */
     while (!recoils.empty())
     {
-      pka = dynamic_cast<ionMDtag*>(recoils.front());
+      pka = dynamic_cast<IonMDTag*>(recoils.front());
       recoils.pop();
       sample->averages(pka);
 

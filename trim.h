@@ -33,17 +33,17 @@ namespace MyTRIM_NS {
 
 class trimBase {
 public:
-  void trim(ionBase *pka, std::queue<ionBase*> &recoils);
+  void trim(IonBase *pka, std::queue<IonBase*> &recoils);
   trimBase(simconfType * simconf_, sampleBase *sample_) :
     simconf(simconf_), sample(sample_) {}
 
 protected:
   simconfType * simconf;
   sampleBase *sample;
-  ionBase *pka, *recoil;
+  IonBase *pka, *recoil;
   materialBase *material;
   ElementBase *element;
-  std::queue<ionBase*> *recoil_queue_ptr;
+  std::queue<IonBase*> *recoil_queue_ptr;
   bool terminate;
 
   // by default only follow recoils with E > 12eV
@@ -139,11 +139,11 @@ protected:
 
   // ions coming to rest
   virtual void checkPKAState() {
-    if (pka->state==ionBase::INTERSTITIAL)
+    if (pka->state==IonBase::INTERSTITIAL)
       os << "I " << *pka << std::endl;
-    else if (pka->state==ionBase::SUBSTITUTIONAL)
+    else if (pka->state==IonBase::SUBSTITUTIONAL)
       os << "S " << *pka << std::endl;
-    else if (pka->state==ionBase::REPLACEMENT)
+    else if (pka->state==IonBase::REPLACEMENT)
       os << "R " << *pka << std::endl;
   };
 };
@@ -194,8 +194,8 @@ protected:
 
   // residual energy of pka coming to a stop
   virtual void checkPKAState() {
-    if (pka->state == ionBase::MOVING ||
-        pka->state == ionBase::LOST) return;
+    if (pka->state == IonBase::MOVING ||
+        pka->state == IonBase::LOST) return;
 
     os << pka->e << ' ' <<  *pka << std::endl;
     simconf->EnucTotal += pka->e;

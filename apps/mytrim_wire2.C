@@ -63,12 +63,12 @@ int main(int argc, char *argv[])
   const int nstep = 5;
   Real ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
   int ion_count[nstep];
-  ionBase* ion_prototype[nstep];
-  ion_prototype[0] = new ionBase( 5, 11.0 , 320.0e3); // Z,m,E
-  ion_prototype[1] = new ionBase( 5, 11.0 , 220.0e3); // Z,m,E
-  ion_prototype[2] = new ionBase( 5, 11.0 , 160.0e3); // Z,m,E
-  ion_prototype[3] = new ionBase( 5, 11.0 , 120.0e3); // Z,m,E
-  ion_prototype[4] = new ionBase(15, 31.0 , 250.0e3); // Z,m,E
+  IonBase* ion_prototype[nstep];
+  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z,m,E
+  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z,m,E
+  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z,m,E
+  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z,m,E
+  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z,m,E
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
@@ -143,9 +143,9 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
-  ionBase *pka;
+  IonBase *pka;
 
   // map concentration along length
   int *lbins[2];
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
         std::cerr << "pka #" << n+1 << std::endl;
 
       // generate new PKA from prototype ion
-      pka = new ionBase(ion_prototype[s]);
+      pka = new IonBase(ion_prototype[s]);
       pka->gen = 0; // generation (0 = PKA)
       pka->tag = -1;
 
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
       //cout << "START " << pka->pos(0) << ' ' << pka->pos(1) << ' ' << pka->pos(2) << ' ' << std::endl;
       //continue;
 
-      pka->set_ef();
+      pka->setEf();
       recoils.push(pka);
 
       while (!recoils.empty())

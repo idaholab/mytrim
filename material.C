@@ -45,7 +45,7 @@ void materialBase::prepare()
 }
 
 // make sure layers are prepare'd first!
-void materialBase::average(const ionBase * pka)
+void materialBase::average(const IonBase * pka)
 {
   mu = pka->_m / am;
 
@@ -76,7 +76,7 @@ void materialBase::average(const ionBase * pka)
 }
 
 // make sure layers are prepare'd and averaged first!
-Real materialBase::getrstop(const ionBase * pka)
+Real materialBase::getrstop(const IonBase * pka)
 {
   Real se = 0.0;
   for (unsigned int i = 0; i < element.size(); ++i)
@@ -111,7 +111,7 @@ Real materialBase::rpstop(int z2p, Real e)
   return sp;
 }
 
-Real materialBase::rstop(const ionBase * ion, int z2)
+Real materialBase::rstop(const IonBase * ion, int z2)
 {
   Real e, vrmin, yrmin, v, vr, yr, vmin, m1;
   Real a, b, q, q1, l, l0, l1;
