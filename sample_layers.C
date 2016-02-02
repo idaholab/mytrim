@@ -11,7 +11,7 @@ int sampleLayers::lookupLayer(Point & pos)
   for (i = 0; i < layerThickness.size(); ++i)
   {
     d += layerThickness[i];
-    if (pos[0] < d) break;
+    if (pos(0) < d) break;
   }
 
   if (i >= material.size())
@@ -34,35 +34,35 @@ Real sampleLayers::rangeMaterial(Point & pos, Point & dir)
   const Real unrestricted = 1.0e6;
 
   // parallel to layer interfaces
-  if (dir[0] == 0.0) return unrestricted;
+  if (dir(0) == 0.0) return unrestricted;
 
-  Real epsilon = std::abs(1.0e-10 / dir[0]);
+  Real epsilon = std::abs(1.0e-10 / dir(0));
 
   // outside film
-  if (pos[0] < 0.0)
+  if (pos(0) < 0.0)
   {
-    if (dir[0] < 0.0)
+    if (dir(0) < 0.0)
       return unrestricted;
     else
-      return -pos[0]/dir[0] + epsilon;
+      return -pos(0)/dir(0) + epsilon;
   }
 
   // find layer
   for (i = 0; i < layerThickness.size(); ++i)
   {
-    if (pos[0] >= d && pos[0] < d + layerThickness[i])
+    if (pos(0) >= d && pos(0) < d + layerThickness[i])
     {
-      if (dir[0] < 0)
-        return (d-pos[0])/dir[0] + epsilon;
+      if (dir(0) < 0)
+        return (d-pos(0))/dir(0) + epsilon;
       else
-        return (d+layerThickness[i]-pos[0])/dir[0] + epsilon;
+        return (d+layerThickness[i]-pos(0))/dir(0) + epsilon;
     }
     d += layerThickness[i];
   }
 
   // not returned yet, means we are beyond the last layer
-  if (dir[0] > 0.0)
+  if (dir(0) > 0.0)
     return unrestricted;
   else
-    return (d-pos[0])/dir[0] + epsilon;
+    return (d-pos(0))/dir(0) + epsilon;
 }

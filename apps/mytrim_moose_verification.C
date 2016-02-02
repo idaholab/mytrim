@@ -89,13 +89,13 @@ int main(int, char **)
     pka->_m = 40;
     pka->e  = 300;
 
-    pka->dir[0] = 0.0;
-    pka->dir[1] = 1.0;
-    pka->dir[2] = 0.0;
+    pka->dir(0) = 0.0;
+    pka->dir(1) = 1.0;
+    pka->dir(2) = 0.0;
 
-    pka->pos[0] = 100.0;
-    pka->pos[1] = 0.01;
-    pka->pos[2] = 100.0;
+    pka->pos(0) = 100.0;
+    pka->pos(1) = 0.01;
+    pka->pos(2) = 100.0;
 
     pka->set_ef();
     recoils.push(pka);
@@ -107,12 +107,12 @@ int main(int, char **)
     recoils.pop();
     sample->averages(pka);
 
-    pka->pos[2] = 100.0;
-    pka->dir[2] = 0.0;
+    pka->pos(2) = 100.0;
+    pka->dir(2) = 0.0;
 
     trim->trim(pka, recoils);
 
-    printf("%f %f %f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
+    printf("%f %f %f\n", pka->pos(0), pka->pos(1), pka->pos(2));
 
     // done with this recoil
     delete pka;

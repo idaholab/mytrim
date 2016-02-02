@@ -185,22 +185,22 @@ int main(int argc, char *argv[])
 
     do
     {
-      for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
+      for (int i = 0; i < 3; i++) ff1->dir(i) = dr250() - 0.5;
       norm = ff1->dir.size_sq();
     }
     while (norm <= 0.0001 || norm > 0.25);
 
     /*
     norm = 1.0;
-    ff1->dir[0] = 1.0;
-    ff1->dir[1] = 0.0;
-    ff1->dir[2] = 0.0;
+    ff1->dir(0) = 1.0;
+    ff1->dir(1) = 0.0;
+    ff1->dir(2) = 0.0;
     */
     ff1->dir /= std::sqrt(norm);
 
     // random origin (outside cluster!)
     do {
-      for (int i = 0; i < 3; i++) ff1->pos[i] = dr250() * sample->w[i];
+      for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
     } while (sample->lookupCluster(ff1->pos) >= 0);
 
     ff1->set_ef();
@@ -210,7 +210,7 @@ int main(int argc, char *argv[])
     //ff1->id = simconf->id++;
 
     // reverse direction
-    for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
+    for (int i = 0; i < 3; i++) ff2->dir(i) *= -1.0;
 
     ff2->_Z = Z2;
     ff2->_m = A2;
@@ -244,11 +244,11 @@ int main(int argc, char *argv[])
 	{
           for (int i = 0; i < 3; i++)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
-            pos2[i] = pka->pos[i];
+            dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
+            pos2[i] = pka->pos(i);
             if (sample->bc[i] == sampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
-	    pos1[i] = pka->pos[i] + dif[i];
-	    //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i]);
+	    pos1[i] = pka->pos(i) + dif[i];
+	    //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
           }
 	  //printf("\n");
 //if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
@@ -259,9 +259,9 @@ int main(int argc, char *argv[])
       // printf("%f\t%d\n", pka->e, pka->_Z);
       //pka->md = id++;
 
-//printf("\nstart %f %f %f %d %d %d\n", pka->pos[0], pka->pos[1], pka->pos[2],  pka->_Z, pka->md, pka->id);
+//printf("\nstart %f %f %f %d %d %d\n", pka->pos(0), pka->pos(1), pka->pos(2),  pka->_Z, pka->md, pka->id);
       trim->trim(pka, recoils);
-//fprintf(phon, "%f %f %f %f %d %d\n", pka->e, pka->pos[0], pka->pos[1], pka->pos[2], pka->_Z, pka->id);
+//fprintf(phon, "%f %f %f %f %d %d\n", pka->e, pka->pos(0), pka->pos(1), pka->pos(2), pka->_Z, pka->id);
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -269,17 +269,17 @@ int main(int argc, char *argv[])
       if (pka->_Z == 54 )
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
+        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0)
         {
           for (int i = 0; i < 3; i++)
           {
-            dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
-            dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
+            dif[i] = pos1[i] - pka->pos(i);  // distance to cluster center
+            dif2[i] = pos2[i] - pka->pos(i); // total distance it moved
           }
-          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->md, pka->pos[0], pka->pos[1], pka->pos[2], std::sqrt(v_dot(dif2, dif2)));
+          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->md, pka->pos(0), pka->pos(1), pka->pos(2), std::sqrt(v_dot(dif2, dif2)));
         }
 
 
@@ -292,16 +292,16 @@ int main(int argc, char *argv[])
 
           do
           {
-            for (int i = 0; i < 3; i++) pka->dir[i] = dr250() - 0.5;
+            for (int i = 0; i < 3; i++) pka->dir(i) = dr250() - 0.5;
             norm = v_dot(pka->dir, pka->dir);
           }
           while (norm <= 0.0001);
           v_scale(pka->dir, jmp / std::sqrt(norm));
 
-          for (int i = 0; i < 3; i++) pka->pos[i] += pka->dir[i];
+          for (int i = 0; i < 3; i++) pka->pos(i) += pka->dir(i);
           jumps++;
         }
-        while (pka->pos[0] > 0 && pka->pos[0] < sample->w[0]);
+        while (pka->pos(0) > 0 && pka->pos(0) < sample->w[0]);
 
         if (material->tag >= 0 && jumps > 0)
           fprintf(stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->tag, pka->tag, jumps); */

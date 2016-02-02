@@ -143,13 +143,13 @@ int main(int argc, char *argv[])
 
     do
     {
-      for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
+      for (int i = 0; i < 3; i++) ff1->dir(i) = dr250() - 0.5;
       norm = ff1->dir.size_sq();
     }
     while (norm <= 0.0001 || norm > 0.25);
     ff1->dir /= std::sqrt(norm);
 
-    for (int i = 0; i < 3; i++) ff1->pos[i] = dr250() * sample->w[i];
+    for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
     //ff1->id = simconf->id++;
 
     // reverse direction
-    for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
+    for (int i = 0; i < 3; i++) ff2->dir(i) *= -1.0;
 
     ff2->_Z = Z2;
     ff2->_m = A2;
@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
       if (pka->_Z == 54 )
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
+        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
       }
 
       // done with this recoil

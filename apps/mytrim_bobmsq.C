@@ -172,13 +172,13 @@ int main(int argc, char *argv[])
     ff1->_m = A;
     ff1->e  = E;
 
-    ff1->dir[0] = 1;
-    ff1->dir[1] = 0;
-    ff1->dir[2] = 0;
+    ff1->dir(0) = 1;
+    ff1->dir(1) = 0;
+    ff1->dir(2) = 0;
 
-    ff1->pos[0] = 0;
-    ff1->pos[1] = sample->w[1] / 2.0;
-    ff1->pos[2] = sample->w[2] / 2.0;
+    ff1->pos(0) = 0;
+    ff1->pos(1) = sample->w[1] / 2.0;
+    ff1->pos(2) = sample->w[2] / 2.0;
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
       // store position
       if (pka->gen > 0)
         for (int i = 0; i < 3; i++)
-          pos2[i] = pka->pos[i];
+          pos2[i] = pka->pos(i);
 
       // follow this ion's trajectory and store recoils
       trim->trim(pka, recoils);
@@ -200,10 +200,10 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
       if (pka->gen > 0)
         for (int i = 0; i < 3; i++)
-          sqd += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]);
+          sqd += (pos2[i]-pka->pos(i))*(pos2[i]-pka->pos(i));
       else if (pka->gen > 1)
         for (int i = 0; i < 3; i++)
-          sqd2 += (pos2[i]-pka->pos[i])*(pos2[i]-pka->pos[i]);
+          sqd2 += (pos2[i]-pka->pos(i))*(pos2[i]-pka->pos(i));
 
       // done with this recoil
       delete pka;

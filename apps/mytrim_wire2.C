@@ -175,9 +175,9 @@ int main(int argc, char *argv[])
       pka->gen = 0; // generation (0 = PKA)
       pka->tag = -1;
 
-      pka->dir[0] = 0.0;
-      pka->dir[1] = sin(theta);
-      pka->dir[2] = cos(theta);
+      pka->dir(0) = 0.0;
+      pka->dir(1) = sin(theta);
+      pka->dir(2) = cos(theta);
 
       v_norm(pka->dir);
 
@@ -185,20 +185,20 @@ int main(int argc, char *argv[])
       {
         // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
         // TODO: take theta into account!
-        pka->pos[0] = (dr250() - 0.5) * (length + sample->w[0]);
-        pka->pos[1] = (dr250() - 0.5) * (length + sample->w[1]);
-        pka->pos[2] = -250.0; // overcoat thickness
+        pka->pos(0) = (dr250() - 0.5) * (length + sample->w[0]);
+        pka->pos(1) = (dr250() - 0.5) * (length + sample->w[1]);
+        pka->pos(2) = -250.0; // overcoat thickness
       }
       else
       {
         if (theta == 0.0)
         {
           // 0 degrees => start on top of wire!
-          pka->pos[2] = 0.0;
+          pka->pos(2) = 0.0;
           do
           {
-            pka->pos[0] = dr250() * sample->w[0];
-            pka->pos[1] = dr250() * sample->w[1];
+            pka->pos(0) = dr250() * sample->w[0];
+            pka->pos(1) = dr250() * sample->w[1];
           } while (sample->lookupMaterial(pka->pos) == 0);
         }
         else
@@ -213,23 +213,23 @@ int main(int argc, char *argv[])
               vpos[1] = 0.0;
               vpos[2] = (dr250() * (length + diameter/tan(theta))) - diameter/tan(theta);
 
-              t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->dir[1]);
+              t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->dir(1));
 
               // if we start beyond wire length (that would be inside the substrate) then retry
-            } while (t*pka->dir[2] + vpos[2] >= length);
+            } while (t*pka->dir(2) + vpos[2] >= length);
 
             // if first intersection with cylinder is at z<0 then check if we hit the top face instead
-            if (t*pka->dir[2] + vpos[2] < 0.0)
-              t = -vpos[2]/pka->dir[2];
+            if (t*pka->dir(2) + vpos[2] < 0.0)
+              t = -vpos[2]/pka->dir(2);
 
             // start PKA at calculated intersection point
             for (int i = 0; i < 3; i++)
-                pka->pos[i] = t*pka->dir[i] + vpos[i];
+                pka->pos(i) = t*pka->dir(i) + vpos[i];
 
           } while (sample->lookupMaterial(pka->pos) == 0);
         }
       }
-      //cout << "START " << pka->pos[0] << ' ' << pka->pos[1] << ' ' << pka->pos[2] << ' ' << std::endl;
+      //cout << "START " << pka->pos(0) << ' ' << pka->pos(1) << ' ' << pka->pos(2) << ' ' << std::endl;
       //continue;
 
       pka->set_ef();
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 
         if (pka->_Z == ion_prototype[s]->_Z )
         {
-          //printf( "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
+          //printf( "p1 %f\t%f\t%f\n", pka->pos(0), pka->pos(1), pka->pos(2));
         }
 
         // follow this ion's trajectory and store recoils
@@ -256,13 +256,13 @@ int main(int argc, char *argv[])
         // ion is in the wire
         if ( sample->lookupMaterial(pka->pos) == sample->material[0])
         {
-          int l = pka->pos[2] / dl;
+          int l = pka->pos(2) / dl;
           if (l >=0 && l < lx)
           {
             if (xyz_out)
             {
               xyz_data << simconf->scoef[pka->_Z-1].sym << ' '
-                      << pka->pos[0]/100.0 << ' ' << pka->pos[1]/100.0 << ' ' << pka->pos[2]/100.0 << std::endl;
+                      << pka->pos(0)/100.0 << ' ' << pka->pos(1)/100.0 << ' ' << pka->pos(2)/100.0 << std::endl;
               xyz_lines++;
             }
 

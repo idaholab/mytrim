@@ -15,7 +15,8 @@ inline void v_cross(const Real * a1, const Real * a2, Real * b)
 inline void v_cross(const Point & a1, const Point & a2, Point & b)
 {
   for (unsigned int i = 0; i < 3; ++i)
-    b[i] = a1[(i+1)%3] * a2[(i+2)%3] - a1[(i+2)%3] * a2[(i+1)%3];
+    b(i) =   a1((i + 1) % 3) * a2((i + 2) % 3)
+           - a1((i + 2) % 3) * a2((i + 1) % 3);
 }
 
 inline void v_scale(Real * a1, Real b) // in=place scale

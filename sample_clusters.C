@@ -40,8 +40,8 @@ int sampleClusters::lookupCluster(Point & pos, Real dr)
   // if pos>w || pos<0 drop out early when bc[] = CUT or return material[0]
   for (unsigned int i = 0; i<3; ++i)
   {
-    k[i] = std::floor((pos[i] * kn[i]) / w[i]);
-    if (pos[i] < 0.0 || pos[i] >= w[i])
+    k[i] = std::floor((pos(i) * kn[i]) / w[i]);
+    if (pos(i) < 0.0 || pos(i) >= w[i])
     {
       switch (bc[i])
       {
@@ -81,7 +81,7 @@ int sampleClusters::lookupCluster(Point & pos, Real dr)
           {
             for (unsigned int i = 0; i<3; ++i)
             {
-              dif[i] = pos[i] - c[i][l];
+              dif[i] = pos(i) - c[i][l];
               if (bc[i] == PBC)
                 dif[i] -= ::round(dif[i] / w[i]) * w[i];
             }
@@ -182,11 +182,11 @@ void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr)
   {
     while (true)
     {
-      for (unsigned int j = 0; j < 3; ++j) npos[j] = dr250() * w[j];
+      for (unsigned int j = 0; j < 3; ++j) npos(j) = dr250() * w[j];
 
       if (lookupCluster(npos, dr + r) == -1)
       {
-        addCluster(npos[0], npos[1], npos[2], r);
+        addCluster(npos(0), npos(1), npos(2), r);
         break;
       }
       //else fprintf(stderr, "rejected, too close\n");

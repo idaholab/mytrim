@@ -249,13 +249,13 @@ int main(int argc, char *argv[])
     ff1->_m = A;
     ff1->e  = E;
 
-    ff1->dir[0] = 1;
-    ff1->dir[1] = 0;
-    ff1->dir[2] = 0;
+    ff1->dir(0) = 1;
+    ff1->dir(1) = 0;
+    ff1->dir(2) = 0;
 
-    ff1->pos[0] = 0;
-    ff1->pos[1] = sample->w[1] / 2.0;
-    ff1->pos[2] = sample->w[2] / 2.0;
+    ff1->pos(0) = 0;
+    ff1->pos(1) = sample->w[1] / 2.0;
+    ff1->pos(2) = sample->w[2] / 2.0;
 
     ff1->set_ef();
     recoils.push(ff1);
@@ -286,11 +286,11 @@ int main(int argc, char *argv[])
         {
           for (int i = 0; i < 3; i++)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->pos[i];
-            pos2[i] = pka->pos[i];
+            dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
+            pos2[i] = pka->pos(i);
             if (sample->bc[i] == sampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
-            pos1[i] = pka->pos[i] + dif[i];
-            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos[i], pos1[i]);
+            pos1[i] = pka->pos(i) + dif[i];
+            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
           }
 //printf("\n");
 //if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
@@ -313,17 +313,17 @@ int main(int argc, char *argv[])
       if (pka->_Z == 5 || pka->_Z == 22)
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
+        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0)
         {
           for (int i = 0; i < 3; i++)
           {
-            dif[i] = pos1[i] - pka->pos[i];  // distance to cluster center
-            dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
+            dif[i] = pos1[i] - pka->pos(i);  // distance to cluster center
+            dif2[i] = pos2[i] - pka->pos(i); // total distance it moved
           }
-          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->_Z, pka->pos[0], pka->pos[1], pka->pos[2], std::sqrt(v_dot(dif2, dif2)));
+          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->_Z, pka->pos(0), pka->pos(1), pka->pos(2), std::sqrt(v_dot(dif2, dif2)));
         }
 
 
@@ -336,16 +336,16 @@ int main(int argc, char *argv[])
 
           do
           {
-            for (int i = 0; i < 3; i++) pka->dir[i] = dr250() - 0.5;
+            for (int i = 0; i < 3; i++) pka->dir(i) = dr250() - 0.5;
             norm = v_dot(pka->dir, pka->dir);
           }
           while (norm <= 0.0001);
           v_scale(pka->dir, jmp / std::sqrt(norm));
 
-          for (int i = 0; i < 3; i++) pka->pos[i] += pka->dir[i];
+          for (int i = 0; i < 3; i++) pka->pos(i) += pka->dir(i);
           jumps++;
         }
-        while (pka->pos[0] > 0 && pka->pos[0] < sample->w[0]);
+        while (pka->pos(0) > 0 && pka->pos(0) < sample->w[0]);
 
         if (material->tag >= 0 && jumps > 0)
           fprintf(stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->tag, pka->tag, jumps); */
