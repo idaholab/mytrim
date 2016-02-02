@@ -31,19 +31,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-class trimBase {
+class TrimBase
+{
 public:
+  TrimBase(SimconfType * simconf_, SampleBase *sample_) :
+      simconf(simconf_),
+      sample(sample_)
+  {}
+
   void trim(IonBase *pka, std::queue<IonBase*> &recoils);
-  trimBase(SimconfType * simconf_, SampleBase *sample_) :
-    simconf(simconf_), sample(sample_) {}
 
 protected:
   SimconfType * simconf;
-  SampleBase *sample;
-  IonBase *pka, *recoil;
-  MaterialBase *material;
-  ElementBase *element;
-  std::queue<IonBase*> *recoil_queue_ptr;
+  SampleBase * sample;
+  IonBase * pka, * recoil;
+  MaterialBase * material;
+  ElementBase * element;
+  std::queue<IonBase*> * recoil_queue_ptr;
   bool terminate;
 
   // by default only follow recoils with E > 12eV
@@ -57,20 +61,24 @@ protected:
     return true;
   };
   virtual void vacancyCreation();
-  virtual void checkPKAState() {};
-  virtual void dissipateRecoilEnergy() {};
+  virtual void checkPKAState() {}
+  virtual void dissipateRecoilEnergy() {}
 };
 
 
 //
 // Only follow the primary knock ons (i.e. fission fragments)
 //
-class trimPrimaries : public trimBase {
+class TrimPrimaries : public TrimBase
+{
 public:
-  trimPrimaries(SimconfType * simconf_, SampleBase *sample_) : trimBase(simconf_, sample_) {};
+  TrimPrimaries(SimconfType * simconf, SampleBase * sample) :
+      TrimBase(simconf, sample)
+  {}
+
 protected:
-  virtual int maxGen() { return 1; };
-  virtual bool followRecoil() { return (recoil->gen < maxGen()); };
+  virtual int maxGen() { return 1; }
+  virtual bool followRecoil() { return (recoil->gen < maxGen()); }
 
   void vacancyCreation()
   {
@@ -97,74 +105,98 @@ protected:
 //
 // Only follow the first generation of recoils
 //
-class trimRecoils : public trimPrimaries {
-  public:
-    trimRecoils(SimconfType * simconf_, SampleBase *sample_) : trimPrimaries(simconf_, sample_) {};
-  protected:
-    virtual int maxGen() { return 2; };
+class TrimRecoils : public TrimPrimaries
+{
+public:
+  TrimRecoils(SimconfType * simconf, SampleBase * sample) :
+      TrimPrimaries(simconf, sample)
+  {}
+
+protected:
+  virtual int maxGen() { return 2; }
 };
 
 
 //
 // store a history of all recoils
 //
-class trimHistory : public trimBase {
+class TrimHistory : public TrimBase
+{
 public:
-  trimHistory(SimconfType * simconf_, SampleBase *sample_) : trimBase(simconf_, sample_) {};
-  std::vector<Real> pos_hist[3];
+  TrimHistory(SimconfType * simconf, SampleBase * sample) :
+      TrimBase(simconf, sample)
+  {}
+
+  const std::vector<Point> & getHistory() { return _pos_hist; }
+
 protected:
   virtual bool followRecoil()
   {
-    pos_hist[0].push_back(pka->pos(0));
-    pos_hist[1].push_back(pka->pos(1));
-    pos_hist[2].push_back(pka->pos(2));
+    _pos_hist.push_back(pka->pos);
     return true;
-  };
+  }
+
+  std::vector<Point> _pos_hist;
 };
 
 
 //
 // Log vaccancy/interstitial creation
 //
-class trimDefectLog : public trimBase {
+class TrimDefectLog : public TrimBase
+{
 public:
-  trimDefectLog(SimconfType * simconf_, SampleBase *sample_, std::ostream &os_) : trimBase(simconf_, sample_), os(os_) {};
+  TrimDefectLog(SimconfType * simconf, SampleBase * sample, std::ostream & os) :
+      TrimBase(simconf, sample),
+      _os(os)
+  {}
+
 protected:
-  std::ostream &os;
+  std::ostream & _os;
 
-  // ions being removed from lattice sites
+  /// ions being removed from lattice sites
   virtual void vacancyCreation() {
-    os << "V " << *recoil << std::endl;
-  };
+    _os << "V " << *recoil << std::endl;
+  }
 
-  // ions coming to rest
+  /// ions coming to rest
   virtual void checkPKAState() {
     if (pka->state==IonBase::INTERSTITIAL)
-      os << "I " << *pka << std::endl;
+      _os << "I " << *pka << std::endl;
     else if (pka->state==IonBase::SUBSTITUTIONAL)
-      os << "S " << *pka << std::endl;
+      _os << "S " << *pka << std::endl;
     else if (pka->state==IonBase::REPLACEMENT)
-      os << "R " << *pka << std::endl;
-  };
+      _os << "R " << *pka << std::endl;
+  }
 };
 
 
 //
 // Map vaccancy creation
 //
-class trimVacMap : public trimBase {
+class TrimVacMap : public TrimBase
+{
   static const int mx = 20, my = 20;
+
 public:
-  int vmap[mx][my][3];
-  trimVacMap(SimconfType * simconf_, SampleBase *sample_, int z1_, int z2_, int z3_ = -1) : trimBase(simconf_, sample_), z1(z1_), z2(z2_), z3(z3_)
+  TrimVacMap(SimconfType * simconf, SampleBase * sample, int z1, int z2, int z3 = -1) :
+      TrimBase(simconf, sample),
+      _z1(z1),
+      _z2(z2),
+      _z3(z3)
   {
     for (int e = 0; e < 3; e++)
       for (int x = 0; x < mx; x++)
         for (int y = 0; y < my; y++)
           vmap[x][y][e] = 0;
-  };
+  }
+
+  int vmap[mx][my][3];
+
 protected:
-  int z1, z2, z3;
+  // TODO: this is horrible. Pass in variable number of Z!
+  int _z1, _z2, _z3;
+
   virtual void vacancyCreation()
   {
     // both atoms have enough energy to leave the site
@@ -176,28 +208,37 @@ protected:
     y -= int(y/my) * my;
 
     // keep track of vaccancies for the two constituents
-    if (recoil->_Z == z1) vmap[x][y][0]++;
-    else if (recoil->_Z == z2) vmap[x][y][1]++;
-    else if (recoil->_Z == z3) vmap[x][y][2]++;
-  };
+    if (recoil->_Z == _z1)
+      vmap[x][y][0]++;
+    else if (recoil->_Z == _z2)
+      vmap[x][y][1]++;
+    else if (recoil->_Z == _z3)
+      vmap[x][y][2]++;
+  }
 };
 
 
 //
 // Output all phonon energy losses
 //
-class trimPhononOut : public trimBase {
+class TrimPhononOut : public TrimBase
+{
 public:
-  trimPhononOut(SimconfType * simconf_, SampleBase *sample_,  std::ostream &os_) : trimBase(simconf_, sample_), os(os_) {};
+  TrimPhononOut(SimconfType * simconf, SampleBase * sample,  std::ostream & os) :
+      TrimBase(simconf, sample),
+      _os(os)
+  {}
+
 protected:
-  std::ostream &os;
+  std::ostream & _os;
 
   // residual energy of pka coming to a stop
-  virtual void checkPKAState() {
+  virtual void checkPKAState()
+  {
     if (pka->state == IonBase::MOVING ||
         pka->state == IonBase::LOST) return;
 
-    os << pka->e << ' ' <<  *pka << std::endl;
+    _os << pka->e << ' ' <<  *pka << std::endl;
     simconf->EnucTotal += pka->e;
   }
 
@@ -206,13 +247,13 @@ protected:
   virtual void dissipateRecoilEnergy()
   {
     Real Edep = recoil->e + element->_Elbind;
-    os << Edep << ' ' <<  *recoil << std::endl;
+    _os << Edep << ' ' <<  *recoil << std::endl;
     simconf->EnucTotal += Edep;
-  };
+  }
 
   // dissipate lattice binding energy where recoil branches off
   virtual bool followRecoil() {
-    os << element->_Elbind << ' ' <<  *recoil << std::endl;
+    _os << element->_Elbind << ' ' <<  *recoil << std::endl;
     simconf->EnucTotal += element->_Elbind;
     return true;
   }

@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.phon", argv[1]);
 
   //FILE *phon = fopen(fname, "wt");
-  //trimPhononOut *trim = new trimPhononOut(sample, phon);
-  trimBase *trim = new trimBase(simconf, sample);
-  //trimBase *trim = new trimPrimaries(sample);
+  //TrimPhononOut *trim = new TrimPhononOut(sample, phon);
+  TrimBase *trim = new TrimBase(simconf, sample);
+  //TrimBase *trim = new TrimPrimaries(sample);
 
 
   //Real r = 10.0;

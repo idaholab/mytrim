@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
   // initialize trim engine for the sample
   snprintf(fname, 199, "%s.phon", argv[1]);
   //FILE *phon = fopen(fname, "wt");
-  //trimPhononOut *trim = new trimPhononOut(sample, phon);
-  //trimBase *trim = new trimBase(sample);
-  trimBase *trim = new trimPrimaries(simconf, sample);
+  //TrimPhononOut *trim = new TrimPhononOut(sample, phon);
+  //TrimBase *trim = new TrimBase(sample);
+  TrimBase *trim = new TrimPrimaries(simconf, sample);
 
   sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 

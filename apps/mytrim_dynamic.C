@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   std::cout << "SS " << sx << ' ' << sy << ' ' << sz << std::endl;
 
   SampleDynamic *sample = new SampleDynamic(simconf, sx, sy, sz);
-  trimBase *trim = new trimBase(simconf, sample);
+  TrimBase *trim = new TrimBase(simconf, sample);
 
   // Read Materials description from stdin
   int nlayer;

@@ -109,10 +109,10 @@ int main(int argc, char *argv[])
   // initialize trim engine for the sample
   /*  const int z1 = 31;
       const int z2 = 33;
-      trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs
+      TrimVacMap *trim = new TrimVacMap(sample, z1, z2); // GaAs
   */
-  //trimBase *trim = new trimBase(sample);
-  trimBase *trim = new trimPrimaries(simconf, sample);
+  //TrimBase *trim = new TrimBase(sample);
+  TrimBase *trim = new TrimPrimaries(simconf, sample);
 
   MaterialBase *material;
   ElementBase *element;

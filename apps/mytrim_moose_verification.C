@@ -57,7 +57,7 @@ int main(int, char **)
   // initialize sample structure
   SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
-  trimBase *trim = new trimBase(simconf, sample);
+  TrimBase *trim = new TrimBase(simconf, sample);
 
   sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
   sample->bc[1] = SampleBase::CUT; // no PBC in x (just clusterless matrix)

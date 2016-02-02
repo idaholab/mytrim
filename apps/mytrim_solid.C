@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   // initialize sample structure
   SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
-  trimBase *trim = new trimBase(simconf, sample);
+  TrimBase *trim = new TrimBase(simconf, sample);
 
   MaterialBase *material;
   ElementBase *element;

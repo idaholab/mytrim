@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
   std::cout << "NN " << nmax << " PKAs" << std::endl;
 
   SampleLayers *sample = new SampleLayers(sx, sy, sz);
-  //trimBase *trim = new trimBase(sample);
-  trimBase *trim = new trimRecoils(simconf, sample);
+  //TrimBase *trim = new TrimBase(sample);
+  TrimBase *trim = new TrimRecoils(simconf, sample);
 
   // Read Materials description from stdin
   int nlayer;

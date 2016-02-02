@@ -88,24 +88,24 @@ int main(int argc, char *argv[])
   sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
 
   // initialize trim engine for the sample
-  trimBase *trim;
+  TrimBase *trim;
   std::ofstream auxout;
   std::stringstream auxoutname;
   switch (mode) {
     case PLAIN:
-      trim = new trimBase(simconf, sample);
+      trim = new TrimBase(simconf, sample);
       break;
 
     case PHONONS:
       auxoutname << argv[1] << ".phonons";
       auxout.open(auxoutname.str().c_str());
-      trim = new trimPhononOut(simconf, sample, auxout);
+      trim = new TrimPhononOut(simconf, sample, auxout);
       break;
 
     case DEFECTS:
       auxoutname << argv[1] << ".defects";
       auxout.open(auxoutname.str().c_str());
-      trim = new trimDefectLog(simconf, sample, auxout);
+      trim = new TrimDefectLog(simconf, sample, auxout);
       break;
 
     default:

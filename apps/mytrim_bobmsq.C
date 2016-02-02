@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
   SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
-  trimBase *trim = new trimBase(simconf, sample);
-  //trimBase *trim = new trimPrimaries(sample);
+  TrimBase *trim = new TrimBase(simconf, sample);
+  //TrimBase *trim = new TrimPrimaries(sample);
 
   //sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 

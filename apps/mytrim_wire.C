@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   const int z1 = 29; //Cu
   const int z2 = 22; //Ti
   const int z3 = 47; //Ag
-  trimVacMap *trim = new trimVacMap(simconf, sample, z1, z2, z3); // GaCW
+  TrimVacMap *trim = new TrimVacMap(simconf, sample, z1, z2, z3); // GaCW
 
   MaterialBase *material;
   ElementBase *element;

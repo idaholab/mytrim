@@ -12,7 +12,8 @@ using namespace MyTRIM_NS;
 //
 
 // does a single ion cascade
-void trimBase::trim(IonBase *pka_, std::queue<IonBase*> &recoils)
+void
+TrimBase::trim(IonBase *pka_, std::queue<IonBase*> &recoils)
 {
   // simconf should already be initialized
   pka = pka_;
@@ -324,7 +325,8 @@ void trimBase::trim(IonBase *pka_, std::queue<IonBase*> &recoils)
   } while (pka->state == IonBase::MOVING);
 }
 
-void trimBase::vacancyCreation()
+void
+TrimBase::vacancyCreation()
 {
   simconf->vacancies_created++;
 
