@@ -7,6 +7,7 @@ export MYTRIM_SEED=39172
 if [ $? -ne 0 ]
 then
   echo "FAILED to run mytrim_uo2!"
+  exit 1
 fi
 
 NFAIL=0

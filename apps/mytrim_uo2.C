@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     // seed random number generator from system entropy pool
     // we internally use the libc random function (not r250c, which is not threadsafe)
     FILE *urand = fopen("/dev/random", "r");
-    fread(&seed, sizeof(int), 1, urand);
+    if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
     fclose(urand);
   }
   r250_init(seed<0 ? -seed : seed);

@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
   int seed;
-  fread(&seed, sizeof(int), 1, urand);
+  if (fread(&seed, sizeof(int), 1, urand) != sizeof(int)) return 1;
   fclose(urand);
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
