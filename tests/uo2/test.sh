@@ -12,8 +12,7 @@ fi
 NFAIL=0
 for OUT in out.Erec out.clcoor out.dist
 do
-  diff $OUT gold/$OUT
-  #> /dev/null
+  ../csv_diff.sh $OUT 0.0001
   if [ $? -ne 0 ]
   then
     echo "Difference in $OUT"
