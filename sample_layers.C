@@ -3,7 +3,8 @@
 
 using namespace MyTRIM_NS;
 
-int sampleLayers::lookupLayer(Point & pos)
+int
+SampleLayers::lookupLayer(Point & pos)
 {
   unsigned int i;
   Real d = 0.0;
@@ -20,13 +21,15 @@ int sampleLayers::lookupLayer(Point & pos)
   return i;
 }
 
-MaterialBase*  sampleLayers::lookupMaterial(Point & pos)
+MaterialBase*
+SampleLayers::lookupMaterial(Point & pos)
 {
   return material[lookupLayer(pos)];
 }
 
 
-Real sampleLayers::rangeMaterial(Point & pos, Point & dir)
+Real
+SampleLayers::rangeMaterial(Point & pos, Point & dir)
 {
   // assume dir is a normalized vector
   Real d = 0.0;

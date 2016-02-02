@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
   Real r = atof(argv[2]); //10.0;
   Real Cbf = atof(argv[3]);
 
-  sample->bc[0] = sampleBase::INF; // no PBC in x (just clusterless matrix)
+  sample->bc[0] = SampleBase::INF; // no PBC in x (just clusterless matrix)
   sample->initSpatialhash(int(sample->w[0] / r) - 1,
                            int(sample->w[1] / r) - 1,
                            int(sample->w[2] / r) - 1);
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
             pos2[i] = pka->pos(i);
-            if (sample->bc[i] == sampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
+            if (sample->bc[i] == SampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
             pos1[i] = pka->pos(i) + dif[i];
             //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
           }

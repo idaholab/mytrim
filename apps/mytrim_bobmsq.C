@@ -64,13 +64,13 @@ int main(int argc, char *argv[])
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
+  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
   trimBase *trim = new trimBase(simconf, sample);
   //trimBase *trim = new trimPrimaries(sample);
 
-  //sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
+  //sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];

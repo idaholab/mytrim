@@ -30,7 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-class MaterialBase {
+class MaterialBase
+{
 public:
   MaterialBase(simconfType * simconf_, Real rho_);
 

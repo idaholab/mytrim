@@ -6,8 +6,8 @@
 
 using namespace MyTRIM_NS;
 
-sampleDynamic::sampleDynamic(simconfType * simconf_, Real x, Real y, Real z):
-    sampleLayers(x, y, z),
+SampleDynamic::SampleDynamic(simconfType * simconf_, Real x, Real y, Real z):
+    SampleLayers(x, y, z),
     simconf(simconf_)
 {
   bc[0] = CUT;
@@ -15,7 +15,8 @@ sampleDynamic::sampleDynamic(simconfType * simconf_, Real x, Real y, Real z):
   bc[2] = PBC;
 }
 
-void sampleDynamic::averages(const IonBase *_pka)
+void
+SampleDynamic::averages(const IonBase *_pka)
 {
   // remember pka, we do not calculate averages right now, but on demand!
   pka = _pka;
@@ -25,7 +26,8 @@ void sampleDynamic::averages(const IonBase *_pka)
   while (i > 0) material[--i]->dirty = true;
 }
 
-MaterialBase*  sampleDynamic::lookupMaterial(Point & pos)
+MaterialBase*
+SampleDynamic::lookupMaterial(Point & pos)
 {
   //std::cout << "lookuplayer" << std::endl;
   MaterialBase* m = material[lookupLayer(pos)];
@@ -41,7 +43,8 @@ MaterialBase*  sampleDynamic::lookupMaterial(Point & pos)
   return m;
 }
 
-void sampleDynamic::addAtomsToLayer(int layer, int n, int Z)
+void
+SampleDynamic::addAtomsToLayer(int layer, int n, int Z)
 {
   unsigned int i, ne = material[layer]->element.size();
   Real rnorm = 0.0; // volume of one atom with the fractional composition of the layer at natural density

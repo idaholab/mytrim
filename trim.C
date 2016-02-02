@@ -258,7 +258,7 @@ void trimBase::trim(IonBase *pka_, std::queue<IonBase*> &recoils)
 
     // end cascade if a CUT boundary is crossed
     for (int i = 0; i < 3; i++) {
-      if (sample->bc[i]==sampleBase::CUT &&
+      if (sample->bc[i]==SampleBase::CUT &&
            (pka->pos(i)>sample->w[i] || pka->pos(i)<0.0)) {
         pka->state = IonBase::LOST;
         break;

@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
 
-            if (sample->bc[i] == sampleBase::PBC)
+            if (sample->bc[i] == SampleBase::PBC)
               dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
 
             pos1[i] = pka->pos(i) + dif[i];

@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "SS " << sx << ' ' << sy << ' ' << sz << std::endl;
 
-  sampleDynamic *sample = new sampleDynamic(simconf, sx, sy, sz);
+  SampleDynamic *sample = new SampleDynamic(simconf, sx, sy, sz);
   trimBase *trim = new trimBase(simconf, sample);
 
   // Read Materials description from stdin

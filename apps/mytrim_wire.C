@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   simconfType * simconf = new simconfType;
 
   // initialize sample structure
-  sampleWire *sample = new sampleWire(dwire, dwire, 100.0);
+  SampleWire *sample = new SampleWire(dwire, dwire, 100.0);
 
   // initialize trim engine for the sample
   const int z1 = 29; //Cu

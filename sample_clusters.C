@@ -9,7 +9,7 @@
 using namespace MyTRIM_NS;
 
 sampleClusters::sampleClusters(Real x, Real y, Real z) :
-    sampleBase(x, y, z)
+    SampleBase(x, y, z)
 {
   sh = 0;
   cl = 0; cn = 0; cnm = 0;

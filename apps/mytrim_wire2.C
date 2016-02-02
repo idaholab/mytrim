@@ -82,13 +82,13 @@ int main(int argc, char *argv[])
   //simconf->fullTraj = true;
 
   // initialize sample structure
-  sampleWire *sample;
+  SampleWire *sample;
   if (burried)
-    sample = new sampleBurriedWire(diameter, diameter, length);
+    sample = new SampleBurriedWire(diameter, diameter, length);
   else
   {
-    sample = new sampleWire(diameter, diameter, length);
-    sample->bc[2] = sampleWire::CUT;
+    sample = new SampleWire(diameter, diameter, length);
+    sample->bc[2] = SampleWire::CUT;
   }
 
   // calculate actual ion numbers

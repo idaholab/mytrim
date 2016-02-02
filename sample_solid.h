@@ -25,8 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-struct sampleSolid : sampleBase {
-  sampleSolid(Real x, Real y, Real z): sampleBase(x, y, z) {};
+struct SampleSolid : public SampleBase
+{
+public:
+  SampleSolid(Real x, Real y, Real z) : SampleBase(x, y, z) {};
+
   virtual MaterialBase* lookupMaterial(Point & pos);
 };
 

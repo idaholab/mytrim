@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   const int nmax = 10000;
   std::cout << "NN " << nmax << " PKAs" << std::endl;
 
-  sampleLayers *sample = new sampleLayers(sx, sy, sz);
+  SampleLayers *sample = new SampleLayers(sx, sy, sz);
   //trimBase *trim = new trimBase(sample);
   trimBase *trim = new trimRecoils(simconf, sample);
 

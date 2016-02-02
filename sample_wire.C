@@ -7,14 +7,16 @@
 
 using namespace MyTRIM_NS;
 
-sampleWire::sampleWire(Real x, Real y, Real z)  : sampleBase(x, y, z)
+SampleWire::SampleWire(Real x, Real y, Real z) :
+    SampleBase(x, y, z)
 {
- bc[0] = CUT;
- bc[1] = CUT;
+  bc[0] = CUT;
+  bc[1] = CUT;
 }
 
 // look if we are within dr of the wire axis
-MaterialBase* sampleWire::lookupMaterial(Point & pos)
+MaterialBase*
+SampleWire::lookupMaterial(Point & pos)
 {
   Real x = (pos(0) / w[0]) * 2.0 - 1.0;
   Real y = (pos(1) / w[1]) * 2.0 - 1.0;

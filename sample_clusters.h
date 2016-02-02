@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-struct sampleClusters : sampleBase {
+struct sampleClusters : SampleBase {
 
   Real sd, kd[3]; // half the spatial diagonal of a hash block, hash block size
   int *sh, kn[3]; // spatial hash and its dimensions

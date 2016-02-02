@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
+  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
   trimBase *trim = new trimBase(simconf, sample);
 
