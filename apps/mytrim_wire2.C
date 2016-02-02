@@ -45,7 +45,6 @@ using namespace MyTRIM_NS;
 
 int main(int argc, char *argv[])
 {
-  char fname[200];
   if (argc != 8)
   {
     std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << std::endl;
@@ -108,9 +107,10 @@ int main(int argc, char *argv[])
   }
 
   // initialize trim engine for the sample
-/*  const int z1 = 31;
-  const int z2 = 33;
-  trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs*/
+  /*  const int z1 = 31;
+      const int z2 = 33;
+      trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs
+  */
   //trimBase *trim = new trimBase(sample);
   trimBase *trim = new trimPrimaries(simconf, sample);
 
@@ -144,17 +144,6 @@ int main(int argc, char *argv[])
 
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
-
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
-  //snprintf(fname, 199, "%s.Erec", argv[1]);
-  //FILE *erec = fopen(fname, "wt");
-
-  //snprintf(fname, 199, "%s.dist", argv[1]);
-  //FILE *rdist = fopen(fname, "wt");
 
   ionBase *pka;
 

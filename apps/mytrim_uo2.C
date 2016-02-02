@@ -125,11 +125,10 @@ int main(int argc, char *argv[])
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
+  //Real v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
-  //fprintf(stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0);
   std::cerr << "adding " << n_cl << " clusters...\n";
 
   // cluster surfaces must be at least 25.0 Ang apart
@@ -143,7 +142,6 @@ int main(int argc, char *argv[])
   fclose(ccf);
 
   std::cerr << "sample built.\n";
-  //return 0;
 
   materialBase *material;
   elementBase *element;
@@ -185,8 +183,6 @@ int main(int argc, char *argv[])
   std::queue<ionBase*> recoils;
 
   Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
   Real dif[3];
 
   MassInverter *m = new MassInverter;

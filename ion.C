@@ -12,14 +12,13 @@ ionBase::ionBase() :
 }
 
 ionBase::ionBase(ionBase* prototype) :
-    state(MOVING),
     _Z(prototype->_Z),
-    _m(prototype->_m)
+    _m(prototype->_m),
+    e(prototype->e),
+    state(MOVING)
 {
   ef = prototype->ef; // final energy
   t = prototype->t;   //clock
-
-  e = prototype->e;
 }
 
 ionBase::ionBase(int Z, Real m, Real e_) :

@@ -58,14 +58,13 @@ int main(int argc, char *argv[])
   simconfType * simconf = new simconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
-  //simconf->tmin = 0.2;
 
   // initialize sample structure
   sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
-  //sampleClusters *sample = new sampleClusters(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
   snprintf(fname, 199, "%s.phon", argv[1]);
+
   //FILE *phon = fopen(fname, "wt");
   //trimPhononOut *trim = new trimPhononOut(sample, phon);
   trimBase *trim = new trimBase(simconf, sample);
@@ -81,19 +80,14 @@ int main(int argc, char *argv[])
                            int(sample->w[1] / r) - 1,
                            int(sample->w[2] / r) - 1);
 
-
-  // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
-  int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
+  int n_cl;
 
   n_cl = v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
-  //fprintf(stderr, "adding %d clusters to reach %fat%% Mo\n", n_cl, atp * 100.0);
   fprintf(stderr, "adding %d clusters...\n", n_cl);
 
   // cluster surfaces must be at least 25.0 Ang apart
   sample->addRandomClusters(n_cl, r, 15.0);
-  //sample->addCluster(100.0, 100.0, 100.0, 10.0);
 
   // write cluster coords with tag numbers
   snprintf(fname, 199, "%s.clcoor", argv[1]);
@@ -103,7 +97,6 @@ int main(int argc, char *argv[])
   fclose(ccf);
 
   fprintf(stderr, "sample built.\n");
-  //return 0;
 
   materialBase *material;
   elementBase *element;
@@ -139,8 +132,6 @@ int main(int argc, char *argv[])
   std::queue<ionBase*> recoils;
 
   Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
   Real dif[3], dif2[3];
 
   MassInverter *m = new MassInverter;
@@ -158,7 +149,6 @@ int main(int argc, char *argv[])
   Real pos1[3], pos2[3];
 
   ionMDtag *ff1, *ff2, *pka;
-  int id = 1;
 
   // 1000 fission events
   for (int n = 0; n < 1000; n++) // 2000 ff

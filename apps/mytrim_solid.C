@@ -42,9 +42,9 @@ using namespace MyTRIM_NS;
 int main(int argc, char *argv[])
 {
   char fname[200];
-  if (argc != 4) // 2
+  if (argc != 3) // 2
   {
-    fprintf(stderr, "syntax:\n%s basename r Cbfactor\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n", argv[0]);
+    fprintf(stderr, "syntax:\n%s basename r\n\nCbfactor=1 => 7e-4 bubbles/nm^3\n", argv[0]);
     return 1;
   }
 
@@ -65,19 +65,6 @@ int main(int argc, char *argv[])
   sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
 
   trimBase *trim = new trimBase(simconf, sample);
-
-
-  //Real r = 10.0;
-  Real r = atof(argv[2]); //10.0;
-  Real Cbf = atof(argv[3]);
-
-
-  // Real atp = 0.1; // 10at% Mo 90at%Cu
-  Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
-  int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
-
-  n_cl = 1;//v_sam * 7.0e-7 * Cbf ; // Ola06 7e-4/nm^3
 
   materialBase *material;
   elementBase *element;
@@ -106,10 +93,6 @@ int main(int argc, char *argv[])
   std::queue<ionBase*> recoils;
 
   Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
   MassInverter *m = new MassInverter;
   EnergyInverter *e = new EnergyInverter;
 
@@ -122,10 +105,7 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  Real pos1[3];
-
-  ionMDtag *ff1, *ff2, *pka;
-  int id = 1;
+  ionMDtag *ff1, *pka;
 
   // 5 fission events
   for (int n = 0; n < 10; n++) // 10 ff

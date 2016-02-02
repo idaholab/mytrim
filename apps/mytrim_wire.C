@@ -106,17 +106,6 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
-  //snprintf(fname, 199, "%s.Erec", argv[1]);
-  //FILE *erec = fopen(fname, "wt");
-
-  //snprintf(fname, 199, "%s.dist", argv[1]);
-  //FILE *rdist = fopen(fname, "wt");
-
   ionBase *pka;
 
   const int mx = 20, my = 20;

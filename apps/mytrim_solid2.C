@@ -184,16 +184,7 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3], dif2[3];
-
-  MassInverter *m = new MassInverter;
-  EnergyInverter *e = new EnergyInverter;
-
-  Real A1, A2, Etot, E1, E2;
-  int Z1, Z2;
+  Real dif2[3];
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
   FILE *erec = fopen(fname, "wt");
@@ -201,10 +192,9 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  Real pos1[3], pos2[3];
+  Real pos2[3];
 
   ionBase *ff1, *pka;
-  int id = 1;
 
   //Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
   Real A = 131.0, E = 2.0e4; int Z = 54; // 20keV Xe
@@ -302,7 +292,6 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
-  Real surf = sample->w[1] * sample->w[2];
   Real natom = v_sam * sample->material[0]->arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)",
           v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));

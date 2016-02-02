@@ -41,7 +41,6 @@ using namespace MyTRIM_NS;
 
 int main(int argc, char *argv[])
 {
-  char fname[200];
   if (argc != 3)
   {
     fprintf(stderr, "syntax:\n%s element energy[keV]\n",argv[0]);
@@ -153,18 +152,8 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-
-  MassInverter *m = new MassInverter;
-  EnergyInverter *e = new EnergyInverter;
-
-  Real A1, A2, Etot, E1, E2;
-  int Z1, Z2;
-
-  Real pos1[3], pos2[3];
-
+  Real pos2[3];
   ionBase *ff1, *pka;
-  int id = 1;
 
   // squared displacement
   Real sqd = 0.0, sqd2 = 0.0;
@@ -224,7 +213,6 @@ int main(int argc, char *argv[])
   // output full damage data
   printf("total sum of square displacements: %g Ang^2\n", sqd);
   printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
-  Real surf = sample->w[1] * sample->w[2];
   Real natom = v_sam * sample->material[0]->arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)\n",
           v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));

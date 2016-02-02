@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
-  Real v_cl = 4.0/3.0 * M_PI * cub(r);
+  //Real v_cl = 4.0/3.0 * M_PI * cub(r);
   int n_cl; // = atp * scoef[29-1].atrho * v_sam / (v_cl * ((1.0 - atp) * scoef[42-1].atrho + atp * scoef[29-1].atrho));
 
   n_cl = v_sam * 1.5e-7 * Cbf ; // Allen08 1.5e-4/nm^3
@@ -218,13 +218,7 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
   Real dif[3], dif2[3];
-
-  Real A1, A2, Etot, E1, E2;
-  int Z1, Z2;
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
   FILE *erec = fopen(fname, "wt");
@@ -235,7 +229,6 @@ int main(int argc, char *argv[])
   Real pos1[3], pos2[3];
 
   ionMDtag *ff1, *pka;
-  int id = 1;
 
   Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
   //Real A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni

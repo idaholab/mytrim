@@ -114,14 +114,6 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  Real norm;
-  Real jmp = 2.7; // diffusion jump distance
-  int jumps;
-  Real dif[3];
-
-  MassInverter *m = new MassInverter;
-  EnergyInverter *e = new EnergyInverter;
-
   //Real A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
   Real A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
 
@@ -131,13 +123,9 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  Real pos1[3];
-
-  ionBase *ff1, *ff2, *pka;
-  int id = 1;
-
+  ionBase *ff1, *pka;
   int nrec = 0;
-  Real sum_r2, opos[3];
+  Real sum_r2 = 0.0, opos[3];
 
   // 1000 PKA
   for (int n = 0; n < nmax; n++)
