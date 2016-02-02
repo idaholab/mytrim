@@ -21,14 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef MYTRIM_SIMCONF_H
 #define MYTRIM_SIMCONF_H
 
-// building from within MOOSE/Magpie?
 #ifdef MYTRIM_ENABLED
+// building from within MOOSE/Magpie
 #include "MooseError.h"
 #include "MooseTypes.h"
 #include "libmesh/point.h"
+namespace MyTRIM_NS {
+  const Real drm = Real(RAND_MAX)+1.0;
+  inline Real dr250() { return Real(rand())/drm; }
+  inline void r250_init(int s) { srand(s); }
+}
 #else
+// building standalone (for Travis CI tests)
 typedef double Real;
 #include "point.h"
+#include "r250.h"
 #endif
 
 #include <stdlib.h>
