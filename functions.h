@@ -33,11 +33,6 @@ inline void v_norm(Real * a1, Real b = 1.0) // in-place normalize to b (= 1.0 de
 inline Real sqr(Real a) { return a*a; }
 inline Real cub(Real a) { return a*a*a; }
 
-// random numbers
-const Real drm = Real(RAND_MAX)+1.0;
-inline Real dr250() { return Real(rand())/drm; }
-inline void r250_init(int s) { srand(s); }
-
 }
 
 #endif

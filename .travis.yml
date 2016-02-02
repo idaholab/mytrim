@@ -1,11 +1,30 @@
+sudo: false
+
 language: cpp
 
 compiler:
   - gcc
+  - clang
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.9
+      - g++-4.9
+      - clang
 
 before_script:
   - mkdir build
   - cd build
+  - cmake --version
   - cmake ..
 
-script: make
+script:
+  - make
+  - cd ../tests
+  - ./run_tests.sh

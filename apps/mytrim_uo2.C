@@ -60,15 +60,25 @@ int main(int argc, char *argv[])
 
   // run mode
   enum RunMode { PLAIN, PHONONS, DEFECTS };
-  //RunMode mode = DEFECTS;
-  RunMode mode = PHONONS;
+  RunMode mode = PLAIN;
+  //RunMode mode = PHONONS;
 
-  // seed random number generator from system entropy pool
-  // we internally use the libc random function (not r250c, which is not threadsafe)
+  // set seed
   int seed;
-  FILE *urand = fopen("/dev/random", "r");
-  fread(&seed, sizeof(int), 1, urand);
-  fclose(urand);
+  char * seedenv = getenv("MYTRIM_SEED");
+  if (seedenv)
+  {
+    // use the number provided in the environment variable MYTRIM_SEED
+    seed = atoi(seedenv);
+  }
+  else
+  {
+    // seed random number generator from system entropy pool
+    // we internally use the libc random function (not r250c, which is not threadsafe)
+    FILE *urand = fopen("/dev/random", "r");
+    fread(&seed, sizeof(int), 1, urand);
+    fclose(urand);
+  }
   r250_init(seed<0 ? -seed : seed);
 
   // initialize global parameter structure and read data tables from file
@@ -241,6 +251,7 @@ int main(int argc, char *argv[])
     ff2->z1 = Z2;
     ff2->m1 = A2;
     ff2->e  = E2 * 1.0e6;
+    ff2->md = 0;
 
     ff2->set_ef();
     recoils.push(ff2);
@@ -262,7 +273,8 @@ int main(int argc, char *argv[])
       {
 	      // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
-	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
+	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0)
+          pka->md = 1;
 
         if (pka->gen > 0)
         {
@@ -289,6 +301,8 @@ int main(int argc, char *argv[])
       // follow this ion's trajectory and store recoils
       // printf("%f\t%d\n", pka->e, pka->z1);
       trim->trim(pka, recoils);
+
+      // printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
 
       // do ion analysis/processing AFTER the cascade here
 
