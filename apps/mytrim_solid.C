@@ -110,8 +110,8 @@ int main(int argc, char *argv[])
   int jumps;
   Real dif[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
@@ -153,21 +153,21 @@ int main(int argc, char *argv[])
 
     Z2 = 92 - Z1;
 
-    /* ff1->z1 = Z1;
-    ff1->m1 = A1;
+    /* ff1->_Z = Z1;
+    ff1->_m = A1;
     ff1->e  = E1 * 1.0e6; */
 
-    ff1->z1 = 53;
-    ff1->m1 = 127;
+    ff1->_Z = 53;
+    ff1->_m = 127;
     ff1->e  = 70.0 * 1.0e6;
 
     do
     {
       for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
-      norm = v_dot(ff1->dir, ff1->dir);
+      norm = ff1->dir.size_sq();
     }
-    while (norm <= 0.0001);
-    v_scale(ff1->dir, 1.0 / std::sqrt(norm));
+    while (norm <= 0.0001 || norm > 0.25);
+    ff1->dir /= std::sqrt(norm);
 
     for (int i = 0; i < 3; i++) ff1->pos[i] = dr250() * sample->w[i];
 
@@ -181,8 +181,8 @@ int main(int argc, char *argv[])
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
 
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
+    ff2->_Z = Z2;
+    ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
 
     ff2->set_ef();
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if (pka->z1 == 54 )
+      if (pka->_Z == 54 )
       {
         // mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
         if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is Xe
-      if (pka->z1 == 54 )
+      if (pka->_Z == 54 )
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);

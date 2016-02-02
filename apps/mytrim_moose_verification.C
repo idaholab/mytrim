@@ -41,12 +41,7 @@ using namespace MyTRIM_NS;
 
 int main(int argc, char *argv[])
 {
-  // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
-  int seed;
-  fread(&seed, sizeof(int), 1, urand);
-  fclose(urand);
-  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
+  r250_init(32423); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -80,8 +75,8 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<ionBase*> recoils;
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   // create a bunch of ions
   MyTRIM_NS::ionBase * pka;
@@ -90,8 +85,8 @@ int main(int argc, char *argv[])
     pka = new MyTRIM_NS::ionBase;
     pka->gen = 0;  // generation (0 = PKA)
     pka->tag = 0; // tag holds the element type
-    pka->z1 = 20;
-    pka->m1 = 40;
+    pka->_Z = 20;
+    pka->_m = 40;
     pka->e  = 300;
 
     pka->dir[0] = 0.0;

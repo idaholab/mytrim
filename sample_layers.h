@@ -30,9 +30,9 @@ struct sampleLayers : sampleBase {
   std::vector<Real> layerThickness;
 
   sampleLayers(Real x, Real y, Real z): sampleBase(x, y, z) {};
-  virtual int lookupLayer(Real* pos);
-  virtual materialBase* lookupMaterial(Real* pos);
-  virtual Real rangeMaterial(Real* pos, Real* dir);
+  virtual int lookupLayer(Point & pos);
+  virtual materialBase* lookupMaterial(Point & pos);
+  virtual Real rangeMaterial(Point & pos, Point & dir);
 };
 
 }

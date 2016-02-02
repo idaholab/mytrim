@@ -35,7 +35,7 @@ struct sampleDynamic : sampleLayers {
 
   sampleDynamic(simconfType * _simconf, Real x, Real y, Real z);
 
-  virtual materialBase* lookupMaterial(Real* pos);
+  virtual materialBase* lookupMaterial(Point & pos);
   virtual void addAtomsToLayer(int layer, int n, int Z);
 
 protected:

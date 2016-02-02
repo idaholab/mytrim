@@ -134,8 +134,8 @@ int main(int argc, char *argv[])
     pka = new ionBase;
     pka->gen = 0; // generation (0 = PKA)
     pka->tag = -1;
-    pka->z1 = zpka; // S
-    pka->m1 = mpka;
+    pka->_Z = zpka; // S
+    pka->_m = mpka;
     pka->e  = epka;
 
     pka->dir[0] = 0.0;
@@ -161,13 +161,13 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if (pka->z1 == zpka )
+      if (pka->_Z == zpka )
       {
         //printf( "p1 %f\t%f\t%f\n", pka->pos[0], pka->pos[1], pka->pos[2]);
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
@@ -182,9 +182,9 @@ int main(int argc, char *argv[])
         y -= int(y/my) * my;
 
         // keep track of interstitials for the two constituents
-        if (pka->z1 == z1) imap[x][y][0]++;
-        else if (pka->z1 == z2) imap[x][y][1]++;
-        else if (pka->z1 == z3) imap[x][y][2]++;
+        if (pka->_Z == z1) imap[x][y][0]++;
+        else if (pka->_Z == z2) imap[x][y][1]++;
+        else if (pka->_Z == z3) imap[x][y][2]++;
       }
 
       // done with this recoil

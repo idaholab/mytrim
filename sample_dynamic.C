@@ -25,7 +25,7 @@ void sampleDynamic::averages(const ionBase *_pka)
   while (i > 0) material[--i]->dirty = true;
 }
 
-materialBase*  sampleDynamic::lookupMaterial(Real* pos)
+materialBase*  sampleDynamic::lookupMaterial(Point & pos)
 {
   //std::cout << "lookuplayer" << std::endl;
   materialBase* m = material[lookupLayer(pos)];

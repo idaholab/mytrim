@@ -60,16 +60,28 @@ int main(int argc, char *argv[])
 
   // run mode
   enum RunMode { PLAIN, PHONONS, DEFECTS };
-  //RunMode mode = DEFECTS;
-  RunMode mode = PHONONS;
+  RunMode mode = PLAIN;
+  //RunMode mode = PHONONS;
 
-  // seed random number generator from system entropy pool
-  // we internally use the libc random function (not r250c, which is not threadsafe)
+  // set seed
   int seed;
-  FILE *urand = fopen("/dev/random", "r");
-  fread(&seed, sizeof(int), 1, urand);
-  fclose(urand);
+  char * seedenv = getenv("MYTRIM_SEED");
+  if (seedenv)
+  {
+    // use the number provided in the environment variable MYTRIM_SEED
+    seed = atoi(seedenv);
+  }
+  else
+  {
+    // seed random number generator from system entropy pool
+    // we internally use the libc random function (not r250c, which is not threadsafe)
+    FILE *urand = fopen("/dev/random", "r");
+    fread(&seed, sizeof(int), 1, urand);
+    fclose(urand);
+  }
   r250_init(seed<0 ? -seed : seed);
+
+  std::cout << "DEBUG " << dr250() << ' ' << dr250() << ' ' << dr250() << ' ' << dr250() << '\n';
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
@@ -179,8 +191,8 @@ int main(int argc, char *argv[])
   int jumps;
   Real dif[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
@@ -215,17 +227,18 @@ int main(int argc, char *argv[])
     Z1 = round((A1 * 92.0) / 235.0);
     Z2 = 92 - Z1;
 
-    ff1->z1 = Z1;
-    ff1->m1 = A1;
+    ff1->_Z = Z1;
+    ff1->_m = A1;
     ff1->e  = E1 * 1.0e6;
 
     do
     {
-      for (int i = 0; i < 3; i++) ff1->dir[i] = dr250() - 0.5;
-      norm = v_dot(ff1->dir, ff1->dir);
+      for (int i = 0; i < 3; i++)
+        ff1->dir[i] = dr250() - 0.5;
+      norm = ff1->dir.size_sq();
     }
-    while (norm <= 0.0001);
-    v_scale(ff1->dir, 1.0 / std::sqrt(norm));
+    while (norm <= 0.0001 || norm > 0.25);
+    ff1->dir /= std::sqrt(norm);
 
     // random origin
     for (int i = 0; i < 3; i++) ff1->pos[i] = dr250() * sample->w[i];
@@ -238,9 +251,10 @@ int main(int argc, char *argv[])
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir[i] *= -1.0;
 
-    ff2->z1 = Z2;
-    ff2->m1 = A2;
+    ff2->_Z = Z2;
+    ff2->_m = A2;
     ff2->e  = E2 * 1.0e6;
+    ff2->md = 0;
 
     ff2->set_ef();
     recoils.push(ff2);
@@ -258,11 +272,12 @@ int main(int argc, char *argv[])
       sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
-      if (pka->z1 == gas_z1)
+      if (pka->_Z == gas_z1)
       {
 	      // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
-	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
+	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0)
+          pka->md = 1;
 
         if (pka->gen > 0)
         {
@@ -287,13 +302,15 @@ int main(int argc, char *argv[])
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       trim->trim(pka, recoils);
+
+      // printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
 
       // do ion analysis/processing AFTER the cascade here
 
       // pka is GAS
-      if (pka->z1 == gas_z1)
+      if (pka->_Z == gas_z1)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);

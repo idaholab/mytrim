@@ -18,57 +18,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA
 */
 
-#ifndef MYTRIM_INVERT_H
-#define MYTRIM_INVERT_H
+#ifndef MYTRIM_POINT_H
+#define MYTRIM_POINT_H
 
 #include "simconf.h"
 #include <cmath>
 
-namespace MyTRIM_NS {
-
-class Inverter
-{
-public :
-  Inverter() : maxx(0.0), maxf(0.0), tol(1e-13) {}
-
-  /// Evaluate inverse of function (iteratively)
-  Real x(Real f) const;
-
-protected :
-  /// Evaluate function
-  virtual Real f(Real x) const = 0;
-
-  Real maxx, maxf, tol;
-};
-
-
-class MassInverter : public Inverter
+class Point
 {
 public:
-  MassInverter() { maxx = 235.0; tol = 1e-7; maxf = f(maxx); }
+  Point();
+  Point(Real x, Real y, Real z);
 
-protected:
-  virtual Real f(Real x) const;
-};
+  /// component access for backwards compatibility
+  Real & operator[] (unsigned int i);
+  const Real & operator[] (unsigned int i) const;
 
+  /// distance squared form the origin
+  Real size_sq() { return data[0]*data[0] + data[1]*data[1] + data[2]*data[2]; }
 
-class EnergyInverter : public Inverter
-{
-public:
-  EnergyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
+  /// distance form the origin
+  Real size() { return std::sqrt(size_sq()); }
 
-  void setMass(Real A) {
-    _A = A;
-    maxf = f(maxx);
-  }
+  /// arithmetic operators
+  Point operator+ (const Point & rhs);
+  Point operator- (const Point & rhs);
+  Point operator* (Real rhs);
+  Point operator/ (Real rhs);
 
-protected:
-  virtual Real f(Real x) const;
+  /// compound operators
+  Point & operator+= (const Point & rhs);
+  Point & operator-= (const Point & rhs);
+  Point & operator*= (Real rhs);
+  Point & operator/= (Real rhs);
 
 private:
-  Real _A;
+  Real data[3];
 };
 
-}
-
-#endif
+#endif //MYTRIM_POINT_H

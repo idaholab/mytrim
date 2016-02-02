@@ -6,13 +6,30 @@
 
 namespace MyTRIM_NS {
 
-struct ionBase {
-  // atomic number, mass, and kinetic energy of the ion
-  int z1;
-  Real m1, e;
+class ionBase
+{
+public:
+  ionBase();
+  ionBase(ionBase* prototype);
+  ionBase(int Z, Real m, Real e_);
+  virtual ~ionBase() {};
+
+  virtual void parent(ionBase* parent);
+  virtual ionBase* spawnRecoil();
+
+  void set_ef();
+
+  /// atomic number
+  int _Z;
+
+  /// mass
+  Real _m;
+
+  /// kinetic energy
+  Real e;
 
   // normalized velocity vector, and position
-  Real dir[3], pos[3];
+  Point dir, pos;
 
   // internal clock (needed for visualization)
   Real t;
@@ -28,37 +45,33 @@ struct ionBase {
 
   // state of the recoil:
   //   MOVING          ion is still being tracked
-  //   REPLACEMENT     pka->z1 == element->z && pka->e < element->Edisp
-  //   SUBSTITUTIONAL  pka->z1 != element->z && pka->e < element->Edisp
+  //   REPLACEMENT     pka->_Z == element->z && pka->e < element->Edisp
+  //   SUBSTITUTIONAL  pka->_Z != element->z && pka->e < element->Edisp
   //   INTERSTITIAL    no recoil spawned and pke->e < pka->ef
   //   LOST            ion has left the sample
   enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } state;
   static const int DELETE = -1;
-
-  ionBase();
-  ionBase(ionBase* prototype);
-  ionBase(int z1_, Real m1_, Real e_);
-  virtual ~ionBase() {};
-
-  virtual void parent(ionBase* parent);
-  virtual ionBase* spawnRecoil();
-
-  void set_ef();
 };
 
-std::ostream& operator << (std::ostream& os, const ionBase &i); /// Serialize ion into text stream
+/// Serialize ion into text stream
+std::ostream& operator << (std::ostream& os, const ionBase &i);
 
 
-struct ionMDtag : public ionBase {
-  // generation after first ion falling into the MD energy gap (200eV - 12000eV) TODO: move to subclass?
+class ionMDtag : public ionBase
+{
+public:
+  ionMDtag() : ionBase(), md(0) {}
+  ionMDtag(ionMDtag * prototype) : ionBase(prototype), md(prototype->md) {}
+
+  /// overwrite this to return recoil ion objects of type ionMDtag
+  virtual ionBase* spawnRecoil();
+
+  /// generation after first ion falling into the MD energy gap (200eV - 12000eV) TODO: move to subclass?
   int md;
-
-  // overwrite this tor return recoil ion objects of type ionMDtag
-  virtual ionBase* spawnRecoil();
 };
 
-std::ostream& operator << (std::ostream& os, const ionMDtag &p); /// Serialize ion into text stream
-
+/// Serialize ion into text stream
+std::ostream& operator << (std::ostream& os, const ionMDtag &p);
 }
 
 #endif

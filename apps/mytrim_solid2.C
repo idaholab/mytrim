@@ -189,8 +189,8 @@ int main(int argc, char *argv[])
   int jumps;
   Real dif[3], dif2[3];
 
-  massInverter *m = new massInverter;
-  energyInverter *e = new energyInverter;
+  MassInverter *m = new MassInverter;
+  EnergyInverter *e = new EnergyInverter;
 
   Real A1, A2, Etot, E1, E2;
   int Z1, Z2;
@@ -221,8 +221,8 @@ int main(int argc, char *argv[])
     ff1->tag = -1;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E;
 
     ff1->dir[0] = 1;
@@ -246,11 +246,11 @@ int main(int argc, char *argv[])
       //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
       Real oerec = pka->e;
 
-      if (pka->z1 == 542)
+      if (pka->_Z == 542)
       {
         if (pka->gen > 0)
         {
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->z1);
+      // printf("%f\t%d\n", pka->e, pka->_Z);
       //pka->md = id++;
 
       trim->trim(pka, recoils);
@@ -274,9 +274,9 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is O or Ti
-      //if (pka->z1 == 8 || pka->z1 == 22 || pka->z1 == 39)
+      //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      if (pka->z1 == 542)
+      if (pka->_Z == 542)
       {
         // output
         //printf("%f %f %f %d\n", pka->pos[0], pka->pos[1], pka->pos[2], pka->tag);
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
         {
           dif2[i] = pos2[i] - pka->pos[i]; // total distance it moved
         }
-        fprintf(rdist, "%d %f %f %f %f %f\n", pka->z1, pos2[0], pos2[1], pos2[2], std::sqrt(v_dot(dif2, dif2)), oerec);
+        fprintf(rdist, "%d %f %f %f %f %f\n", pka->_Z, pos2[0], pos2[1], pos2[2], std::sqrt(v_dot(dif2, dif2)), oerec);
 
       }
 

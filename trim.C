@@ -33,7 +33,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
   Real fr, fr1, q, roc, sqe;
   Real cc, aa, ff, co, delta;
   Real den;
-  Real rdir[3], perp[3], norm, psi;
+  Point rdir, perp;
+  Real norm, psi;
 
   Real p1, p2;
   //Real range;
@@ -59,7 +60,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     material->pmax = material->a / (eeg + std::sqrt(eeg) + 0.125 * std::pow(eeg, 0.1));
 
     ls = 1.0 / (M_PI * std::pow(material->pmax, 2.0) * material->arho);
-    if (ic==1) ls = r1 * fmin(ls, simconf->cw);
+    if (ic == 1)
+      ls = r1 * std::min(ls, simconf->cw);
 
     // correct for maximum available range in current material by increasing maximum impact parameter
     #ifdef RANGECORRECT
@@ -102,7 +104,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     #endif
 
     // advance clock pathlength/velocity
-    pka->t += 10.1811859 * (ls - simconf->tau) / std::sqrt(2.0 * pka->e / pka->m1);
+    pka->t += 10.1811859 * (ls - simconf->tau) / std::sqrt(2.0 * pka->e / pka->_m);
 
     // time in fs! m in u, l in Ang, e in eV
     // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
@@ -145,21 +147,21 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     {
       // first guess at ion c.p.a. [TRI02780]
       r = b;
-      rr = -2.7 * logf(eps * b);
+      rr = -2.7 * std::log(eps * b);
       if (rr >= b)
       {
         r = rr;
-        rr = -2.7 * logf(eps * rr);
+        rr = -2.7 * std::log(eps * rr);
         if (rr >= b) r = rr;
       }
 
       do
       {
         // universal potential
-        ex1 = 0.18175 * exp(-3.1998 * r);
-        ex2 = 0.50986 * exp(-0.94229 * r);
-        ex3 = 0.28022 * exp(-0.4029 * r);
-        ex4 = 0.028171 * exp(-0.20162 * r);
+        ex1 = 0.18175 * std::exp(-3.1998 * r);
+        ex2 = 0.50986 * std::exp(-0.94229 * r);
+        ex3 = 0.28022 * std::exp(-0.4029 * r);
+        ex4 = 0.028171 * std::exp(-0.20162 * r);
         v = (ex1 + ex2 + ex3 + ex4) / r;
         v1 = -(v + 3.1998 *ex1 + 0.94229 * ex2 + 0.4029 * ex3 + 0.20162 * ex4) / r;
 
@@ -203,10 +205,10 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     simconf->EelTotal += dee;
 
     // momentum transfer
-    p1 = std::sqrt(2.0 * pka->m1 * pka->e); // momentum before collision
+    p1 = std::sqrt(2.0 * pka->_m * pka->e); // momentum before collision
     if (den > pka->e) den = pka->e; // avoid negative energy
     pka->e -= den;
-    p2 = std::sqrt(2.0 * pka->m1 * pka->e); // momentum after collision
+    p2 = std::sqrt(2.0 * pka->_m * pka->e); // momentum after collision
 
     // track maximum electronic energy loss TODO: might want to track max(see)!
     if (dee>max) max = dee;
@@ -227,29 +229,31 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
 
     // recoil loses the lattice binding energy
     recoil->e -= element->Elbind;
-    recoil->m1 = element->m;
-    recoil->z1 = element->z;
+    recoil->_m = element->m;
+    recoil->_Z = element->z;
 
     // create a random vector perpendicular to pka.dir
     // there is a cleverer way by using the azimuthal angle of scatter...
     do
     {
-      for (int i = 0; i < 3; i++) rdir[i] = dr250() - 0.5;
-      v_cross(pka->dir, rdir, perp);
-      norm = std::sqrt(v_dot(perp, perp));
-    }
-    while (norm == 0.0);
-    v_scale(perp, 1.0 / norm);
+      do
+      {
+        for (int i = 0; i < 3; ++i)
+          rdir[i] = 2.0 * dr250() - 1.0;
+      } while (rdir.size_sq() > 1.0);
 
-    psi = atan(st / (ct + element->my));
-    v_scale(pka->dir, std::cos(psi));
+      v_cross(pka->dir, rdir, perp);
+      norm = perp.size();
+    } while (norm == 0.0);
+
+    perp /= norm;
+
+    psi = std::atan2(st, ct + element->my);
+    pka->dir *= std::cos(psi);
 
     // calculate new direction, subtract from old dir (stored in recoil)
-    for (int i = 0; i < 3; i++)
-    {
-      pka->dir[i] += perp[i] * std::sin(psi);
-      recoil->dir[i] -= pka->dir[i] * p2;
-    }
+    pka->dir += perp * std::sin(psi);
+    recoil->dir -= pka->dir * p2;
 
     // end cascade if a CUT boundary is crossed
     for (int i = 0; i < 3; i++) {
@@ -289,7 +293,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
           vacancyCreation();
         } else {
           // nope, the pka gets stuck at that site as...
-          if (pka->z1 == element->z)
+          if (pka->_Z == element->z)
             pka->state = ionBase::REPLACEMENT;
           else
             pka->state = ionBase::SUBSTITUTIONAL;

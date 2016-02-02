@@ -146,8 +146,8 @@ int main(int argc, char *argv[])
     ff1->tag = -1;
     ff1->id = simconf->id++;
 
-    ff1->z1 = Z;
-    ff1->m1 = A;
+    ff1->_Z = Z;
+    ff1->_m = A;
     ff1->e  = E * (3-((n*3)/35000));
 
     ff1->dir[0] = 1;
@@ -177,9 +177,9 @@ int main(int argc, char *argv[])
 
       // remove from source layer
       if (pka->gen > 0)
-        sample->addAtomsToLayer(layer1, -1, pka->z1);
+        sample->addAtomsToLayer(layer1, -1, pka->_Z);
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->z1);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
       //for (int i = 0; i < 3; i++)
       // opos[i] = pka->pos[i];
 
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
       // add to destination layer
       layer2 = sample->lookupLayer(pka->pos);
       if (pka->pos[0] > 0)
-        sample->addAtomsToLayer(layer2, 1, pka->z1);
+        sample->addAtomsToLayer(layer2, 1, pka->_Z);
 
       //
       // do ion analysis/processing AFTER the cascade here
