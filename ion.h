@@ -60,6 +60,9 @@ std::ostream& operator << (std::ostream& os, const ionBase &i);
 class ionMDtag : public ionBase
 {
 public:
+  ionMDtag() : ionBase(), md(0) {}
+  ionMDtag(ionMDtag * prototype) : ionBase(prototype), md(prototype->md) {}
+
   /// overwrite this to return recoil ion objects of type ionMDtag
   virtual ionBase* spawnRecoil();
 
