@@ -33,7 +33,7 @@ namespace MyTRIM_NS {
 class MaterialBase
 {
 public:
-  MaterialBase(simconfType * simconf_, Real rho_);
+  MaterialBase(SimconfType * simconf_, Real rho_);
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
@@ -66,7 +66,7 @@ protected:
   Real rpstop(int z2, Real e);
   Real rstop(const IonBase *ion, int z2);
 
-  simconfType * simconf;
+  SimconfType * simconf;
 };
 
 }

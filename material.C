@@ -8,7 +8,7 @@
 
 using namespace MyTRIM_NS;
 
-MaterialBase::MaterialBase(simconfType * simconf_, Real rho_) :
+MaterialBase::MaterialBase(SimconfType * simconf_, Real rho_) :
     rho(rho_),
     tag(-1),
     dirty(true),

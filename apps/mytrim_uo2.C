@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed);
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
 
   // initialize sample structure
   sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);

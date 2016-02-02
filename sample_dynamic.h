@@ -31,7 +31,7 @@ namespace MyTRIM_NS {
 class SampleDynamic : public SampleLayers
 {
 public:
-  SampleDynamic(simconfType * _simconf, Real x, Real y, Real z);
+  SampleDynamic(SimconfType * _simconf, Real x, Real y, Real z);
 
   virtual void averages(const IonBase *_pka);
   virtual MaterialBase* lookupMaterial(Point & pos);
@@ -41,7 +41,7 @@ public:
 protected:
   const IonBase *pka;
 
-  simconfType * simconf;
+  SimconfType * simconf;
 };
 
 }

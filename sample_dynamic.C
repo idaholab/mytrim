@@ -6,7 +6,7 @@
 
 using namespace MyTRIM_NS;
 
-SampleDynamic::SampleDynamic(simconfType * simconf_, Real x, Real y, Real z):
+SampleDynamic::SampleDynamic(SimconfType * simconf_, Real x, Real y, Real z):
     SampleLayers(x, y, z),
     simconf(simconf_)
 {

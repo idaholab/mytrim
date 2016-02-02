@@ -11,12 +11,12 @@
 #include "simconf.h"
 
 namespace MyTRIM_NS {
-  simconfType *simconf;
+  SimconfType *simconf;
 }
 
 using namespace MyTRIM_NS;
 
-simconfType::simconfType(Real _alfa) :
+SimconfType::SimconfType(Real _alfa) :
     _data_dir(getenv("MYTRIM_DATADIR") ? getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR)
 {
   ed = 25.0; // displacement energy
@@ -45,7 +45,7 @@ simconfType::simconfType(Real _alfa) :
 }
 
 void
-simconfType::readSnuc()
+SimconfType::readSnuc()
 {
   const unsigned int nbuf = 2000;
   char buffer[nbuf] = {0};
@@ -69,7 +69,7 @@ simconfType::readSnuc()
 }
 
 void
-simconfType::readScoef()
+SimconfType::readScoef()
 {
   const unsigned int nbuf = 2000;
   char buffer[nbuf] = {0};
@@ -113,7 +113,7 @@ simconfType::readScoef()
 }
 
 void
-simconfType::fileReadError(const char * path)
+SimconfType::fileReadError(const char * path)
 {
 #ifdef MYTRIM_ENABLED
     mooseError("Error reading " << path);
@@ -124,7 +124,7 @@ simconfType::fileReadError(const char * path)
 }
 
 void
-simconfType::skipLine(FILE * sf)
+SimconfType::skipLine(FILE * sf)
 {
   const unsigned int nbuf = 2000;
   char buffer[nbuf] = {0};

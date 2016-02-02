@@ -44,22 +44,20 @@ typedef double Real;
 
 namespace MyTRIM_NS {
 
-// ZBL coefficients a,b,c,d for all element pairs from Z=1..92
-struct scoefLine {
-  char sym[3], name[30];
-  Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
-};
-
-class simconfType
+class SimconfType
 {
 public:
-  simconfType(Real _alfa = 0.0);
+  SimconfType(Real _alfa = 0.0);
 
   Real ed, alfa, alpha, tmin, tau, da, cw;
   int id;
 
   // tables from files
-  scoefLine scoef[92];
+  // ZBL coefficients a,b,c,d for all element pairs from Z=1..92
+  struct ScoefLine {
+    char sym[3], name[30];
+    Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
+  } scoef[92];
   Real pcoef[92][8];
   Real snuc[92][92][4];
 
