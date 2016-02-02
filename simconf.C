@@ -1,5 +1,4 @@
 #include <cmath>
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 //#include <stdlib.h>
@@ -17,7 +16,8 @@ namespace MyTRIM_NS {
 
 using namespace MyTRIM_NS;
 
-simconfType::simconfType(Real _alfa)
+simconfType::simconfType(Real _alfa) :
+    _data_dir(getenv("MYTRIM_DATADIR") ? getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR)
 {
   ed = 25.0; // displacement energy
   alfa = _alfa; // angle of incidence (degrees)
@@ -40,29 +40,28 @@ simconfType::simconfType(Real _alfa)
   EnucTotal = 0.0;
 
   // read data tables
-  read_snuc();
-  read_scoef();
+  readSnuc();
+  readScoef();
 }
 
 void
-simconfType::read_snuc()
+simconfType::readSnuc()
 {
-  char * data_dir_env = getenv("MYTRIM_DATADIR");
   const unsigned int nbuf = 2000;
   char buffer[nbuf] = {0};
-  if (data_dir_env  == 0)
-    data_dir_env = strdup(MYTRIM_DATA_DIR);
   FILE *sf;
 
-  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SNUC03.dat");
+  snprintf(buffer, nbuf, "%s/%s", _data_dir.c_str(), "SNUC03.dat");
   sf = fopen(buffer, "rt");
   if (sf == NULL) fileReadError(buffer);
 
   for (int i = 0; i < 92; i++)
     for (int j = i; j < 92; j++)
     {
-      fscanf(sf, "%*d %*d %lf %lf %lf %lf\n",
-        &snuc[j][i][0], &snuc[j][i][1], &snuc[j][i][2], &snuc[j][i][3]);
+      if (fscanf(sf, "%*d %*d %lf %lf %lf %lf\n",
+        &snuc[j][i][0], &snuc[j][i][1], &snuc[j][i][2], &snuc[j][i][3]) != 4)
+        fileReadError("contents of SNUC03.dat");
+
       for (int n = 0; n < 4; n++)
         snuc[i][j][n] = snuc[j][i][n];
     }
@@ -70,46 +69,46 @@ simconfType::read_snuc()
 }
 
 void
-simconfType::read_scoef()
+simconfType::readScoef()
 {
-  char * data_dir_env = getenv("MYTRIM_DATADIR");
   const unsigned int nbuf = 2000;
   char buffer[nbuf] = {0};
-  if (data_dir_env  == 0)
-    data_dir_env = strdup(MYTRIM_DATA_DIR);
   FILE *sf;
 
-  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SCOEF.95A");
+  snprintf(buffer, nbuf, "%s/%s", _data_dir.c_str(), "SCOEF.95A");
   sf = fopen(buffer, "rt");
   if (sf == NULL) fileReadError(buffer);
 
-  fgets(buffer, nbuf, sf); // header
-  fgets(buffer, nbuf, sf); // header
+  skipLine(sf); // header
+  skipLine(sf); // header
   for (int i = 0; i < 92; i++)
   {
-    fscanf(sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+    if (fscanf(sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
       &scoef[i].mm1, &scoef[i].m1, &scoef[i].mnat,
       &scoef[i].rho, &scoef[i].atrho, &scoef[i].vfermi, &scoef[i].heat,
       &pcoef[i][0], &pcoef[i][1], &pcoef[i][2], &pcoef[i][3],
-      &pcoef[i][4], &pcoef[i][5], &pcoef[i][6], &pcoef[i][7]);
+      &pcoef[i][4], &pcoef[i][5], &pcoef[i][6], &pcoef[i][7]) != 15)
+      fileReadError("contents of SCOEF.95A");
   }
   fclose(sf);
 
-  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SLFCTR.dat");
+  snprintf(buffer, nbuf, "%s/%s", _data_dir.c_str(), "SLFCTR.dat");
   sf = fopen(buffer, "rt");
   if (sf == NULL) fileReadError(buffer);
 
-  fgets(buffer, nbuf, sf); // header
+  skipLine(sf); // header
   for (int i = 0; i < 92; i++)
-    fscanf(sf, "%*d %lf\n", &scoef[i].lfctr);
+    if (fscanf(sf, "%*d %lf\n", &scoef[i].lfctr) != 1)
+      fileReadError("contents of SLFCTR.dat");
   fclose(sf);
 
-  snprintf(buffer, nbuf, "%s/%s", data_dir_env, "ELNAME.dat");
+  snprintf(buffer, nbuf, "%s/%s", _data_dir.c_str(), "ELNAME.dat");
   sf = fopen(buffer, "rt");
   if (sf == NULL) fileReadError(buffer);
 
   for (int i = 0; i < 92; i++)
-    fscanf(sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name);
+    if (fscanf(sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name) != 2)
+      fileReadError("contents of ELNAME.dat");
   fclose(sf);
 }
 
@@ -117,9 +116,25 @@ void
 simconfType::fileReadError(const char * path)
 {
 #ifdef MYTRIM_ENABLED
-    mooseError("Unable to open " << path);
+    mooseError("Error reading " << path);
 #else
-    std::cerr << "Unable to open " << path << std::endl;
+    std::cerr << "Error reading " << path << std::endl;
     exit(1);
 #endif
+}
+
+void
+simconfType::skipLine(FILE * sf)
+{
+  const unsigned int nbuf = 2000;
+  char buffer[nbuf] = {0};
+  if (!fgets(buffer, nbuf, sf))
+  {
+    #ifdef MYTRIM_ENABLED
+      mooseError("Error reading file");
+    #else
+      std::cerr << "Error reading file" << std::endl;
+      exit(1);
+    #endif
+  }
 }

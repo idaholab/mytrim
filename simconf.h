@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #define MYTRIM_SIMCONF_H
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string>
 
 #ifdef MYTRIM_ENABLED
 // building from within MOOSE/Magpie
@@ -48,7 +50,11 @@ struct scoefLine {
   Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
 };
 
-struct simconfType {
+class simconfType
+{
+public:
+  simconfType(Real _alfa = 0.0);
+
   Real ed, alfa, alpha, tmin, tau, da, cw;
   int id;
 
@@ -66,12 +72,14 @@ struct simconfType {
   // statistics of the simulation run
   int vacancies_created;
 
-  simconfType(Real _alfa = 0.0);
 private:
-  void read_scoef();
-  void read_snuc();
+  void readScoef();
+  void readSnuc();
 
   void fileReadError(const char *);
+  void skipLine(FILE * sf);
+
+  std::string _data_dir;
 };
 
 }
