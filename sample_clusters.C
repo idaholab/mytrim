@@ -9,7 +9,7 @@
 using namespace MyTRIM_NS;
 
 sampleClusters::sampleClusters(Real x, Real y, Real z) :
-    sampleBase(x, y, z)
+    SampleBase(x, y, z)
 {
   sh = 0;
   cl = 0; cn = 0; cnm = 0;
@@ -18,7 +18,7 @@ sampleClusters::sampleClusters(Real x, Real y, Real z) :
 
 // look if we are within dr of a cluster
 // dr == 0.0 means looking if we are inside the cluster
-materialBase* sampleClusters::lookupMaterial(Point & pos)
+MaterialBase* sampleClusters::lookupMaterial(Point & pos)
 {
   int l = lookupCluster(pos, 0.0);
 

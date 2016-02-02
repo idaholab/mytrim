@@ -58,26 +58,26 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
+  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
-  trimBase *trim = new trimBase(simconf, sample);
-  //trimBase *trim = new trimPrimaries(sample);
+  TrimBase *trim = new TrimBase(simconf, sample);
+  //TrimBase *trim = new TrimPrimaries(sample);
 
-  //sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
+  //sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
   Real s_sam = sample->w[1] * sample->w[2];
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
 
   const char *choice[4] = {"Fe", "Si", "Cu", "Au"};
   int i;
@@ -90,56 +90,56 @@ int main(int argc, char *argv[])
   switch (i) {
     case 0:
       // Fe
-      material = new materialBase(simconf, 7.87); // rho
-      element = new elementBase;
+      material = new MaterialBase(simconf, 7.87); // rho
+      element = new ElementBase;
       Z = 26.0;
       A = 56.0;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
     case 1:
       // Si
-      material = new materialBase(simconf, 2.33); // rho
-      element = new elementBase;
+      material = new MaterialBase(simconf, 2.33); // rho
+      element = new ElementBase;
       Z = 14.0;
       A = 28.0;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
     case 2:
       // Cu
-      material = new materialBase(simconf, 8.89); // rho
-      element = new elementBase;
+      material = new MaterialBase(simconf, 8.89); // rho
+      element = new ElementBase;
       Z = 29.0;
       A = 63.5;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
     case 3:
       // Au
-      material = new materialBase(simconf, 19.32); // rho
-      element = new elementBase;
+      material = new MaterialBase(simconf, 19.32); // rho
+      element = new ElementBase;
       Z = 79.0;
       A = 197.0;
-      element->z = Z;
-      element->m = A;
-      element->t = 1.0;
-      element->Edisp = 25.0;
+      element->_Z = Z;
+      element->_m = A;
+      element->_t = 1.0;
+      element->_Edisp = 25.0;
       material->element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
@@ -150,10 +150,10 @@ int main(int argc, char *argv[])
 
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   Real pos2[3];
-  ionBase *ff1, *pka;
+  IonBase *ff1, *pka;
 
   // squared displacement
   Real sqd = 0.0, sqd2 = 0.0;
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
   {
     if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    ff1 = new ionBase;
+    ff1 = new IonBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->id = simconf->id++;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
     ff1->pos(1) = sample->w[1] / 2.0;
     ff1->pos(2) = sample->w[2] / 2.0;
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
     while (!recoils.empty())

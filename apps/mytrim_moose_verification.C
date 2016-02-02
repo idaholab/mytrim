@@ -49,40 +49,40 @@ int main(int, char **)
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
 
   // initialize sample structure
-  sampleSolid *sample = new sampleSolid(200.0, 200.0, 200.0);
+  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
 
-  trimBase *trim = new trimBase(simconf, sample);
+  TrimBase *trim = new TrimBase(simconf, sample);
 
-  sample->bc[0] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
-  sample->bc[1] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
-  sample->bc[2] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
+  sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
+  sample->bc[1] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
+  sample->bc[2] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
 
-  material = new materialBase(simconf, 1.0); // rho
-  element = new elementBase;
-  element->z = 20;
-  element->m = 40.0;
-  element->t = 1.0;
+  material = new MaterialBase(simconf, 1.0); // rho
+  element = new ElementBase;
+  element->_Z = 20;
+  element->_m = 40.0;
+  element->_t = 1.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   // create a bunch of ions
-  MyTRIM_NS::ionBase * pka;
+  MyTRIM_NS::IonBase * pka;
   for (unsigned int i = 0; i < 1000; ++i)
   {
-    pka = new MyTRIM_NS::ionBase;
+    pka = new MyTRIM_NS::IonBase;
     pka->gen = 0;  // generation (0 = PKA)
     pka->tag = 0; // tag holds the element type
     pka->_Z = 20;
@@ -97,7 +97,7 @@ int main(int, char **)
     pka->pos(1) = 0.01;
     pka->pos(2) = 100.0;
 
-    pka->set_ef();
+    pka->setEf();
     recoils.push(pka);
   }
 

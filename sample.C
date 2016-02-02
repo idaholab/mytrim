@@ -2,14 +2,15 @@
 
 using namespace MyTRIM_NS;
 
-sampleBase::sampleBase(Real x, Real y, Real z)
+SampleBase::SampleBase(Real x, Real y, Real z)
 {
   w[0] = x; w[1] = y; w[2] = z;
   for (unsigned int i = 0; i < 3; ++i)
     bc[i] = PBC;
 }
 
-void sampleBase::averages(const ionBase * pka)
+void
+SampleBase::averages(const IonBase * pka)
 {
   for (unsigned int i = 0; i < material.size(); ++i)
     material[i]->average(pka);

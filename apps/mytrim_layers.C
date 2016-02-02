@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
@@ -73,9 +73,9 @@ int main(int argc, char *argv[])
   const int nmax = 10000;
   std::cout << "NN " << nmax << " PKAs" << std::endl;
 
-  sampleLayers *sample = new sampleLayers(sx, sy, sz);
-  //trimBase *trim = new trimBase(sample);
-  trimBase *trim = new trimRecoils(simconf, sample);
+  SampleLayers *sample = new SampleLayers(sx, sy, sz);
+  //TrimBase *trim = new TrimBase(sample);
+  TrimBase *trim = new TrimRecoils(simconf, sample);
 
   // Read Materials description from stdin
   int nlayer;
@@ -85,8 +85,8 @@ int main(int argc, char *argv[])
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "n_layers=" << nlayer << std::endl;
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
   for (int i = 0; i < nlayer; i++)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
@@ -94,15 +94,15 @@ int main(int argc, char *argv[])
     std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
          << lrho << "g/ccm  n_elements=" << nelem << std::endl;
 
-    material = new materialBase(simconf, lrho); // rho
+    material = new MaterialBase(simconf, lrho); // rho
 
     for (int j = 0; j < nelem; j++)
     {
-      element = new elementBase;
-      std::cin >> lename >> element->z >> element->m >> element->t;
+      element = new ElementBase;
+      std::cin >> lename >> element->_Z >> element->_m >> element->_t;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::cout << "  Element: " << lename << "  Z=" << element->z
-           << "  m=" << element->m << "  fraction=" << element->t << std::endl;
+      std::cout << "  Element: " << lename << "  Z=" << element->_Z
+           << "  m=" << element->_m << "  fraction=" << element->_t << std::endl;
       material->element.push_back(element);
     }
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
   }
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   //Real A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
   Real A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   snprintf(fname, 199, "%s.dist", argv[1]);
   FILE *rdist = fopen(fname, "wt");
 
-  ionBase *ff1, *pka;
+  IonBase *ff1, *pka;
   int nrec = 0;
   Real sum_r2 = 0.0;
   Point opos;
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
   {
     if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    ff1 = new ionBase;
+    ff1 = new IonBase;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->id = simconf->id++;
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
     ff1->pos(1) = sample->w[1] / 2.0;
     ff1->pos(2) = sample->w[2] / 2.0;
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
     while (!recoils.empty())

@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
   //simconf->tmin = 0.2;
@@ -68,16 +68,16 @@ int main(int argc, char *argv[])
   // initialize trim engine for the sample
   snprintf(fname, 199, "%s.phon", argv[1]);
   //FILE *phon = fopen(fname, "wt");
-  //trimPhononOut *trim = new trimPhononOut(sample, phon);
-  trimBase *trim = new trimBase(simconf, sample);
-  //trimBase *trim = new trimPrimaries(sample);
+  //TrimPhononOut *trim = new TrimPhononOut(sample, phon);
+  TrimBase *trim = new TrimBase(simconf, sample);
+  //TrimBase *trim = new TrimPrimaries(sample);
 
 
   //Real r = 10.0;
   Real r = atof(argv[2]); //10.0;
   Real Cbf = atof(argv[3]);
 
-  sample->bc[0] = sampleBase::INF; // no PBC in x (just clusterless matrix)
+  sample->bc[0] = SampleBase::INF; // no PBC in x (just clusterless matrix)
   sample->initSpatialhash(int(sample->w[0] / r) - 1,
                            int(sample->w[1] / r) - 1,
                            int(sample->w[2] / r) - 1);
@@ -105,109 +105,109 @@ int main(int argc, char *argv[])
   fprintf(stderr, "sample built.\n");
   //return 0;
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
 
 /*
   // Fe
-  material = new materialBase(7.87); // rho
-  element = new elementBase;
-  element->z = 26; // Fe
-  element->m = 56.0;
-  element->t = 1.0;
-  element->Edisp = 40.0;
+  material = new MaterialBase(7.87); // rho
+  element = new ElementBase;
+  element->_Z = 26; // Fe
+  element->_m = 56.0;
+  element->_t = 1.0;
+  element->_Edisp = 40.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 */
 
   // Cu
-  material = new materialBase(simconf, 8.94); // rho
-  element = new elementBase;
-  element->z = 29; // Fe
-  element->m = 63.0;
-  element->t = 1.0;
-  element->Edisp = 40.0;
+  material = new MaterialBase(simconf, 8.94); // rho
+  element = new ElementBase;
+  element->_Z = 29; // Fe
+  element->_m = 63.0;
+  element->_t = 1.0;
+  element->_Edisp = 40.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
 /*
   // ZrO2
-  material = new materialBase(5.68); // rho
-  element = new elementBase;
-  element->z = 40; // Zr
-  element->m = 91.0;
-  element->t = 1.0;
+  material = new MaterialBase(5.68); // rho
+  element = new ElementBase;
+  element->_Z = 40; // Zr
+  element->_m = 91.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // TiO2 precipitate
-  material = new materialBase(4.23); // rho
-  element = new elementBase;
-  element->z = 22; // Ti
-  element->m = 48.0;
-  element->t = 1.0;
+  material = new MaterialBase(4.23); // rho
+  element = new ElementBase;
+  element->_Z = 22; // Ti
+  element->_m = 48.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
    // Y2Ti2O7 precipitate
-  material = new materialBase(4.6); // rho between 4.23 and 5.01
-  element = new elementBase;
-  element->z = 39; // Y
-  element->m = 89.0;
-  element->t = 2.0;
-  element->Edisp = 57.0;
+  material = new MaterialBase(4.6); // rho between 4.23 and 5.01
+  element = new ElementBase;
+  element->_Z = 39; // Y
+  element->_m = 89.0;
+  element->_t = 2.0;
+  element->_Edisp = 57.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 22; // Ti
-  element->m = 48.0;
-  element->t = 2.0;
-  element->Edisp = 57.0;
+  element = new ElementBase;
+  element->_Z = 22; // Ti
+  element->_m = 48.0;
+  element->_t = 2.0;
+  element->_Edisp = 57.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 7.0;
-  element->Edisp = 57.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 7.0;
+  element->_Edisp = 57.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 */
 /*
   // xe bubble
-  material = new materialBase(3.5); // rho
-  element = new elementBase;
-  element->z = 54; // Xe
-  element->m = 132.0;
-  element->t = 1.0;
+  material = new MaterialBase(3.5); // rho
+  element = new ElementBase;
+  element->_Z = 54; // Xe
+  element->_m = 132.0;
+  element->_t = 1.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 */
   // TiB2 precipitate
-  material = new materialBase(simconf, 4.52); // rho
-  element = new elementBase;
-  element->z = 22; // Ti
-  element->m = 48.0;
-  element->t = 1.0;
+  material = new MaterialBase(simconf, 4.52); // rho
+  element = new ElementBase;
+  element->_Z = 22; // Ti
+  element->_m = 48.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 5; // B
-  element->m = 11.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 5; // B
+  element->_m = 11.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
@@ -216,7 +216,7 @@ int main(int argc, char *argv[])
 
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   Real dif[3], dif2[3];
 
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
 
   Real pos1[3], pos2[3];
 
-  ionMDtag *ff1, *pka;
+  IonMDTag *ff1, *pka;
 
   Real A = 84.0, E = 1.8e6; int Z = 36; // 1.8MeV Kr
   //Real A = 58.0, E = 5.0e6; int Z = 28; // 5MeV Ni
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
   {
     if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    ff1 = new ionMDtag;
+    ff1 = new IonMDTag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->md = 0;
@@ -257,12 +257,12 @@ int main(int argc, char *argv[])
     ff1->pos(1) = sample->w[1] / 2.0;
     ff1->pos(2) = sample->w[2] / 2.0;
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
     while (!recoils.empty())
     {
-      pka = dynamic_cast<ionMDtag*>(recoils.front());
+      pka = dynamic_cast<IonMDTag*>(recoils.front());
       recoils.pop();
       sample->averages(pka);
 
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
             pos2[i] = pka->pos(i);
-            if (sample->bc[i] == sampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
+            if (sample->bc[i] == SampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
             pos1[i] = pka->pos(i) + dif[i];
             //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
           }

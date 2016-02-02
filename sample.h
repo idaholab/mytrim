@@ -29,18 +29,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-struct sampleBase {
-  enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades
+class SampleBase
+{
+public:
+  SampleBase(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 
-  std::vector<materialBase*> material;
-  Real w[3]; // simulation volume
-  sampleBoundary bc[3]; // boundary conditions
-
-  virtual void averages(const ionBase  * pka);
-  virtual materialBase* lookupMaterial(Point & pos) = 0;
+  virtual void averages(const IonBase  * pka);
+  virtual MaterialBase* lookupMaterial(Point & pos) = 0;
   virtual Real rangeMaterial(Point & /* pos */, Point & /* dir */) { return 100000.0; };
 
-  sampleBase(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
+  /// materials in the sample
+  std::vector<MaterialBase*> material;
+
+  /// simulation volume
+  Real w[3];
+
+  /// periodic, infinitly large, cut off cascades
+  enum sampleBoundary { PBC, INF, CUT };
+
+  /// boundary conditions
+  sampleBoundary bc[3];
 };
 
 }

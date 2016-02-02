@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-struct sampleClusters : sampleBase {
+struct sampleClusters : SampleBase {
 
   Real sd, kd[3]; // half the spatial diagonal of a hash block, hash block size
   int *sh, kn[3]; // spatial hash and its dimensions
@@ -36,7 +36,7 @@ struct sampleClusters : sampleBase {
 
   sampleClusters(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 
-  virtual materialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase* lookupMaterial(Point & pos);
 
   int lookupCluster(Point & pos, Real dr = 0.0);
   void initSpatialhash(int x, int y, int z);

@@ -12,7 +12,8 @@ using namespace MyTRIM_NS;
 //
 
 // does a single ion cascade
-void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
+void
+TrimBase::trim(IonBase *pka_, std::queue<IonBase*> &recoils)
 {
   // simconf should already be initialized
   pka = pka_;
@@ -117,7 +118,7 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     hh = dr250(); // selects element inside material to scatter from
     for (nn = 0; nn < material->element.size(); ++nn)
     {
-      hh -= material->element[nn]->t;
+      hh -= material->element[nn]->_t;
       if (hh <= 0) break;
     }
     element = material->getElement(nn);
@@ -227,9 +228,9 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     recoil->e = den;
 
     // recoil loses the lattice binding energy
-    recoil->e -= element->Elbind;
-    recoil->_m = element->m;
-    recoil->_Z = element->z;
+    recoil->e -= element->_Elbind;
+    recoil->_m = element->_m;
+    recoil->_Z = element->_Z;
 
     // create a random vector perpendicular to pka.dir
     // there is a cleverer way by using the azimuthal angle of scatter...
@@ -258,9 +259,9 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
 
     // end cascade if a CUT boundary is crossed
     for (int i = 0; i < 3; i++) {
-      if (sample->bc[i]==sampleBase::CUT &&
+      if (sample->bc[i]==SampleBase::CUT &&
            (pka->pos(i)>sample->w[i] || pka->pos(i)<0.0)) {
-        pka->state = ionBase::LOST;
+        pka->state = IonBase::LOST;
         break;
       }
     }
@@ -268,8 +269,8 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     //
     // decide on the fate of recoil and pka
     //
-    if (pka->state != ionBase::LOST) {
-      if (recoil->e > element->Edisp) {
+    if (pka->state != IonBase::LOST) {
+      if (recoil->e > element->_Edisp) {
         // non-physics based descision on recoil following
         if (followRecoil()) {
           v_norm(recoil->dir);
@@ -283,36 +284,36 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
         } else {
           // this recoil could have left its lattice site, but we chose
           // not to follow it (simulation of PKAs only)
-          recoil->id = ionBase::DELETE;
+          recoil->id = IonBase::DELETE;
         }
 
         // will the knock-on get trapped at the recoil atom site?
-        // (TODO: make sure that pka->ef < element->Edisp for all elements!)
+        // (TODO: make sure that pka->ef < element->_Edisp for all elements!)
         // did we create a vacancy by knocking out the recoil atom?
-        if (pka->e > element->Edisp) {
+        if (pka->e > element->_Edisp) {
           // yes, because the knock-on can escape, too!
           vacancyCreation();
         } else {
           // nope, the pka gets stuck at that site as...
-          if (pka->_Z == element->z)
-            pka->state = ionBase::REPLACEMENT;
+          if (pka->_Z == element->_Z)
+            pka->state = IonBase::REPLACEMENT;
           else
-            pka->state = ionBase::SUBSTITUTIONAL;
+            pka->state = IonBase::SUBSTITUTIONAL;
         }
       } else {
         // this recoil will not leave its lattice site
         dissipateRecoilEnergy();
-        recoil->id  = ionBase::DELETE;;
+        recoil->id  = IonBase::DELETE;;
 
         // if the PKA has no energy left, put it to rest here as an interstitial
         if (pka->e < pka->ef) {
-          pka->state = ionBase::INTERSTITIAL;
+          pka->state = IonBase::INTERSTITIAL;
         }
       }
     }
 
     // delete recoil if it was not queued
-    if (recoil->id  == ionBase::DELETE) delete recoil;
+    if (recoil->id  == IonBase::DELETE) delete recoil;
 
     // act on the pka state change
     checkPKAState();
@@ -321,10 +322,11 @@ void trimBase::trim(ionBase *pka_, std::queue<ionBase*> &recoils)
     if (simconf->fullTraj)
       std::cout << pka->state << ' ' << *pka << std::endl;
 
-  } while (pka->state == ionBase::MOVING);
+  } while (pka->state == IonBase::MOVING);
 }
 
-void trimBase::vacancyCreation()
+void
+TrimBase::vacancyCreation()
 {
   simconf->vacancies_created++;
 
@@ -337,15 +339,15 @@ void trimBase::vacancyCreation()
     Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
     Real kd = 0.1337 * std::pow(material->az, 2.0/3.0) / std::pow(material->am, 0.5); //Z,M
     Real Ev = recoil->e / (1.0 + kd * g);
-    simconf->KP_vacancies += 0.8 * Ev / (2.0 * element->Edisp);
-    // should be something like material->Edisp (average?)
+    simconf->KP_vacancies += 0.8 * Ev / (2.0 * element->_Edisp);
+    // should be something like material->_Edisp (average?)
   }
   */
 }
 
 
 /*
-materialBase* sampleType::lookupLayer(const Real* pos)
+MaterialBase* sampleType::lookupLayer(const Real* pos)
 {
   Real dif[3];
 

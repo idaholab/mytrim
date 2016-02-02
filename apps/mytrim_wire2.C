@@ -63,12 +63,12 @@ int main(int argc, char *argv[])
   const int nstep = 5;
   Real ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
   int ion_count[nstep];
-  ionBase* ion_prototype[nstep];
-  ion_prototype[0] = new ionBase( 5, 11.0 , 320.0e3); // Z,m,E
-  ion_prototype[1] = new ionBase( 5, 11.0 , 220.0e3); // Z,m,E
-  ion_prototype[2] = new ionBase( 5, 11.0 , 160.0e3); // Z,m,E
-  ion_prototype[3] = new ionBase( 5, 11.0 , 120.0e3); // Z,m,E
-  ion_prototype[4] = new ionBase(15, 31.0 , 250.0e3); // Z,m,E
+  IonBase* ion_prototype[nstep];
+  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z,m,E
+  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z,m,E
+  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z,m,E
+  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z,m,E
+  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z,m,E
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
@@ -78,17 +78,17 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
   //simconf->fullTraj = true;
 
   // initialize sample structure
-  sampleWire *sample;
+  SampleWire *sample;
   if (burried)
-    sample = new sampleBurriedWire(diameter, diameter, length);
+    sample = new SampleBurriedWire(diameter, diameter, length);
   else
   {
-    sample = new sampleWire(diameter, diameter, length);
-    sample->bc[2] = sampleWire::CUT;
+    sample = new SampleWire(diameter, diameter, length);
+    sample->bc[2] = SampleWire::CUT;
   }
 
   // calculate actual ion numbers
@@ -109,43 +109,43 @@ int main(int argc, char *argv[])
   // initialize trim engine for the sample
   /*  const int z1 = 31;
       const int z2 = 33;
-      trimVacMap *trim = new trimVacMap(sample, z1, z2); // GaAs
+      TrimVacMap *trim = new TrimVacMap(sample, z1, z2); // GaAs
   */
-  //trimBase *trim = new trimBase(sample);
-  trimBase *trim = new trimPrimaries(simconf, sample);
+  //TrimBase *trim = new TrimBase(sample);
+  TrimBase *trim = new TrimPrimaries(simconf, sample);
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
 
   // Si
-  material = new materialBase(simconf, 2.329); // rho
-  element = new elementBase;
-  element->z = 14; // Si
-  element->m = 28.0;
-  element->t = 1.0;
+  material = new MaterialBase(simconf, 2.329); // rho
+  element = new ElementBase;
+  element->_Z = 14; // Si
+  element->_m = 28.0;
+  element->_t = 1.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // SiO2 (material[1] for the cover layer in SampleBurriedWire)
-  material = new materialBase(simconf, 2.634); // rho
-  element = new elementBase;
-  element->z = 14; // Si
-  element->m = 28.0;
-  element->t = 1.0;
+  material = new MaterialBase(simconf, 2.634); // rho
+  element = new ElementBase;
+  element->_Z = 14; // Si
+  element->_m = 28.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
-  ionBase *pka;
+  IonBase *pka;
 
   // map concentration along length
   int *lbins[2];
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
         std::cerr << "pka #" << n+1 << std::endl;
 
       // generate new PKA from prototype ion
-      pka = new ionBase(ion_prototype[s]);
+      pka = new IonBase(ion_prototype[s]);
       pka->gen = 0; // generation (0 = PKA)
       pka->tag = -1;
 
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
       //cout << "START " << pka->pos(0) << ' ' << pka->pos(1) << ' ' << pka->pos(2) << ' ' << std::endl;
       //continue;
 
-      pka->set_ef();
+      pka->setEf();
       recoils.push(pka);
 
       while (!recoils.empty())

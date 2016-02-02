@@ -70,43 +70,43 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
 
   // initialize sample structure
-  sampleWire *sample = new sampleWire(dwire, dwire, 100.0);
+  SampleWire *sample = new SampleWire(dwire, dwire, 100.0);
 
   // initialize trim engine for the sample
   const int z1 = 29; //Cu
   const int z2 = 22; //Ti
   const int z3 = 47; //Ag
-  trimVacMap *trim = new trimVacMap(simconf, sample, z1, z2, z3); // GaCW
+  TrimVacMap *trim = new TrimVacMap(simconf, sample, z1, z2, z3); // GaCW
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
 
-  material = new materialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490)/(56.0+38.0+8.0)); // rho
-  element = new elementBase;
-  element->z = z1; // Cu
-  element->m = 63.546;
-  element->t = 56.0;
+  material = new MaterialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490)/(56.0+38.0+8.0)); // rho
+  element = new ElementBase;
+  element->_Z = z1; // Cu
+  element->_m = 63.546;
+  element->_t = 56.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = z2; // Ti
-  element->m = 47.867;
-  element->t = 38.0;
+  element = new ElementBase;
+  element->_Z = z2; // Ti
+  element->_m = 47.867;
+  element->_t = 38.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = z3; // Ag
-  element->m = 107.87;
-  element->t = 8.0;
+  element = new ElementBase;
+  element->_Z = z3; // Ag
+  element->_m = 107.87;
+  element->_t = 8.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
-  ionBase *pka;
+  IonBase *pka;
 
   const int mx = 20, my = 20;
   int imap[mx][my][3];
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
   {
     if (n % 1000 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
-    pka = new ionBase;
+    pka = new IonBase;
     pka->gen = 0; // generation (0 = PKA)
     pka->tag = -1;
     pka->_Z = zpka; // S
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     // wire surface
     pka->pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;
 
-    pka->set_ef();
+    pka->setEf();
     recoils.push(pka);
 
     while (!recoils.empty())

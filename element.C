@@ -2,6 +2,6 @@
 
 using namespace MyTRIM_NS;
 
-elementBase::elementBase() : Edisp(25.0), Elbind(3.0)
+ElementBase::ElementBase() : _Edisp(25.0), _Elbind(3.0)
 {
 }

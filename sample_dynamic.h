@@ -28,18 +28,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-struct sampleDynamic : sampleLayers {
-  const ionBase *pka;
+class SampleDynamic : public SampleLayers
+{
+public:
+  SampleDynamic(SimconfType * _simconf, Real x, Real y, Real z);
 
-  virtual void averages(const ionBase *_pka);
+  virtual void averages(const IonBase *_pka);
+  virtual MaterialBase* lookupMaterial(Point & pos);
 
-  sampleDynamic(simconfType * _simconf, Real x, Real y, Real z);
-
-  virtual materialBase* lookupMaterial(Point & pos);
   virtual void addAtomsToLayer(int layer, int n, int Z);
 
 protected:
-  simconfType * simconf;
+  const IonBase *pka;
+
+  SimconfType * simconf;
 };
 
 }

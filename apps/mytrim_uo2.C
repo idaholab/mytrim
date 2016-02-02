@@ -82,30 +82,30 @@ int main(int argc, char *argv[])
   r250_init(seed<0 ? -seed : seed);
 
   // initialize global parameter structure and read data tables from file
-  simconfType * simconf = new simconfType;
+  SimconfType * simconf = new SimconfType;
 
   // initialize sample structure
   sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
 
   // initialize trim engine for the sample
-  trimBase *trim;
+  TrimBase *trim;
   std::ofstream auxout;
   std::stringstream auxoutname;
   switch (mode) {
     case PLAIN:
-      trim = new trimBase(simconf, sample);
+      trim = new TrimBase(simconf, sample);
       break;
 
     case PHONONS:
       auxoutname << argv[1] << ".phonons";
       auxout.open(auxoutname.str().c_str());
-      trim = new trimPhononOut(simconf, sample, auxout);
+      trim = new TrimPhononOut(simconf, sample, auxout);
       break;
 
     case DEFECTS:
       auxoutname << argv[1] << ".defects";
       auxout.open(auxoutname.str().c_str());
-      trim = new trimDefectLog(simconf, sample, auxout);
+      trim = new TrimDefectLog(simconf, sample, auxout);
       break;
 
     default:
@@ -143,20 +143,20 @@ int main(int argc, char *argv[])
 
   std::cerr << "sample built.\n";
 
-  materialBase *material;
-  elementBase *element;
+  MaterialBase *material;
+  ElementBase *element;
 
   // UO2 TODO: Eidplacement and binding energies!
-  material = new materialBase(simconf, 10.0); // rho
-  element = new elementBase;
-  element->z = 92; // U
-  element->m = 235.0;
-  element->t = 1.0;
+  material = new MaterialBase(simconf, 10.0); // rho
+  element = new ElementBase;
+  element->_Z = 92; // U
+  element->_m = 235.0;
+  element->_t = 1.0;
   material->element.push_back(element);
-  element = new elementBase;
-  element->z = 8; // O
-  element->m = 16.0;
-  element->t = 2.0;
+  element = new ElementBase;
+  element->_Z = 8; // O
+  element->_m = 16.0;
+  element->_t = 2.0;
   material->element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
@@ -164,11 +164,11 @@ int main(int argc, char *argv[])
 
   // xe bubble
   int gas_z1 = 54;
-  material = new materialBase(simconf, 3.5); // rho
-  element = new elementBase;
-  element->z = gas_z1; // Xe
-  element->m = 132.0;
-  element->t = 1.0;
+  material = new MaterialBase(simconf, 3.5); // rho
+  element = new ElementBase;
+  element->_Z = gas_z1; // Xe
+  element->_m = 132.0;
+  element->_t = 1.0;
   material->element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
   std::cout << "N_gas = " << N_gas << " (arho=" << material->arho << ")\n";
 
   // create a FIFO for recoils
-  std::queue<ionBase*> recoils;
+  std::queue<IonBase*> recoils;
 
   Real norm;
   Real dif[3];
@@ -199,14 +199,14 @@ int main(int argc, char *argv[])
 
   Real pos1[3];
 
-  ionMDtag *ff1, *ff2, *pka;
+  IonMDTag *ff1, *ff2, *pka;
 
   // Nev fission events
   for (int n = 0; n < Nev; n++)
   {
     if (n % 10 == 0) std::cerr << "event #" << n+1 << "\n";
 
-    ff1 = new ionMDtag;
+    ff1 = new IonMDTag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
     ff1->md = 0;
@@ -238,10 +238,10 @@ int main(int argc, char *argv[])
     // random origin
     for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
 
-    ff1->set_ef();
+    ff1->setEf();
     recoils.push(ff1);
 
-    ff2 = new ionMDtag(*ff1); // copy constructor
+    ff2 = new IonMDTag(*ff1); // copy constructor
 
     // reverse direction
     for (int i = 0; i < 3; i++) ff2->dir(i) *= -1.0;
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
     ff2->e  = E2 * 1.0e6;
     ff2->md = 0;
 
-    ff2->set_ef();
+    ff2->setEf();
     recoils.push(ff2);
 
     std::cout << "A1=" << A1 << " Z1=" << Z1 << " (" << E1 << " MeV)\t"
@@ -262,7 +262,7 @@ int main(int argc, char *argv[])
 
     while (!recoils.empty())
     {
-      pka = dynamic_cast<ionMDtag*>(recoils.front());
+      pka = dynamic_cast<IonMDTag*>(recoils.front());
       recoils.pop();
       sample->averages(pka);
 
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
           {
             dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
 
-            if (sample->bc[i] == sampleBase::PBC)
+            if (sample->bc[i] == SampleBase::PBC)
               dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
 
             pos1[i] = pka->pos(i) + dif[i];
