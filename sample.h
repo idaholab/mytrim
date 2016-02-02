@@ -32,12 +32,12 @@ namespace MyTRIM_NS {
 struct sampleBase {
   enum sampleBoundary { PBC, INF, CUT }; // periodic, infinitly large, cut off cascades
 
-  std::vector<materialBase*> material;
+  std::vector<MaterialBase*> material;
   Real w[3]; // simulation volume
   sampleBoundary bc[3]; // boundary conditions
 
   virtual void averages(const IonBase  * pka);
-  virtual materialBase* lookupMaterial(Point & pos) = 0;
+  virtual MaterialBase* lookupMaterial(Point & pos) = 0;
   virtual Real rangeMaterial(Point & /* pos */, Point & /* dir */) { return 100000.0; };
 
   sampleBase(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);

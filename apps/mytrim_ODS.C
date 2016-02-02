@@ -105,12 +105,12 @@ int main(int argc, char *argv[])
   fprintf(stderr, "sample built.\n");
   //return 0;
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
 /*
   // Fe
-  material = new materialBase(7.87); // rho
+  material = new MaterialBase(7.87); // rho
   element = new ElementBase;
   element->_Z = 26; // Fe
   element->_m = 56.0;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 */
 
   // Cu
-  material = new materialBase(simconf, 8.94); // rho
+  material = new MaterialBase(simconf, 8.94); // rho
   element = new ElementBase;
   element->_Z = 29; // Fe
   element->_m = 63.0;
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 
 /*
   // ZrO2
-  material = new materialBase(5.68); // rho
+  material = new MaterialBase(5.68); // rho
   element = new ElementBase;
   element->_Z = 40; // Zr
   element->_m = 91.0;
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // TiO2 precipitate
-  material = new materialBase(4.23); // rho
+  material = new MaterialBase(4.23); // rho
   element = new ElementBase;
   element->_Z = 22; // Ti
   element->_m = 48.0;
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
    // Y2Ti2O7 precipitate
-  material = new materialBase(4.6); // rho between 4.23 and 5.01
+  material = new MaterialBase(4.6); // rho between 4.23 and 5.01
   element = new ElementBase;
   element->_Z = 39; // Y
   element->_m = 89.0;
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 */
 /*
   // xe bubble
-  material = new materialBase(3.5); // rho
+  material = new MaterialBase(3.5); // rho
   element = new ElementBase;
   element->_Z = 54; // Xe
   element->_m = 132.0;
@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 */
   // TiB2 precipitate
-  material = new materialBase(simconf, 4.52); // rho
+  material = new MaterialBase(simconf, 4.52); // rho
   element = new ElementBase;
   element->_Z = 22; // Ti
   element->_m = 48.0;

@@ -66,11 +66,11 @@ int main(int argc, char *argv[])
 
   trimBase *trim = new trimBase(simconf, sample);
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
   // UO2
-  material = new materialBase(simconf, 9.4); // rho
+  material = new MaterialBase(simconf, 9.4); // rho
   element = new ElementBase;
   element->_Z = 92; // U
   element->_m = 235.0;

@@ -114,11 +114,11 @@ int main(int argc, char *argv[])
   //trimBase *trim = new trimBase(sample);
   trimBase *trim = new trimPrimaries(simconf, sample);
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
   // Si
-  material = new materialBase(simconf, 2.329); // rho
+  material = new MaterialBase(simconf, 2.329); // rho
   element = new ElementBase;
   element->_Z = 14; // Si
   element->_m = 28.0;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // SiO2 (material[1] for the cover layer in SampleBurriedWire)
-  material = new materialBase(simconf, 2.634); // rho
+  material = new MaterialBase(simconf, 2.634); // rho
   element = new ElementBase;
   element->_Z = 14; // Si
   element->_m = 28.0;

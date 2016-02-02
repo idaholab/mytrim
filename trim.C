@@ -345,7 +345,7 @@ void trimBase::vacancyCreation()
 
 
 /*
-materialBase* sampleType::lookupLayer(const Real* pos)
+MaterialBase* sampleType::lookupLayer(const Real* pos)
 {
   Real dif[3];
 

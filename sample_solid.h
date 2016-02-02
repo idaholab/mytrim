@@ -27,7 +27,7 @@ namespace MyTRIM_NS {
 
 struct sampleSolid : sampleBase {
   sampleSolid(Real x, Real y, Real z): sampleBase(x, y, z) {};
-  virtual materialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase* lookupMaterial(Point & pos);
 };
 
 }

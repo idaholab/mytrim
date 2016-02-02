@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "n_layers=" << nlayer << std::endl;
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
   for (int i = 0; i < nlayer; i++)
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
          << lrho << "g/ccm  n_elements=" << nelem << std::endl;
 
-    material = new materialBase(simconf, lrho); // rho
+    material = new MaterialBase(simconf, lrho); // rho
 
     for (int j = 0; j < nelem; j++)
     {

@@ -8,7 +8,7 @@
 
 using namespace MyTRIM_NS;
 
-materialBase::materialBase(simconfType * simconf_, Real rho_) :
+MaterialBase::MaterialBase(simconfType * simconf_, Real rho_) :
     rho(rho_),
     tag(-1),
     dirty(true),
@@ -16,7 +16,8 @@ materialBase::materialBase(simconfType * simconf_, Real rho_) :
 {
 }
 
-void materialBase::prepare()
+void
+MaterialBase::prepare()
 {
   Real tt = 0.0;
 
@@ -45,7 +46,8 @@ void materialBase::prepare()
 }
 
 // make sure layers are prepare'd first!
-void materialBase::average(const IonBase * pka)
+void
+MaterialBase::average(const IonBase * pka)
 {
   mu = pka->_m / am;
 
@@ -76,7 +78,8 @@ void materialBase::average(const IonBase * pka)
 }
 
 // make sure layers are prepare'd and averaged first!
-Real materialBase::getrstop(const IonBase * pka)
+Real
+MaterialBase::getrstop(const IonBase * pka)
 {
   Real se = 0.0;
   for (unsigned int i = 0; i < element.size(); ++i)
@@ -85,7 +88,8 @@ Real materialBase::getrstop(const IonBase * pka)
   return se;
 }
 
-Real materialBase::rpstop(int z2p, Real e)
+Real
+MaterialBase::rpstop(int z2p, Real e)
 {
   Real pe, pe0, sl, sh, sp, velpwr;
   int z2 = z2p-1;
@@ -111,7 +115,8 @@ Real materialBase::rpstop(int z2p, Real e)
   return sp;
 }
 
-Real materialBase::rstop(const IonBase * ion, int z2)
+Real
+MaterialBase::rstop(const IonBase * ion, int z2)
 {
   Real e, vrmin, yrmin, v, vr, yr, vmin, m1;
   Real a, b, q, q1, l, l0, l1;

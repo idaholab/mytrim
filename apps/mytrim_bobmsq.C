@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
   Real s_sam = sample->w[1] * sample->w[2];
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
   const char *choice[4] = {"Fe", "Si", "Cu", "Au"};
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   switch (i) {
     case 0:
       // Fe
-      material = new materialBase(simconf, 7.87); // rho
+      material = new MaterialBase(simconf, 7.87); // rho
       element = new ElementBase;
       Z = 26.0;
       A = 56.0;
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
       break;
     case 1:
       // Si
-      material = new materialBase(simconf, 2.33); // rho
+      material = new MaterialBase(simconf, 2.33); // rho
       element = new ElementBase;
       Z = 14.0;
       A = 28.0;
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
       break;
     case 2:
       // Cu
-      material = new materialBase(simconf, 8.89); // rho
+      material = new MaterialBase(simconf, 8.89); // rho
       element = new ElementBase;
       Z = 29.0;
       A = 63.5;
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
       break;
     case 3:
       // Au
-      material = new materialBase(simconf, 19.32); // rho
+      material = new MaterialBase(simconf, 19.32); // rho
       element = new ElementBase;
       Z = 79.0;
       A = 197.0;

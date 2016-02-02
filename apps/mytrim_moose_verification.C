@@ -63,10 +63,10 @@ int main(int, char **)
   sample->bc[1] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
   sample->bc[2] = sampleBase::CUT; // no PBC in x (just clusterless matrix)
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
-  material = new materialBase(simconf, 1.0); // rho
+  material = new MaterialBase(simconf, 1.0); // rho
   element = new ElementBase;
   element->_Z = 20;
   element->_m = 40.0;

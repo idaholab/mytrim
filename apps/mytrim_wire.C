@@ -81,10 +81,10 @@ int main(int argc, char *argv[])
   const int z3 = 47; //Ag
   trimVacMap *trim = new trimVacMap(simconf, sample, z1, z2, z3); // GaCW
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
-  material = new materialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490)/(56.0+38.0+8.0)); // rho
+  material = new MaterialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490)/(56.0+38.0+8.0)); // rho
   element = new ElementBase;
   element->_Z = z1; // Cu
   element->_m = 63.546;

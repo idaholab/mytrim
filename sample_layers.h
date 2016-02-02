@@ -31,7 +31,7 @@ struct sampleLayers : sampleBase {
 
   sampleLayers(Real x, Real y, Real z): sampleBase(x, y, z) {};
   virtual int lookupLayer(Point & pos);
-  virtual materialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase* lookupMaterial(Point & pos);
   virtual Real rangeMaterial(Point & pos, Point & dir);
 };
 

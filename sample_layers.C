@@ -20,7 +20,7 @@ int sampleLayers::lookupLayer(Point & pos)
   return i;
 }
 
-materialBase*  sampleLayers::lookupMaterial(Point & pos)
+MaterialBase*  sampleLayers::lookupMaterial(Point & pos)
 {
   return material[lookupLayer(pos)];
 }

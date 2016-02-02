@@ -28,7 +28,7 @@ namespace MyTRIM_NS {
 struct sampleBurriedWire : sampleWire {
   sampleBurriedWire(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 
-  virtual materialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase* lookupMaterial(Point & pos);
 };
 
 }

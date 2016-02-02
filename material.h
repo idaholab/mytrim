@@ -30,7 +30,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 namespace MyTRIM_NS {
 
-struct materialBase {
+class MaterialBase {
+public:
+  MaterialBase(simconfType * simconf_, Real rho_);
+
+  // make sure stoiciometry is normalized, compute averages independent of pka
+  void prepare();
+
+  // compute pka dependent averages
+  void average(const IonBase *pka);
+  Real getrstop(const IonBase *pka);
+
+  virtual ElementBase * getElement(unsigned int nn) { return element[nn]; }
+
   Real rho;
 
   // set in prepare
@@ -48,17 +60,6 @@ struct materialBase {
   bool dirty;
 
   std::vector<ElementBase*> element;
-
-  materialBase(simconfType * simconf_, Real rho_);
-
-  // make sure stoiciometry is normalized, compute averages independent of pka
-  void prepare();
-
-  // compute pka dependent averages
-  void average(const IonBase *pka);
-  Real getrstop(const IonBase *pka);
-
-  virtual ElementBase * getElement(unsigned int nn) { return element[nn]; }
 
 protected:
   Real rpstop(int z2, Real e);

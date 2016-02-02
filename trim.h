@@ -41,7 +41,7 @@ protected:
   simconfType * simconf;
   sampleBase *sample;
   IonBase *pka, *recoil;
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
   std::queue<IonBase*> *recoil_queue_ptr;
   bool terminate;

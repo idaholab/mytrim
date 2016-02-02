@@ -77,12 +77,12 @@ int main(int argc, char *argv[])
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
   Real s_sam = sample->w[1] * sample->w[2];
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
 /*
   // Fe
-  material = new materialBase(simconf, 7.87); // rho
+  material = new MaterialBase(simconf, 7.87); // rho
   element = new ElementBase;
   element->_Z = 26; // Fe
   element->_m = 56.0;
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // ZrO2
-  material = new materialBase(simconf, 5.68); // rho
+  material = new MaterialBase(simconf, 5.68); // rho
   element = new ElementBase;
   element->_Z = 40; // Zr
   element->_m = 91.0;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 */
 
   // ZrO2 Xe 0.01
-  material = new materialBase(simconf, 5.68); // rho
+  material = new MaterialBase(simconf, 5.68); // rho
   element = new ElementBase;
   element->_Z = 40; // Zr
   element->_m = 90.0;//91?
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 
 /*
   // TiO2 precipitate
-  material = new materialBase(simconf, 4.23); // rho
+  material = new MaterialBase(simconf, 4.23); // rho
   element = new ElementBase;
   element->_Z = 22; // Ti
   element->_m = 48.0;
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
    // Y2Ti2O7 precipitate
-  material = new materialBase(simconf, 4.6); // rho between 4.23 and 5.01
+  material = new MaterialBase(simconf, 4.6); // rho between 4.23 and 5.01
   element = new ElementBase;
   element->_Z = 39; // Y
   element->_m = 89.0;
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // xe bubble
-  material = new materialBase(simconf, 3.5); // rho
+  material = new MaterialBase(simconf, 3.5); // rho
   element = new ElementBase;
   element->_Z = 54; // Xe
   element->_m = 132.0;

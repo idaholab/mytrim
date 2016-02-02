@@ -36,7 +36,7 @@ struct sampleClusters : sampleBase {
 
   sampleClusters(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 
-  virtual materialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase* lookupMaterial(Point & pos);
 
   int lookupCluster(Point & pos, Real dr = 0.0);
   void initSpatialhash(int x, int y, int z);

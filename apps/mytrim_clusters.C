@@ -98,11 +98,11 @@ int main(int argc, char *argv[])
 
   fprintf(stderr, "sample built.\n");
 
-  materialBase *material;
+  MaterialBase *material;
   ElementBase *element;
 
   // UO2
-  material = new materialBase(simconf, 10.0); // rho
+  material = new MaterialBase(simconf, 10.0); // rho
   element = new ElementBase;
   element->_Z = 92; // U
   element->_m = 235.0;
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
   sample->material.push_back(material); // add material to sample
 
   // xe bubble
-  material = new materialBase(simconf, 3.5); // rho
+  material = new MaterialBase(simconf, 3.5); // rho
   element = new ElementBase;
   element->_Z = 54; // Xe
   element->_m = 132.0;
