@@ -41,12 +41,7 @@ using namespace MyTRIM_NS;
 
 int main(int argc, char *argv[])
 {
-  // seed randomnumber generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
-  int seed;
-  fread(&seed, sizeof(int), 1, urand);
-  fclose(urand);
-  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
+  r250_init(32423); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;

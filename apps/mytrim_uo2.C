@@ -81,6 +81,8 @@ int main(int argc, char *argv[])
   }
   r250_init(seed<0 ? -seed : seed);
 
+  std::cout << "DEBUG " << sizeof(int) << ' ' << sizeof(unsigned int) << ' ' << sizeof(unsigned) << ' ' << seed << ' ' << dr250() << ',' << dr250() << '\n';
+
   // initialize global parameter structure and read data tables from file
   simconfType * simconf = new simconfType;
 
@@ -274,7 +276,8 @@ int main(int argc, char *argv[])
       {
 	      // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
-	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
+	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0)
+          pka->md = 1;
 
         if (pka->gen > 0)
         {

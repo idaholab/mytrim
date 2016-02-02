@@ -76,6 +76,8 @@ struct simconfType {
 private:
   void read_scoef();
   void read_snuc();
+
+  void fileReadError(const char *);
 };
 
 }

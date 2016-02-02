@@ -49,22 +49,15 @@ simconfType::read_snuc()
 {
   char * data_dir_env = getenv("MYTRIM_DATADIR");
   const unsigned int nbuf = 2000;
-  char buffer[nbuf];
+  char buffer[nbuf] = {0};
   if (data_dir_env  == 0)
     data_dir_env = strdup(MYTRIM_DATA_DIR);
   FILE *sf;
 
   snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SNUC03.dat");
   sf = fopen(buffer, "rt");
-  if (sf == 0)
-  {
-#ifdef MYTRIM_ENABLED
-    mooseError("Unable to open " << data_dir_env << "/SNUC03.dat");
-#else
-    std::cerr << "Unable to open " << data_dir_env << "/SNUC03.dat" << std::endl;
-    exit(1);
-#endif
-  }
+  if (sf == NULL) fileReadError(buffer);
+
   for (int i = 0; i < 92; i++)
     for (int j = i; j < 92; j++)
     {
@@ -81,13 +74,15 @@ simconfType::read_scoef()
 {
   char * data_dir_env = getenv("MYTRIM_DATADIR");
   const unsigned int nbuf = 2000;
-  char buffer[nbuf];
+  char buffer[nbuf] = {0};
   if (data_dir_env  == 0)
     data_dir_env = strdup(MYTRIM_DATA_DIR);
   FILE *sf;
 
   snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SCOEF.95A");
   sf = fopen(buffer, "rt");
+  if (sf == NULL) fileReadError(buffer);
+
   fgets(buffer, nbuf, sf); // header
   fgets(buffer, nbuf, sf); // header
   for (int i = 0; i < 92; i++)
@@ -102,6 +97,8 @@ simconfType::read_scoef()
 
   snprintf(buffer, nbuf, "%s/%s", data_dir_env, "SLFCTR.dat");
   sf = fopen(buffer, "rt");
+  if (sf == NULL) fileReadError(buffer);
+
   fgets(buffer, nbuf, sf); // header
   for (int i = 0; i < 92; i++)
     fscanf(sf, "%*d %lf\n", &scoef[i].lfctr);
@@ -109,7 +106,20 @@ simconfType::read_scoef()
 
   snprintf(buffer, nbuf, "%s/%s", data_dir_env, "ELNAME.dat");
   sf = fopen(buffer, "rt");
+  if (sf == NULL) fileReadError(buffer);
+
   for (int i = 0; i < 92; i++)
     fscanf(sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name);
   fclose(sf);
+}
+
+void
+simconfType::fileReadError(const char * path)
+{
+#ifdef MYTRIM_ENABLED
+    mooseError("Unable to open " << path);
+#else
+    std::cerr << "Unable to open " << path << std::endl;
+    exit(1);
+#endif
 }

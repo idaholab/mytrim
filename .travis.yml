@@ -10,6 +10,5 @@ before_script:
 
 script:
   - make
-  - make install
   - cd ../tests
   - ./run_tests.sh
