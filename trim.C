@@ -149,7 +149,6 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       rr = -2.7 * std::log(eps * b);
       if (rr >= b)
       {
-        r = rr;
         rr = -2.7 * std::log(eps * rr);
         if (rr >= b) r = rr;
       }
