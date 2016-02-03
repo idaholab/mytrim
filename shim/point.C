@@ -80,6 +80,15 @@ Point::operator/ (Real rhs)
 }
 
 
+Point
+Point::operator- ()
+{
+  return Point(-data[0],
+               -data[1],
+               -data[2]);
+}
+
+
 Point &
 Point::operator+=(const Point & rhs)
 {

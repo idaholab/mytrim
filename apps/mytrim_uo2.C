@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
     ff2 = new IonMDTag(*ff1); // copy constructor
 
     // reverse direction
-    for (int i = 0; i < 3; i++) ff2->_dir(i) *= -1.0;
+    ff2->_dir = -ff2->_dir;
 
     ff2->_Z = Z2;
     ff2->_m = A2;

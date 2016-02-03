@@ -46,6 +46,9 @@ public:
   Point operator* (Real rhs);
   Point operator/ (Real rhs);
 
+  // unary minus
+  Point operator- ();
+
   /// compound operators
   Point & operator+= (const Point & rhs);
   Point & operator-= (const Point & rhs);
