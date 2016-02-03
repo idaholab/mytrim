@@ -156,9 +156,13 @@ MaterialBase::rstop(const IonBase * ion, int z2)
         std::cerr << "alpha stopping not yet implemented!\n";
         exit(1);
     #endif
+    // Helium electronic stopping powers [RST0820]
+    // Real heo = 10.0;
+    // Real he = std::max(heo, )
   }
   else
   {
+    // Heavy ion electronic stopping powers [RST0990]
     yrmin = 0.13;
     vrmin = 1.0;
     v = std::sqrt(e / 25.0) / vfermi;
