@@ -228,15 +228,15 @@ int main(int argc, char *argv[])
     do
     {
       for (int i = 0; i < 3; ++i)
-        ff1->_dir(i) = dr250() - 0.5;
+        ff1->_dir(i) = 2.0 * dr250() - 1.0;
       norm = ff1->_dir.size_sq();
     }
-    while (norm <= 0.0001 /*|| norm > 0.25 */);
-    //while (norm <= 0.0001 || norm > 0.25); // This will fail the test
+    while (norm <= 0.0001 || norm > 1.0);
     ff1->_dir /= std::sqrt(norm);
 
     // random origin
-    for (int i = 0; i < 3; ++i) ff1->_pos(i) = dr250() * sample->w[i];
+    for (int i = 0; i < 3; ++i)
+      ff1->_pos(i) = dr250() * sample->w[i];
 
     ff1->setEf();
     recoils.push(ff1);
