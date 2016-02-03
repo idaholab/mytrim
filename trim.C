@@ -149,7 +149,6 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       rr = -2.7 * std::log(eps * b);
       if (rr >= b)
       {
-        r = rr;
         rr = -2.7 * std::log(eps * rr);
         if (rr >= b) r = rr;
       }
@@ -163,6 +162,24 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
         ex4 = 0.028171 * std::exp(-0.20162 * r);
         v = (ex1 + ex2 + ex3 + ex4) / r;
         v1 = -(v + 3.1998 *ex1 + 0.94229 * ex2 + 0.4029 * ex3 + 0.20162 * ex4) / r;
+
+        /*
+        // Moliere potential
+        ex1 = std::exp(-0.3 * r);
+        ex2 = std::pow(ex1, 4.0);
+        ex3 = std::pow(ex2, 5.0);
+        v = (0.35 * ex1 + 0.55 * ex2 + 0.1 * ex3) / r;
+        v1 = -(v + 0.105 * ex1 + 0.66 * ex2 + 0.6 * ex3) / r;
+        */
+
+        /*
+        // C-Kr potential
+        ex1 = std::exp(-0.279 * r);
+        ex2 = std::exp(-0.637 * r);
+        ex3 = std::exp(-1.1919 * r);
+        v = (0.191 * ex1 + 0.474 * ex2 + 0.335 * ex3) / r;
+        v1 = -(v + 0.531865 * ex1 + 0.30181 * ex2 + 0.6437 * ex3) / r;
+        */
 
         fr = b*b / r + v * r / eps -r;
         fr1 = - b*b / (r*r) + (v + v1 * r) / eps - 1.0;
@@ -178,6 +195,20 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       aa = 2.0 * eps * (1.0 + (0.99229 / sqe)) * std::pow(b, cc); // 2-87 A
       ff = (std::sqrt(aa*aa + 1.0) - aa) * ((9.3066 + eps) / (14.813 + eps));
 
+      /*
+      // Moliere potential
+      cc = (0.009611 + sqe) / (0.005175 + sqe);
+      aa = 2.0 * eps * (1.0 + (0.6743 / sqe)) * std::pow(b, cc);
+      ff = (std::sqrt(aa*aa + 1.0) - aa) * ((6.314 + eps) / (10.0 + eps));
+      */
+
+      /*
+      // C-Kr potential
+      cc = (0.235809 + sqe) / (0.126000 + sqe);
+      aa = 2.0 * eps * (1.0 + (1.0144 / sqe)) * std::pow(b, cc);
+      ff = (std::sqrt(aa*aa + 1.0) - aa) * ((6935.0 + eps) / (83550.0 + eps));
+      */
+
       delta = (r - b) * aa * ff / (ff + 1.0);
       co = (b + delta + roc) / (r + roc);
       c2 = co*co;
@@ -186,7 +217,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       st = std::sqrt(1.0 - ct*ct);
     } // end non-rutherford scattering
 
-    // energy transferred to recoil atom
+    // energy transferred to recoil atom [TRI03350]
     den = _element->ec * s2 * _pka->_E;
 
     if (dee > _pka->_E) {
@@ -241,15 +272,13 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       v_cross(_pka->_dir, rdir, perp);
       norm = perp.size();
     } while (norm == 0.0);
-
     perp /= norm;
 
-    psi = std::atan(st / (ct + _element->my));
-    //psi = std::atan2(st, ct + _element->my); // This will fail the test
-
-    _pka->_dir *= std::cos(psi);
+    // PKA scattering angle
+    psi = std::atan2(st, ct + _element->my);
 
     // calculate new direction, subtract from old dir (stored in recoil)
+    _pka->_dir *= std::cos(psi);
     _pka->_dir += perp * std::sin(psi);
     _recoil->_dir -= _pka->_dir * p2;
 
