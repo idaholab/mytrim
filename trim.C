@@ -241,15 +241,13 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       v_cross(_pka->_dir, rdir, perp);
       norm = perp.size();
     } while (norm == 0.0);
-
     perp /= norm;
 
-    psi = std::atan(st / (ct + _element->my));
-    //psi = std::atan2(st, ct + _element->my); // This will fail the test
-
-    _pka->_dir *= std::cos(psi);
+    // PKA scattering angle
+    psi = std::atan2(st, ct + _element->my);
 
     // calculate new direction, subtract from old dir (stored in recoil)
+    _pka->_dir *= std::cos(psi);
     _pka->_dir += perp * std::sin(psi);
     _recoil->_dir -= _pka->_dir * p2;
 
