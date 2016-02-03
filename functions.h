@@ -28,7 +28,7 @@ inline void v_scale(Real * a1, Real b) // in=place scale
 inline Real v_dot(const Real * a1, const Real * a2)
 {
   Real b = 0.0;
-  for (int i = 0; i < 3; i++) b += a1[i] * a2[i];
+  for (int i = 0; i < 3; ++i) b += a1[i] * a2[i];
     return b;
 }
 

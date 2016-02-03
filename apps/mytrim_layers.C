@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
   MaterialBase *material;
   ElementBase *element;
-  for (int i = 0; i < nlayer; i++)
+  for (int i = 0; i < nlayer; ++i)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       std::cout << "  Element: " << lename << "  Z=" << element->_Z
            << "  m=" << element->_m << "  fraction=" << element->_t << std::endl;
-      material->element.push_back(element);
+      material->_element.push_back(element);
     }
 
     material->prepare(); // all elements added
@@ -140,15 +140,15 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z;
     ff1->_m = A;
-    ff1->e  = E;
+    ff1->_E  = E;
 
-    ff1->dir(0) = 1;
-    ff1->dir(1) = 0;
-    ff1->dir(2) = 0;
+    ff1->_dir(0) = 1;
+    ff1->_dir(1) = 0;
+    ff1->_dir(2) = 0;
 
-    ff1->pos(0) = 0;
-    ff1->pos(1) = sample->w[1] / 2.0;
-    ff1->pos(2) = sample->w[2] / 2.0;
+    ff1->_pos(0) = 0;
+    ff1->_pos(1) = sample->w[1] / 2.0;
+    ff1->_pos(2) = sample->w[2] / 2.0;
 
     ff1->setEf();
     recoils.push(ff1);
@@ -161,9 +161,9 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_Z);
 
-      opos = pka->pos;
+      opos = pka->_pos;
 
       // follow this ion's trajectory and store recoils
       //if (pka->_Z == 29 || pka->_Z == Z)
@@ -173,16 +173,16 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
       if (pka->_Z != Z)
       {
-        sum_r2 += (opos - pka->pos).size_sq();
+        sum_r2 += (opos - pka->_pos).size_sq();
         nrec++;
       }
 
       // pka is O or Ag
-      //if (pka->_Z == 29 && pka->pos(0) >= 500.0)
+      //if (pka->_Z == 29 && pka->_pos(0) >= 500.0)
       if (pka->_Z == 29)
       {
         // output
-        printf("RP %f %d %d\n", pka->pos(0), n,  pka->gen);
+        printf("RP %f %d %d\n", pka->_pos(0), n,  pka->gen);
       }
 
       // done with this recoil

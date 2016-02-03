@@ -8,11 +8,11 @@
 
 using namespace MyTRIM_NS;
 
-MaterialBase::MaterialBase(SimconfType * simconf_, Real rho_) :
-    rho(rho_),
+MaterialBase::MaterialBase(SimconfType * simconf, Real rho) :
+    _rho(rho),
     tag(-1),
-    dirty(true),
-    simconf(simconf_)
+    _dirty(true),
+    _simconf(simconf)
 {
 }
 
@@ -22,59 +22,59 @@ MaterialBase::prepare()
   Real tt = 0.0;
 
   // get total stoichiometry
-  for (unsigned int i = 0; i < element.size(); ++i)
+  for (unsigned int i = 0; i < _element.size(); ++i)
   {
-    if (element[i]->_t < 0.0)
-      element[i]->_t = 0.0;
-    tt += element[i]->_t;
+    if (_element[i]->_t < 0.0)
+      _element[i]->_t = 0.0;
+    tt += _element[i]->_t;
   }
 
   // normalize relative probabilities to 1
-  for (unsigned int i = 0; i < element.size(); ++i)
-    element[i]->_t /= tt;
+  for (unsigned int i = 0; i < _element.size(); ++i)
+    _element[i]->_t /= tt;
 
   // average
-  am = 0.0;
-  az = 0.0;
-  for (unsigned int i = 0; i < element.size(); ++i)
+  _am = 0.0;
+  _az = 0.0;
+  for (unsigned int i = 0; i < _element.size(); ++i)
   {
-    am += element[i]->_m * element[i]->_t;
-    az += Real(element[i]->_Z) * element[i]->_t;
+    _am += _element[i]->_m * _element[i]->_t;
+    _az += Real(_element[i]->_Z) * _element[i]->_t;
   }
 
-  arho = rho * 0.6022 / am; //[TRI00310] atoms/Ang^3
+  _arho = _rho * 0.6022 / _am; //[TRI00310] atoms/Ang^3
 }
 
 // make sure layers are prepare'd first!
 void
 MaterialBase::average(const IonBase * pka)
 {
-  mu = pka->_m / am;
+  mu = pka->_m / _am;
 
   // universal or firsov screening length
-  a = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(az, 0.23));
-  //a = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(az, 0.5), 2.0/3.0);
+  a = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(_az, 0.23));
+  //a = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_az, 0.5), 2.0/3.0);
 
   // mean flight path0
-  f = a * am / (az * Real(pka->_Z) * 14.4 * (pka->_m + am));
+  f = a * _am / (_az * Real(pka->_Z) * 14.4 * (pka->_m + _am));
   //eps0 = e0 * f;
-  epsdg = simconf->tmin * f * std::pow(1.0 + mu, 2.0) / (4.0 * mu);
+  epsdg = _simconf->tmin * f * std::pow(1.0 + mu, 2.0) / (4.0 * mu);
 
   // fd and kd determine how much recoil energy goes into el. loss and vaccancies
-  fd = std::pow(0.01 * az, -7.0 / 3.0);
-  kd = std::pow(0.1334 * az, 2.0 / 3.0) / std::sqrt(am);
+  fd = std::pow(0.01 * _az, -7.0 / 3.0);
+  kd = std::pow(0.1334 * _az, 2.0 / 3.0) / std::sqrt(_am);
 
-  for (unsigned int i = 0; i < element.size(); ++i)
+  for (unsigned int i = 0; i < _element.size(); ++i)
   {
-    element[i]->my = pka->_m / element[i]->_m;
-    element[i]->ec = 4.0 * element[i]->my / std::pow(1.0 + element[i]->my, 2.0);
-    element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(element[i]->_Z, 0.23));
-    //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(element[i].z, 0.5), 2.0/3.0);
-    element[i]->fi = element[i]->ai * element[i]->_m /
-                     (Real(pka->_Z) * Real(element[i]->_Z) * 14.4 * (pka->_m + element[i]->_m));
+    _element[i]->my = pka->_m / _element[i]->_m;
+    _element[i]->ec = 4.0 * _element[i]->my / std::pow(1.0 + _element[i]->my, 2.0);
+    _element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(_element[i]->_Z, 0.23));
+    //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_element[i].z, 0.5), 2.0/3.0);
+    _element[i]->fi = _element[i]->ai * _element[i]->_m /
+                     (Real(pka->_Z) * Real(_element[i]->_Z) * 14.4 * (pka->_m + _element[i]->_m));
   }
 
-  dirty = false;
+  _dirty = false;
 }
 
 // make sure layers are prepare'd and averaged first!
@@ -82,8 +82,8 @@ Real
 MaterialBase::getrstop(const IonBase * pka)
 {
   Real se = 0.0;
-  for (unsigned int i = 0; i < element.size(); ++i)
-    se += rstop(pka, element[i]->_Z) * element[i]->_t * arho;
+  for (unsigned int i = 0; i < _element.size(); ++i)
+    se += rstop(pka, _element[i]->_Z) * _element[i]->_t * _arho;
 
   return se;
 }
@@ -98,10 +98,10 @@ MaterialBase::rpstop(int z2p, Real e)
   pe = std::max(pe0, e);
 
   // pcoef indices are one less than in the fortran version!
-  sl = (simconf->pcoef[z2][0] * std::pow(pe, simconf->pcoef[z2][1])) +
-       (simconf->pcoef[z2][2] * std::pow(pe, simconf->pcoef[z2][3]));
-  sh = simconf->pcoef[z2][4] / std::pow(pe, simconf->pcoef[z2][5]) *
-       std::log(simconf->pcoef[z2][6] / pe + simconf->pcoef[z2][7] * pe);
+  sl = (_simconf->pcoef[z2][0] * std::pow(pe, _simconf->pcoef[z2][1])) +
+       (_simconf->pcoef[z2][2] * std::pow(pe, _simconf->pcoef[z2][3]));
+  sh = _simconf->pcoef[z2][4] / std::pow(pe, _simconf->pcoef[z2][5]) *
+       std::log(_simconf->pcoef[z2][6] / pe + _simconf->pcoef[z2][7] * pe);
   sp = sl * sh / (sl + sh);
   if (e <= pe0)
   {
@@ -127,17 +127,17 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   Real se;
 
   // scoeff
-  Real lfctr = simconf->scoef[z1-1].lfctr;
-  Real mm1 = simconf->scoef[z1-1].mm1;
-  Real vfermi = simconf->scoef[z2-1].vfermi;
-  //Real atrho = simconf->scoef[z2-1].atrho;
+  Real lfctr = _simconf->scoef[z1-1].lfctr;
+  Real mm1 = _simconf->scoef[z1-1].mm1;
+  Real vfermi = _simconf->scoef[z2-1].vfermi;
+  //Real atrho = _simconf->scoef[z2-1].atrho;
 
   if (ion->_m == 0.0)
     m1 = mm1;
   else
     m1 = ion->_m;
 
-  e = 0.001 * ion->e / m1;
+  e = 0.001 * ion->_E / m1;
 
   if (z1 == 1)
   {
@@ -168,8 +168,8 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     else
       vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v*v / 3.0) - std::pow(v, 4.0) / 15.0);
 
-    yr = std::max(yrmin, vr / std::pow(fz1,0.6667));
-    yr = std::max(yr, vrmin / std::pow(fz1,0.6667));
+    yr = std::max(yrmin, vr / std::pow(fz1, 0.6667));
+    yr = std::max(yr, vrmin / std::pow(fz1, 0.6667));
     a = -0.803 * std::pow(yr, 0.3) + 1.3167 * std::pow(yr, 0.6) + 0.38157 * yr +  0.008983 * yr*yr;
 
     // ionization level of the ion at velocity yr

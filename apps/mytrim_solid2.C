@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
   element->_m = 56.0;
   element->_t = 1.0;
   element->_Edisp = 40.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -98,12 +98,12 @@ int main(int argc, char *argv[])
   element->_Z = 40; // Zr
   element->_m = 91.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 8; // O
   element->_m = 16.0;
   element->_t = 2.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 */
@@ -114,17 +114,17 @@ int main(int argc, char *argv[])
   element->_Z = 40; // Zr
   element->_m = 90.0;//91?
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 8; // O
   element->_m = 16.0;
   element->_t = 2.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
 /*  element = new ElementBase;
   element->_Z = 54; // Xe
   element->_m = 132.0;
   element->_t = 0.01;
-  material->element.push_back(element);*/
+  material->_element.push_back(element);*/
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -135,12 +135,12 @@ int main(int argc, char *argv[])
   element->_Z = 22; // Ti
   element->_m = 48.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 8; // O
   element->_m = 16.0;
   element->_t = 2.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
@@ -151,19 +151,19 @@ int main(int argc, char *argv[])
   element->_m = 89.0;
   element->_t = 2.0;
   element->_Edisp = 57.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 22; // Ti
   element->_m = 48.0;
   element->_t = 2.0;
   element->_Edisp = 57.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 8; // O
   element->_m = 16.0;
   element->_t = 7.0;
   element->_Edisp = 57.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
   element->_Z = 54; // Xe
   element->_m = 132.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 */
@@ -213,15 +213,15 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z;
     ff1->_m = A;
-    ff1->e  = E;
+    ff1->_E  = E;
 
-    ff1->dir(0) = 1;
-    ff1->dir(1) = 0;
-    ff1->dir(2) = 0;
+    ff1->_dir(0) = 1;
+    ff1->_dir(1) = 0;
+    ff1->_dir(2) = 0;
 
-    ff1->pos(0) = 0;
-    ff1->pos(1) = sample->w[1] / 2.0;
-    ff1->pos(2) = sample->w[2] / 2.0;
+    ff1->_pos(0) = 0;
+    ff1->_pos(1) = sample->w[1] / 2.0;
+    ff1->_pos(2) = sample->w[2] / 2.0;
 
     ff1->setEf();
     recoils.push(ff1);
@@ -233,33 +233,33 @@ int main(int argc, char *argv[])
       sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
-      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
 
       // pka is O or Ti
       //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
       // pka is Xe
-      Real oerec = pka->e;
+      Real oerec = pka->_E;
 
       if (pka->_Z == 542)
       {
         if (pka->gen > 0)
         {
           // output energy and recoil generation
-          //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
+          //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
         }
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; ++i)
         {
-          pos2[i] = pka->pos(i);
+          pos2[i] = pka->_pos(i);
         }
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->_Z);
-      //pka->md = id++;
+      // printf("%f\t%d\n", pka->_E, pka->_Z);
+      //pka->_md = id++;
 
       trim->trim(pka, recoils);
-      fprintf(rdist, "%f 1\n", pka->pos(0));
+      fprintf(rdist, "%f 1\n", pka->_pos(0));
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -269,12 +269,12 @@ int main(int argc, char *argv[])
       if (pka->_Z == 542)
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
+        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; ++i)
         {
-          dif2[i] = pos2[i] - pka->pos(i); // total distance it moved
+          dif2[i] = pos2[i] - pka->_pos(i); // total distance it moved
         }
         fprintf(rdist, "%d %f %f %f %f %f\n", pka->_Z, pos2[0], pos2[1], pos2[2], std::sqrt(v_dot(dif2, dif2)), oerec);
 
@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
-  Real natom = v_sam * sample->material[0]->arho;
+  Real natom = v_sam * sample->material[0]->_arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)",
           v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));
 
@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
   Real Epka = 5.0e6;
   Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
   Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
+  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z, M
   Real Ev = Epka / (1.0 + kd * g);
   Real Ed = 40.0;
   printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",

@@ -55,7 +55,7 @@ SimconfType::readSnuc()
   sf = fopen(buffer, "rt");
   if (sf == NULL) fileReadError(buffer);
 
-  for (int i = 0; i < 92; i++)
+  for (int i = 0; i < 92; ++i)
     for (int j = i; j < 92; j++)
     {
       if (fscanf(sf, "%*d %*d %lf %lf %lf %lf\n",
@@ -81,7 +81,7 @@ SimconfType::readScoef()
 
   skipLine(sf); // header
   skipLine(sf); // header
-  for (int i = 0; i < 92; i++)
+  for (int i = 0; i < 92; ++i)
   {
     if (fscanf(sf, "%*d %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
       &scoef[i].mm1, &scoef[i].m1, &scoef[i].mnat,
@@ -97,7 +97,7 @@ SimconfType::readScoef()
   if (sf == NULL) fileReadError(buffer);
 
   skipLine(sf); // header
-  for (int i = 0; i < 92; i++)
+  for (int i = 0; i < 92; ++i)
     if (fscanf(sf, "%*d %lf\n", &scoef[i].lfctr) != 1)
       fileReadError("contents of SLFCTR.dat");
   fclose(sf);
@@ -106,7 +106,7 @@ SimconfType::readScoef()
   sf = fopen(buffer, "rt");
   if (sf == NULL) fileReadError(buffer);
 
-  for (int i = 0; i < 92; i++)
+  for (int i = 0; i < 92; ++i)
     if (fscanf(sf, "%*d %s %s\n", scoef[i].sym, scoef[i].name) != 2)
       fileReadError("contents of ELNAME.dat");
   fclose(sf);

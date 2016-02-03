@@ -36,7 +36,7 @@ public:
 
   virtual void averages(const IonBase  * pka);
   virtual MaterialBase* lookupMaterial(Point & pos) = 0;
-  virtual Real rangeMaterial(Point & /* pos */, Point & /* dir */) { return 100000.0; };
+  virtual Real rangeMaterial(Point & pos, Point & dir);
 
   /// materials in the sample
   std::vector<MaterialBase*> material;

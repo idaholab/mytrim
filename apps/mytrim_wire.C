@@ -89,17 +89,17 @@ int main(int argc, char *argv[])
   element->_Z = z1; // Cu
   element->_m = 63.546;
   element->_t = 56.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = z2; // Ti
   element->_m = 47.867;
   element->_t = 38.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = z3; // Ag
   element->_m = 107.87;
   element->_t = 8.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -125,19 +125,19 @@ int main(int argc, char *argv[])
     pka->tag = -1;
     pka->_Z = zpka; // S
     pka->_m = mpka;
-    pka->e  = epka;
+    pka->_E  = epka;
 
-    pka->dir(0) = 0.0;
-    pka->dir(1) = -cos(theta);
-    pka->dir(2) = sin(theta);
+    pka->_dir(0) = 0.0;
+    pka->_dir(1) = -cos(theta);
+    pka->_dir(2) = sin(theta);
 
-    v_norm(pka->dir);
+    v_norm(pka->_dir);
 
-    pka->pos(0) = dr250() * sample->w[0];
-    pka->pos(2) = dr250() * sample->w[2];
+    pka->_pos(0) = dr250() * sample->w[0];
+    pka->_pos(2) = dr250() * sample->w[2];
 
     // wire surface
-    pka->pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;
+    pka->_pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->_pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;
 
     pka->setEf();
     recoils.push(pka);
@@ -152,21 +152,21 @@ int main(int argc, char *argv[])
 
       if (pka->_Z == zpka )
       {
-        //printf( "p1 %f\t%f\t%f\n", pka->pos(0), pka->pos(1), pka->pos(2));
+        //printf( "p1 %f\t%f\t%f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->_Z);
+      // printf("%f\t%d\n", pka->_E, pka->_Z);
       trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
 
       // ion is still in sample
-      if ( sample->lookupMaterial(pka->pos) != 0)
+      if ( sample->lookupMaterial(pka->_pos) != 0)
       {
         int x, y;
-        x = ((pka->pos(0) * mx) / sample->w[0]);
-        y = ((pka->pos(1) * my) / sample->w[1]);
+        x = ((pka->_pos(0) * mx) / sample->w[0]);
+        y = ((pka->_pos(1) * my) / sample->w[1]);
         x -= int(x/mx) * mx;
         y -= int(y/my) * my;
 

@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
   // write cluster coords with tag numbers
   snprintf(fname, 199, "%s.clcoor", argv[1]);
   FILE *ccf = fopen(fname, "wt");
-  for (int i = 0; i < sample->cn; i++)
+  for (int i = 0; i < sample->cn; ++i)
     fprintf(ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i);
   fclose(ccf);
 
@@ -152,15 +152,15 @@ int main(int argc, char *argv[])
   element->_Z = 92; // U
   element->_m = 235.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 8; // O
   element->_m = 16.0;
   element->_t = 2.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
-  Real N_UO2 = material->arho;
+  Real N_UO2 = material->_arho;
 
   // xe bubble
   int gas_z1 = 54;
@@ -169,15 +169,15 @@ int main(int argc, char *argv[])
   element->_Z = gas_z1; // Xe
   element->_m = 132.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
-  N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * std::pow(r,3.0));
+  N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * std::pow(r, 3.0));
   std::cout << "N_UO2 = " << N_UO2 << std::endl;
 
-  Real N_gas = sample->cn * material->arho * 4.0/3.0 * M_PI * std::pow(r,3.0);
-  std::cout << "N_gas = " << N_gas << " (arho=" << material->arho << ")\n";
+  Real N_gas = sample->cn * material->_arho * 4.0/3.0 * M_PI * std::pow(r, 3.0);
+  std::cout << "N_gas = " << N_gas << " (_arho=" << material->_arho << ")\n";
 
   // create a FIFO for recoils
   std::queue<IonBase*> recoils;
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
     ff1 = new IonMDTag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
-    ff1->md = 0;
+    ff1->_md = 0;
 
     // generate fission fragment data
     A1 = m->x(dr250());
@@ -223,20 +223,20 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z1;
     ff1->_m = A1;
-    ff1->e  = E1 * 1.0e6;
+    ff1->_E  = E1 * 1.0e6;
 
     do
     {
-      for (int i = 0; i < 3; i++)
-        ff1->dir(i) = dr250() - 0.5;
-      norm = ff1->dir.size_sq();
+      for (int i = 0; i < 3; ++i)
+        ff1->_dir(i) = dr250() - 0.5;
+      norm = ff1->_dir.size_sq();
     }
     while (norm <= 0.0001 /*|| norm > 0.25 */);
     //while (norm <= 0.0001 || norm > 0.25); // This will fail the test
-    ff1->dir /= std::sqrt(norm);
+    ff1->_dir /= std::sqrt(norm);
 
     // random origin
-    for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
+    for (int i = 0; i < 3; ++i) ff1->_pos(i) = dr250() * sample->w[i];
 
     ff1->setEf();
     recoils.push(ff1);
@@ -244,12 +244,12 @@ int main(int argc, char *argv[])
     ff2 = new IonMDTag(*ff1); // copy constructor
 
     // reverse direction
-    for (int i = 0; i < 3; i++) ff2->dir(i) *= -1.0;
+    ff2->_dir = -ff2->_dir;
 
     ff2->_Z = Z2;
     ff2->_m = A2;
-    ff2->e  = E2 * 1.0e6;
-    ff2->md = 0;
+    ff2->_E  = E2 * 1.0e6;
+    ff2->_md = 0;
 
     ff2->setEf();
     recoils.push(ff2);
@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
               << "A2=" << A1 << " Z2=" << Z2 << " (" << E2 << " MeV)\n";
 
     // total energy of this fission event
-    Real Efiss = ff1->e + ff2->e;
+    Real Efiss = ff1->_E + ff2->_E;
 
     while (!recoils.empty())
     {
@@ -269,38 +269,38 @@ int main(int argc, char *argv[])
       // do ion analysis/processing BEFORE the cascade here
       if (pka->_Z == gas_z1)
       {
-	      // mark the first recoil that falls into the MD energy gap with 1
+        // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
-	      if (pka->e > 200 && pka->e < 12000 && pka->md == 0)
-          pka->md = 1;
+        if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0)
+          pka->_md = 1;
 
         if (pka->gen > 0)
         {
           // output energy and recoil generation
-          fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
+          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
         }
 
         if (pka->tag >= 0)
         {
-          for (int i = 0; i < 3; i++)
+          for (int i = 0; i < 3; ++i)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
+            dif[i] =  sample->c[i][pka->tag] - pka->_pos(i);
 
             if (sample->bc[i] == SampleBase::PBC)
               dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
 
-            pos1[i] = pka->pos(i) + dif[i];
-            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
+            pos1[i] = pka->_pos(i) + dif[i];
+            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->_pos(i), pos1[i]);
           }
-	        //printf("\n");
+          //printf("\n");
         }
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->_Z);
+      // printf("%f\t%d\n", pka->_E, pka->_Z);
       trim->trim(pka, recoils);
 
-      // printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
+      // printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -308,15 +308,15 @@ int main(int argc, char *argv[])
       if (pka->_Z == gas_z1)
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
+        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0) {
-          for (int i = 0; i < 3; i++)
-            dif[i] = pos1[i] - pka->pos(i);
+          for (int i = 0; i < 3; ++i)
+            dif[i] = pos1[i] - pka->_pos(i);
 
           fprintf(rdist, "%f %d %f %f %f\n", std::sqrt(v_dot(dif, dif)),
-                   pka->md, pka->pos(0), pka->pos(1), pka->pos(2));
+                   pka->_md, pka->_pos(0), pka->_pos(1), pka->_pos(2));
         }
       }
 

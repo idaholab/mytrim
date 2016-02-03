@@ -31,7 +31,7 @@ struct sampleClusters : SampleBase {
   int *sh, kn[3]; // spatial hash and its dimensions
 
   int *cl, cn, cnm; // cluster linklist, actual number of clusters (incl. ghosts) and number reserved
-  Real *c[4]; // three arrays for cluster x,y,z,r^2 coordinates
+  Real *c[4]; // three arrays for cluster x, y, z, r^2 coordinates
   Real cmr; // maximum cluster radius in the sample
 
   sampleClusters(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
@@ -40,11 +40,12 @@ struct sampleClusters : SampleBase {
 
   int lookupCluster(Point & pos, Real dr = 0.0);
   void initSpatialhash(int x, int y, int z);
-  void clearSpatialHash();
-  void clearClusters();
   void addCluster(Real x, Real y, Real z, Real r);
   void addRandomClusters(unsigned int n, Real r, Real dr = 0.0);
+
 protected:
+  void clearClusters();
+  void clearSpatialHash();
   void reallocClusters(int n);
 };
 

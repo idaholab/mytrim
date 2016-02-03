@@ -5,8 +5,8 @@
 using namespace MyTRIM_NS;
 
 IonBase::IonBase() :
-    t(0.0),  // clock
-    ef(3.0), // final energy
+    _time(0.0),
+    _Ef(3.0),
     state(MOVING)
 {
 }
@@ -14,28 +14,28 @@ IonBase::IonBase() :
 IonBase::IonBase(IonBase* prototype) :
     _Z(prototype->_Z),
     _m(prototype->_m),
-    e(prototype->e),
+    _E(prototype->_E),
+    _time(prototype->_time),
+    _Ef(prototype->_Ef),
     state(MOVING)
 {
-  ef = prototype->ef; // final energy
-  t = prototype->t;   //clock
 }
 
-IonBase::IonBase(int Z, Real m, Real e_) :
+IonBase::IonBase(int Z, Real m, Real E) :
     _Z(Z),
     _m(m),
-    e(e_),
+    _E(E),
+    _time(0.0),
+    _Ef(3.0),
     state(MOVING)
 {
-  ef = 3.0; // final energy
-  t = 0.0; //clock;
 }
 
 void
 IonBase::setEf()
 {
   // stop following an ion if it's energy falls below 5.0eV
-  ef = 3.0;
+  _Ef = 3.0;
 
   // final energy TODO: 100Mev*0.00001 = 1keV - do we really want to stop there?!
   //fmax(5.0, 0.00001 * e);
@@ -44,30 +44,29 @@ IonBase::setEf()
 void
 IonBase::parent(IonBase *parent)
 {
-  ef = 3.0; // final energy
+  _Ef = 3.0; // final energy
 
   gen = parent->gen + 1;
-  t = parent->t;
+  _time = parent->_time;
 
-  for (unsigned int i = 0; i < 3; i++)
-    pos(i) = parent->pos(i);
+  _pos = parent->_pos;
 }
 
 IonBase*
 IonBase::spawnRecoil()
 {
-  IonBase *recoil = new IonBase;
+  IonBase * recoil = new IonBase;
   recoil->parent(this);
   return recoil;
 }
 
 // output operator (implement for derived classes if necessary)
 namespace MyTRIM_NS {
-  std::ostream& operator << (std::ostream& os, const IonBase &i)
+  std::ostream & operator << (std::ostream & os, const IonBase & i)
   {
-    os << i.pos(0) << ' ' << i.pos(1) << ' ' << i.pos(2) << ' '
-       << i._Z << ' ' << i._m << ' ' << i.e << ' '
-       << i.t << ' '
+    os << i._pos(0) << ' ' << i._pos(1) << ' ' << i._pos(2) << ' '
+       << i._Z << ' ' << i._m << ' ' << i._E << ' '
+       << i._time << ' '
        << i.id << ' ' << i.gen << ' ' << i.tag << ' ';
     return os;
   }
@@ -84,9 +83,9 @@ IonMDTag::spawnRecoil()
 
 namespace MyTRIM_NS {
   // leverage the parent class output and augment it
-  std::ostream& operator << (std::ostream& os, const IonMDTag &i)
+  std::ostream & operator << (std::ostream & os, const IonMDTag & i)
   {
-    os << (static_cast<const IonBase &>(i)) <<  i.md << ' ';
+    os << (static_cast<const IonBase &>(i)) <<  i._md << ' ';
     return os;
   }
 }

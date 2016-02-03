@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 {
   if (argc != 8)
   {
-    std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << std::endl;
+    std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0, 1] numbermultiplier xyzout[0, 1] lbinout[0, 1]" << std::endl;
     return 1;
   }
 
@@ -64,11 +64,11 @@ int main(int argc, char *argv[])
   Real ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
   int ion_count[nstep];
   IonBase* ion_prototype[nstep];
-  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z,m,E
-  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z,m,E
-  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z,m,E
-  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z,m,E
-  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z,m,E
+  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z, m, E
+  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z, m, E
+  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z, m, E
+  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z, m, E
+  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z, m, E
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   element->_Z = 14; // Si
   element->_m = 28.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -133,12 +133,12 @@ int main(int argc, char *argv[])
   element->_Z = 14; // Si
   element->_m = 28.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 8; // O
   element->_m = 16.0;
   element->_t = 2.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -175,31 +175,31 @@ int main(int argc, char *argv[])
       pka->gen = 0; // generation (0 = PKA)
       pka->tag = -1;
 
-      pka->dir(0) = 0.0;
-      pka->dir(1) = sin(theta);
-      pka->dir(2) = cos(theta);
+      pka->_dir(0) = 0.0;
+      pka->_dir(1) = sin(theta);
+      pka->_dir(2) = cos(theta);
 
-      v_norm(pka->dir);
+      v_norm(pka->_dir);
 
       if (burried)
       {
         // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
         // TODO: take theta into account!
-        pka->pos(0) = (dr250() - 0.5) * (length + sample->w[0]);
-        pka->pos(1) = (dr250() - 0.5) * (length + sample->w[1]);
-        pka->pos(2) = -250.0; // overcoat thickness
+        pka->_pos(0) = (dr250() - 0.5) * (length + sample->w[0]);
+        pka->_pos(1) = (dr250() - 0.5) * (length + sample->w[1]);
+        pka->_pos(2) = -250.0; // overcoat thickness
       }
       else
       {
         if (theta == 0.0)
         {
           // 0 degrees => start on top of wire!
-          pka->pos(2) = 0.0;
+          pka->_pos(2) = 0.0;
           do
           {
-            pka->pos(0) = dr250() * sample->w[0];
-            pka->pos(1) = dr250() * sample->w[1];
-          } while (sample->lookupMaterial(pka->pos) == 0);
+            pka->_pos(0) = dr250() * sample->w[0];
+            pka->_pos(1) = dr250() * sample->w[1];
+          } while (sample->lookupMaterial(pka->_pos) == 0);
         }
         else
         {
@@ -213,23 +213,23 @@ int main(int argc, char *argv[])
               vpos[1] = 0.0;
               vpos[2] = (dr250() * (length + diameter/tan(theta))) - diameter/tan(theta);
 
-              t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->dir(1));
+              t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->_dir(1));
 
               // if we start beyond wire length (that would be inside the substrate) then retry
-            } while (t*pka->dir(2) + vpos[2] >= length);
+            } while (t*pka->_dir(2) + vpos[2] >= length);
 
             // if first intersection with cylinder is at z<0 then check if we hit the top face instead
-            if (t*pka->dir(2) + vpos[2] < 0.0)
-              t = -vpos[2]/pka->dir(2);
+            if (t*pka->_dir(2) + vpos[2] < 0.0)
+              t = -vpos[2]/pka->_dir(2);
 
             // start PKA at calculated intersection point
-            for (int i = 0; i < 3; i++)
-                pka->pos(i) = t*pka->dir(i) + vpos[i];
+            for (int i = 0; i < 3; ++i)
+                pka->_pos(i) = t*pka->_dir(i) + vpos[i];
 
-          } while (sample->lookupMaterial(pka->pos) == 0);
+          } while (sample->lookupMaterial(pka->_pos) == 0);
         }
       }
-      //cout << "START " << pka->pos(0) << ' ' << pka->pos(1) << ' ' << pka->pos(2) << ' ' << std::endl;
+      //cout << "START " << pka->_pos(0) << ' ' << pka->_pos(1) << ' ' << pka->_pos(2) << ' ' << std::endl;
       //continue;
 
       pka->setEf();
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 
         if (pka->_Z == ion_prototype[s]->_Z )
         {
-          //printf( "p1 %f\t%f\t%f\n", pka->pos(0), pka->pos(1), pka->pos(2));
+          //printf( "p1 %f\t%f\t%f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
         }
 
         // follow this ion's trajectory and store recoils
@@ -254,15 +254,15 @@ int main(int argc, char *argv[])
         // do ion analysis/processing AFTER the cascade here
 
         // ion is in the wire
-        if ( sample->lookupMaterial(pka->pos) == sample->material[0])
+        if ( sample->lookupMaterial(pka->_pos) == sample->material[0])
         {
-          int l = pka->pos(2) / dl;
+          int l = pka->_pos(2) / dl;
           if (l >=0 && l < lx)
           {
             if (xyz_out)
             {
               xyz_data << simconf->scoef[pka->_Z-1].sym << ' '
-                      << pka->pos(0)/100.0 << ' ' << pka->pos(1)/100.0 << ' ' << pka->pos(2)/100.0 << std::endl;
+                      << pka->_pos(0)/100.0 << ' ' << pka->_pos(1)/100.0 << ' ' << pka->_pos(2)/100.0 << std::endl;
               xyz_lines++;
             }
 

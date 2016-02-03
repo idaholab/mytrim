@@ -53,7 +53,7 @@ public:
   int id;
 
   // tables from files
-  // ZBL coefficients a,b,c,d for all element pairs from Z=1..92
+  // ZBL coefficients a, b, c, d for all element pairs from Z=1..92
   struct ScoefLine {
     char sym[3], name[30];
     Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;

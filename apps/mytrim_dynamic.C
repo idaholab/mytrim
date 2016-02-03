@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
   MaterialBase *material;
   ElementBase *element;
 
-  for (int i = 0; i < nlayer; i++)
+  for (int i = 0; i < nlayer; ++i)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       std::cout << "  Element: " << lename << "  Z=" << element->_Z
            << "  m=" << element->_m << "  fraction=" << element->_t << std::endl;
-      material->element.push_back(element);
+      material->_element.push_back(element);
     }
     std::cout << material << std::endl;
 
@@ -140,15 +140,15 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z;
     ff1->_m = A;
-    ff1->e  = E * (3-((n*3)/35000));
+    ff1->_E  = E * (3-((n*3)/35000));
 
-    ff1->dir(0) = 1;
-    ff1->dir(1) = 0;
-    ff1->dir(2) = 0;
+    ff1->_dir(0) = 1;
+    ff1->_dir(1) = 0;
+    ff1->_dir(2) = 0;
 
-    ff1->pos(0) = 0;
-    ff1->pos(1) = sample->w[1] / 2.0;
-    ff1->pos(2) = sample->w[2] / 2.0;
+    ff1->_pos(0) = 0;
+    ff1->_pos(1) = sample->w[1] / 2.0;
+    ff1->_pos(2) = sample->w[2] / 2.0;
 
     ff1->setEf();
     recoils.push(ff1);
@@ -165,15 +165,15 @@ int main(int argc, char *argv[])
       //
 
       // get layer of origin
-      layer1 = sample->lookupLayer(pka->pos);
+      layer1 = sample->lookupLayer(pka->_pos);
 
       // remove from source layer
       if (pka->gen > 0)
         sample->addAtomsToLayer(layer1, -1, pka->_Z);
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->_Z);
-      //for (int i = 0; i < 3; i++)
-      // opos(i) = pka->pos(i);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_Z);
+      //for (int i = 0; i < 3; ++i)
+      // opos(i) = pka->_pos(i);
 
       //
       // follow this ion's trajectory and store recoils
@@ -181,8 +181,8 @@ int main(int argc, char *argv[])
       trim->trim(pka, recoils);
 
       // add to destination layer
-      layer2 = sample->lookupLayer(pka->pos);
-      if (pka->pos(0) > 0)
+      layer2 = sample->lookupLayer(pka->_pos);
+      if (pka->_pos(0) > 0)
         sample->addAtomsToLayer(layer2, 1, pka->_Z);
 
       //
@@ -196,12 +196,12 @@ int main(int argc, char *argv[])
   fclose(rdist);
   fclose(erec);
 
-  for (unsigned int i = 0; i < sample->material.size(); i++)
+  for (unsigned int i = 0; i < sample->material.size(); ++i)
   {
     std::cout << sample->layerThickness[i] << ' ';
-    for (unsigned int j = 0; j < sample->material[i]->element.size(); j++)
+    for (unsigned int j = 0; j < sample->material[i]->_element.size(); j++)
     {
-      std::cout << sample->material[i]->element[j]->_Z << ' ' << sample->material[i]->element[j]->_t << ' ';
+      std::cout << sample->material[i]->_element[j]->_Z << ' ' << sample->material[i]->_element[j]->_t << ' ';
     }
     std::cout << std::endl;
   }
