@@ -237,8 +237,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       {
         for (int i = 0; i < 3; ++i)
           rdir(i) = 2.0 * dr250() - 1.0;
-        } while (rdir.size_sq() > 1.0 && false);
-        // } while (rdir.size_sq() > 1.0); // This will fail the test
+        } while (rdir.size_sq() > 1.0);
       v_cross(_pka->_dir, rdir, perp);
       norm = perp.size();
     } while (norm == 0.0);
