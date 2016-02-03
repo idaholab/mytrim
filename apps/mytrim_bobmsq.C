@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
       element->_m = A;
       element->_t = 1.0;
       element->_Edisp = 25.0;
-      material->element.push_back(element);
+      material->_element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
       element->_m = A;
       element->_t = 1.0;
       element->_Edisp = 25.0;
-      material->element.push_back(element);
+      material->_element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
       element->_m = A;
       element->_t = 1.0;
       element->_Edisp = 25.0;
-      material->element.push_back(element);
+      material->_element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
       element->_m = A;
       element->_t = 1.0;
       element->_Edisp = 25.0;
-      material->element.push_back(element);
+      material->_element.push_back(element);
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
@@ -170,15 +170,15 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z;
     ff1->_m = A;
-    ff1->e  = E;
+    ff1->_E  = E;
 
-    ff1->dir(0) = 1;
-    ff1->dir(1) = 0;
-    ff1->dir(2) = 0;
+    ff1->_dir(0) = 1;
+    ff1->_dir(1) = 0;
+    ff1->_dir(2) = 0;
 
-    ff1->pos(0) = 0;
-    ff1->pos(1) = sample->w[1] / 2.0;
-    ff1->pos(2) = sample->w[2] / 2.0;
+    ff1->_pos(0) = 0;
+    ff1->_pos(1) = sample->w[1] / 2.0;
+    ff1->_pos(2) = sample->w[2] / 2.0;
 
     ff1->setEf();
     recoils.push(ff1);
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
       // store position
       if (pka->gen > 0)
         for (int i = 0; i < 3; i++)
-          pos2[i] = pka->pos(i);
+          pos2[i] = pka->_pos(i);
 
       // follow this ion's trajectory and store recoils
       trim->trim(pka, recoils);
@@ -200,10 +200,10 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
       if (pka->gen > 0)
         for (int i = 0; i < 3; i++)
-          sqd += (pos2[i]-pka->pos(i))*(pos2[i]-pka->pos(i));
+          sqd += (pos2[i]-pka->_pos(i))*(pos2[i]-pka->_pos(i));
       else if (pka->gen > 1)
         for (int i = 0; i < 3; i++)
-          sqd2 += (pos2[i]-pka->pos(i))*(pos2[i]-pka->pos(i));
+          sqd2 += (pos2[i]-pka->_pos(i))*(pos2[i]-pka->_pos(i));
 
       // done with this recoil
       delete pka;
@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
   // output full damage data
   printf("total sum of square displacements: %g Ang^2\n", sqd);
   printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
-  Real natom = v_sam * sample->material[0]->arho;
+  Real natom = v_sam * sample->material[0]->_arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)\n",
           v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));
   printf("sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g\nnvac = %d", sqd/(simconf->vacancies_created/natom), sqd/simconf->vacancies_created, sqd2/simconf->vacancies_created,simconf->vacancies_created );

@@ -33,7 +33,7 @@ namespace MyTRIM_NS {
 class MaterialBase
 {
 public:
-  MaterialBase(SimconfType * simconf_, Real rho_);
+  MaterialBase(SimconfType * simconf, Real rho);
 
   // make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
@@ -42,13 +42,13 @@ public:
   void average(const IonBase *pka);
   Real getrstop(const IonBase *pka);
 
-  virtual ElementBase * getElement(unsigned int nn) { return element[nn]; }
+  virtual ElementBase * getElement(unsigned int nn) { return _element[nn]; }
 
-  Real rho;
+  Real _rho;
 
   // set in prepare
-  Real am, az; // average mass and atomic number
-  Real arho;
+  Real _am, _az; // average mass and atomic number
+  Real _arho;
 
   // set in average
   Real mu;
@@ -58,15 +58,15 @@ public:
   Real pmax;
 
   int tag;
-  bool dirty;
+  bool _dirty;
 
-  std::vector<ElementBase*> element;
+  std::vector<ElementBase*> _element;
 
 protected:
   Real rpstop(int z2, Real e);
   Real rstop(const IonBase *ion, int z2);
 
-  SimconfType * simconf;
+  SimconfType * _simconf;
 };
 
 }

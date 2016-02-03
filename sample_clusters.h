@@ -40,11 +40,12 @@ struct sampleClusters : SampleBase {
 
   int lookupCluster(Point & pos, Real dr = 0.0);
   void initSpatialhash(int x, int y, int z);
-  void clearSpatialHash();
-  void clearClusters();
   void addCluster(Real x, Real y, Real z, Real r);
   void addRandomClusters(unsigned int n, Real r, Real dr = 0.0);
+
 protected:
+  void clearClusters();
+  void clearSpatialHash();
   void reallocClusters(int n);
 };
 

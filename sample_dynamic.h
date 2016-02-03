@@ -41,7 +41,7 @@ public:
 protected:
   const IonBase *pka;
 
-  SimconfType * simconf;
+  SimconfType * _simconf;
 };
 
 }

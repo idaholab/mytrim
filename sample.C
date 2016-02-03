@@ -15,3 +15,9 @@ SampleBase::averages(const IonBase * pka)
   for (unsigned int i = 0; i < material.size(); ++i)
     material[i]->average(pka);
 }
+
+Real
+SampleBase::rangeMaterial(Point & /* pos */, Point & /* dir */)
+{
+  return 100000.0;
+};

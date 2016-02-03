@@ -107,12 +107,12 @@ int main(int argc, char *argv[])
   element->_Z = 92; // U
   element->_m = 235.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   element = new ElementBase;
   element->_Z = 16; // O
   element->_m = 32.0;
   element->_t = 2.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   element->_m = 132.0;
   element->_t = 1.0;
 //  element->_t = 0.002;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 //  sample->material.push_back(material); // add material to sample
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
     ff1 = new IonMDTag;
     ff1->gen = 0; // generation (0 = PKA)
     ff1->tag = -1;
-    ff1->md = 0;
+    ff1->_md = 0;
     ff1->id = simconf->id++;
 
     // generate fission fragment data
@@ -178,30 +178,31 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z1;
     ff1->_m = A1;
-    ff1->e  = E1 * 1.0e6;
+    ff1->_E  = E1 * 1.0e6;
 //     ff1->_Z = 53;
 //     ff1->_m = 127;
-//     ff1->e  = 70.0 * 1.0e6;
+//     ff1->_E  = 70.0 * 1.0e6;
 
     do
     {
-      for (int i = 0; i < 3; i++) ff1->dir(i) = dr250() - 0.5;
-      norm = ff1->dir.size_sq();
+      for (int i = 0; i < 3; i++) ff1->_dir(i) = dr250() - 0.5;
+      norm = ff1->_dir.size_sq();
     }
     while (norm <= 0.0001 || norm > 0.25);
 
     /*
     norm = 1.0;
-    ff1->dir(0) = 1.0;
-    ff1->dir(1) = 0.0;
-    ff1->dir(2) = 0.0;
+    ff1->_dir(0) = 1.0;
+    ff1->_dir(1) = 0.0;
+    ff1->_dir(2) = 0.0;
     */
-    ff1->dir /= std::sqrt(norm);
+    ff1->_dir /= std::sqrt(norm);
 
     // random origin (outside cluster!)
     do {
-      for (int i = 0; i < 3; i++) ff1->pos(i) = dr250() * sample->w[i];
-    } while (sample->lookupCluster(ff1->pos) >= 0);
+      for (int i = 0; i < 3; i++)
+        ff1->_pos(i) = dr250() * sample->w[i];
+    } while (sample->lookupCluster(ff1->_pos) >= 0);
 
     ff1->setEf();
     recoils.push(ff1);
@@ -210,11 +211,11 @@ int main(int argc, char *argv[])
     //ff1->id = simconf->id++;
 
     // reverse direction
-    for (int i = 0; i < 3; i++) ff2->dir(i) *= -1.0;
+    for (int i = 0; i < 3; i++) ff2->_dir(i) *= -1.0;
 
     ff2->_Z = Z2;
     ff2->_m = A2;
-    ff2->e  = E2 * 1.0e6;
+    ff2->_E  = E2 * 1.0e6;
 
     ff2->setEf();
     recoils.push(ff2);
@@ -232,23 +233,23 @@ int main(int argc, char *argv[])
       if (pka->_Z == 54 )
       {
 	// mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
-	if (pka->e > 200 && pka->e < 12000 && pka->md == 0) pka->md = 1;
+	if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0) pka->_md = 1;
 
         if (pka->gen > 0)
         {
           // output energy and recoil generation
-          fprintf(erec, "%f\t%d\t%d\n", pka->e, pka->gen, pka->md);
+          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
         }
 
         if (pka->tag >= 0)
 	{
           for (int i = 0; i < 3; i++)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->pos(i);
-            pos2[i] = pka->pos(i);
+            dif[i] =  sample->c[i][pka->tag] - pka->_pos(i);
+            pos2[i] = pka->_pos(i);
             if (sample->bc[i] == SampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
-	    pos1[i] = pka->pos(i) + dif[i];
-	    //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->pos(i), pos1[i]);
+	    pos1[i] = pka->_pos(i) + dif[i];
+	    //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->_pos(i), pos1[i]);
           }
 	  //printf("\n");
 //if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
@@ -256,12 +257,12 @@ int main(int argc, char *argv[])
       }
 
       // follow this ion's trajectory and store recoils
-      // printf("%f\t%d\n", pka->e, pka->_Z);
-      //pka->md = id++;
+      // printf("%f\t%d\n", pka->_E, pka->_Z);
+      //pka->_md = id++;
 
-//printf("\nstart %f %f %f %d %d %d\n", pka->pos(0), pka->pos(1), pka->pos(2),  pka->_Z, pka->md, pka->id);
+//printf("\nstart %f %f %f %d %d %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2),  pka->_Z, pka->_md, pka->id);
       trim->trim(pka, recoils);
-//fprintf(phon, "%f %f %f %f %d %d\n", pka->e, pka->pos(0), pka->pos(1), pka->pos(2), pka->_Z, pka->id);
+//fprintf(phon, "%f %f %f %f %d %d\n", pka->_E, pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_Z, pka->id);
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -269,17 +270,17 @@ int main(int argc, char *argv[])
       if (pka->_Z == 54 )
       {
         // output
-        //printf("%f %f %f %d\n", pka->pos(0), pka->pos(1), pka->pos(2), pka->tag);
+        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0)
         {
           for (int i = 0; i < 3; i++)
           {
-            dif[i] = pos1[i] - pka->pos(i);  // distance to cluster center
-            dif2[i] = pos2[i] - pka->pos(i); // total distance it moved
+            dif[i] = pos1[i] - pka->_pos(i);  // distance to cluster center
+            dif2[i] = pos2[i] - pka->_pos(i); // total distance it moved
           }
-          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->md, pka->pos(0), pka->pos(1), pka->pos(2), std::sqrt(v_dot(dif2, dif2)));
+          fprintf(rdist, "%f %d %f %f %f %f\n", std::sqrt(v_dot(dif, dif)), pka->_md, pka->_pos(0), pka->_pos(1), pka->_pos(2), std::sqrt(v_dot(dif2, dif2)));
         }
 
 
@@ -287,21 +288,21 @@ int main(int argc, char *argv[])
 /*        jumps = 0;
         do
         {
-          material = sample->lookupLayer(pka->pos);
+          material = sample->lookupLayer(pka->_pos);
           if (material->tag >= 0) break;
 
           do
           {
-            for (int i = 0; i < 3; i++) pka->dir(i) = dr250() - 0.5;
-            norm = v_dot(pka->dir, pka->dir);
+            for (int i = 0; i < 3; i++) pka->_dir(i) = dr250() - 0.5;
+            norm = v_dot(pka->_dir, pka->_dir);
           }
           while (norm <= 0.0001);
-          v_scale(pka->dir, jmp / std::sqrt(norm));
+          v_scale(pka->_dir, jmp / std::sqrt(norm));
 
-          for (int i = 0; i < 3; i++) pka->pos(i) += pka->dir(i);
+          for (int i = 0; i < 3; i++) pka->_pos(i) += pka->_dir(i);
           jumps++;
         }
-        while (pka->pos(0) > 0 && pka->pos(0) < sample->w[0]);
+        while (pka->_pos(0) > 0 && pka->_pos(0) < sample->w[0]);
 
         if (material->tag >= 0 && jumps > 0)
           fprintf(stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->tag, pka->tag, jumps); */

@@ -71,7 +71,7 @@ int main(int, char **)
   element->_Z = 20;
   element->_m = 40.0;
   element->_t = 1.0;
-  material->element.push_back(element);
+  material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
@@ -87,15 +87,15 @@ int main(int, char **)
     pka->tag = 0; // tag holds the element type
     pka->_Z = 20;
     pka->_m = 40;
-    pka->e  = 300;
+    pka->_E  = 300;
 
-    pka->dir(0) = 0.0;
-    pka->dir(1) = 1.0;
-    pka->dir(2) = 0.0;
+    pka->_dir(0) = 0.0;
+    pka->_dir(1) = 1.0;
+    pka->_dir(2) = 0.0;
 
-    pka->pos(0) = 100.0;
-    pka->pos(1) = 0.01;
-    pka->pos(2) = 100.0;
+    pka->_pos(0) = 100.0;
+    pka->_pos(1) = 0.01;
+    pka->_pos(2) = 100.0;
 
     pka->setEf();
     recoils.push(pka);
@@ -107,12 +107,12 @@ int main(int, char **)
     recoils.pop();
     sample->averages(pka);
 
-    pka->pos(2) = 100.0;
-    pka->dir(2) = 0.0;
+    pka->_pos(2) = 100.0;
+    pka->_dir(2) = 0.0;
 
     trim->trim(pka, recoils);
 
-    printf("%f %f %f\n", pka->pos(0), pka->pos(1), pka->pos(2));
+    printf("%f %f %f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
 
     // done with this recoil
     delete pka;
