@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
   // write cluster coords with tag numbers
   snprintf(fname, 199, "%s.clcoor", argv[1]);
   FILE *ccf = fopen(fname, "wt");
-  for (int i = 0; i < sample->cn; i++)
+  for (int i = 0; i < sample->cn; ++i)
     fprintf(ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i);
   fclose(ccf);
 
@@ -173,10 +173,10 @@ int main(int argc, char *argv[])
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
-  N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * std::pow(r,3.0));
+  N_UO2 *= (sample->w[0]*sample->w[1]*sample->w[2] - sample->cn * 4.0/3.0 * M_PI * std::pow(r, 3.0));
   std::cout << "N_UO2 = " << N_UO2 << std::endl;
 
-  Real N_gas = sample->cn * material->_arho * 4.0/3.0 * M_PI * std::pow(r,3.0);
+  Real N_gas = sample->cn * material->_arho * 4.0/3.0 * M_PI * std::pow(r, 3.0);
   std::cout << "N_gas = " << N_gas << " (_arho=" << material->_arho << ")\n";
 
   // create a FIFO for recoils
@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
 
     do
     {
-      for (int i = 0; i < 3; i++)
+      for (int i = 0; i < 3; ++i)
         ff1->_dir(i) = dr250() - 0.5;
       norm = ff1->_dir.size_sq();
     }
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
     ff1->_dir /= std::sqrt(norm);
 
     // random origin
-    for (int i = 0; i < 3; i++) ff1->_pos(i) = dr250() * sample->w[i];
+    for (int i = 0; i < 3; ++i) ff1->_pos(i) = dr250() * sample->w[i];
 
     ff1->setEf();
     recoils.push(ff1);
@@ -269,9 +269,9 @@ int main(int argc, char *argv[])
       // do ion analysis/processing BEFORE the cascade here
       if (pka->_Z == gas_z1)
       {
-	      // mark the first recoil that falls into the MD energy gap with 1
+        // mark the first recoil that falls into the MD energy gap with 1
         // (child generations increase the number)
-	      if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0)
+        if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0)
           pka->_md = 1;
 
         if (pka->gen > 0)
@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
 
         if (pka->tag >= 0)
         {
-          for (int i = 0; i < 3; i++)
+          for (int i = 0; i < 3; ++i)
           {
             dif[i] =  sample->c[i][pka->tag] - pka->_pos(i);
 
@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
             pos1[i] = pka->_pos(i) + dif[i];
             //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->_pos(i), pos1[i]);
           }
-	        //printf("\n");
+          //printf("\n");
         }
       }
 
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
 
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0) {
-          for (int i = 0; i < 3; i++)
+          for (int i = 0; i < 3; ++i)
             dif[i] = pos1[i] - pka->_pos(i);
 
           fprintf(rdist, "%f %d %f %f %f\n", std::sqrt(v_dot(dif, dif)),

@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 {
   if (argc != 8)
   {
-    std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0,1] numbermultiplier xyzout[0,1] lbinout[0,1]" << std::endl;
+    std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0, 1] numbermultiplier xyzout[0, 1] lbinout[0, 1]" << std::endl;
     return 1;
   }
 
@@ -64,11 +64,11 @@ int main(int argc, char *argv[])
   Real ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
   int ion_count[nstep];
   IonBase* ion_prototype[nstep];
-  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z,m,E
-  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z,m,E
-  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z,m,E
-  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z,m,E
-  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z,m,E
+  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z, m, E
+  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z, m, E
+  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z, m, E
+  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z, m, E
+  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z, m, E
 
   // seed randomnumber generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
               t = -vpos[2]/pka->_dir(2);
 
             // start PKA at calculated intersection point
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; ++i)
                 pka->_pos(i) = t*pka->_dir(i) + vpos[i];
 
           } while (sample->lookupMaterial(pka->_pos) == 0);

@@ -168,8 +168,8 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     else
       vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v*v / 3.0) - std::pow(v, 4.0) / 15.0);
 
-    yr = std::max(yrmin, vr / std::pow(fz1,0.6667));
-    yr = std::max(yr, vrmin / std::pow(fz1,0.6667));
+    yr = std::max(yrmin, vr / std::pow(fz1, 0.6667));
+    yr = std::max(yr, vrmin / std::pow(fz1, 0.6667));
     a = -0.803 * std::pow(yr, 0.3) + 1.3167 * std::pow(yr, 0.6) + 0.38157 * yr +  0.008983 * yr*yr;
 
     // ionization level of the ion at velocity yr

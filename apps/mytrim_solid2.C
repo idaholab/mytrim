@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
           //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
         }
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; ++i)
         {
           pos2[i] = pka->_pos(i);
         }
@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
         //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; ++i)
         {
           dif2[i] = pos2[i] - pka->_pos(i); // total distance it moved
         }
@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
   Real Epka = 5.0e6;
   Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
   Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
+  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z, M
   Real Ev = Epka / (1.0 + kd * g);
   Real Ed = 40.0;
   printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",

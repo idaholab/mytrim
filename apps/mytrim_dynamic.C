@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
   MaterialBase *material;
   ElementBase *element;
 
-  for (int i = 0; i < nlayer; i++)
+  for (int i = 0; i < nlayer; ++i)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
         sample->addAtomsToLayer(layer1, -1, pka->_Z);
 
       //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_Z);
-      //for (int i = 0; i < 3; i++)
+      //for (int i = 0; i < 3; ++i)
       // opos(i) = pka->_pos(i);
 
       //
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
   fclose(rdist);
   fclose(erec);
 
-  for (unsigned int i = 0; i < sample->material.size(); i++)
+  for (unsigned int i = 0; i < sample->material.size(); ++i)
   {
     std::cout << sample->layerThickness[i] << ' ';
     for (unsigned int j = 0; j < sample->material[i]->_element.size(); j++)

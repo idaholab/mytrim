@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   // write cluster coords with tag numbers
   snprintf(fname, 199, "%s.clcoor", argv[1]);
   FILE *ccf = fopen(fname, "wt");
-  for (int i = 0; i < sample->cn; i++)
+  for (int i = 0; i < sample->cn; ++i)
     fprintf(ccf, "%f %f %f %f %d\n", sample->c[0][i], sample->c[1][i], sample->c[2][i], sample->c[3][i], i);
   fclose(ccf);
 
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 
         if (pka->tag >= 0)
         {
-          for (int i = 0; i < 3; i++)
+          for (int i = 0; i < 3; ++i)
           {
             dif[i] =  sample->c[i][pka->tag] - pka->_pos(i);
             pos2[i] = pka->_pos(i);
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
           }
 //printf("\n");
 //if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
-	}
+  }
       }
 
       // follow this ion's trajectory and store recoils
@@ -318,7 +318,7 @@ int main(int argc, char *argv[])
         // print out distance to cluster of origin center (and depth of recoil)
         if (pka->tag >= 0)
         {
-          for (int i = 0; i < 3; i++)
+          for (int i = 0; i < 3; ++i)
           {
             dif[i] = pos1[i] - pka->_pos(i);  // distance to cluster center
             dif2[i] = pos2[i] - pka->_pos(i); // total distance it moved
@@ -336,13 +336,13 @@ int main(int argc, char *argv[])
 
           do
           {
-            for (int i = 0; i < 3; i++) pka->_dir(i) = dr250() - 0.5;
+            for (int i = 0; i < 3; ++i) pka->_dir(i) = dr250() - 0.5;
             norm = v_dot(pka->_dir, pka->_dir);
           }
           while (norm <= 0.0001);
           v_scale(pka->_dir, jmp / std::sqrt(norm));
 
-          for (int i = 0; i < 3; i++) pka->_pos(i) += pka->_dir(i);
+          for (int i = 0; i < 3; ++i) pka->_pos(i) += pka->_dir(i);
           jumps++;
         }
         while (pka->_pos(0) > 0 && pka->_pos(0) < sample->w[0]);
@@ -370,7 +370,7 @@ int main(int argc, char *argv[])
   Real Epka = 5.0e6;
   Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
   Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z,M
+  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z, M
   Real Ev = Epka / (1.0 + kd * g);
   Real Ed = 40.0;
   printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",

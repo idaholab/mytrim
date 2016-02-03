@@ -86,7 +86,7 @@ int sampleClusters::lookupCluster(Point & pos, Real dr)
                 dif[i] -= ::round(dif[i] / w[i]) * w[i];
             }
             r2 = v_dot(dif, dif);
-            //printf(" trying cluster %d, dif=(%f,%f,%f), r2=%f\n", l,dif[0],dif[1],dif[2],r2);
+            //printf(" trying cluster %d, dif=(%f, %f, %f), r2=%f\n", l, dif[0], dif[1], dif[2], r2);
             if (r2 < sqr(c[3][l] + dr))
               return l;
 
@@ -106,7 +106,7 @@ void sampleClusters::initSpatialhash(int x, int y, int z)
 
   // calculate half the spatial diagonal of a hash block
   sd = 0.0;
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; ++i)
   {
     kd[i] = w[i] / Real(kn[i]);
     sd += kd[i];
@@ -117,7 +117,7 @@ void sampleClusters::initSpatialhash(int x, int y, int z)
 
 void sampleClusters::clearSpatialHash()
 {
-  for (int i = 0; i < kn[0]*kn[1]*kn[2]; i++) sh[i]=-1;
+  for (int i = 0; i < kn[0]*kn[1]*kn[2]; ++i) sh[i]=-1;
 }
 
 void sampleClusters::reallocClusters(int n)
@@ -125,7 +125,7 @@ void sampleClusters::reallocClusters(int n)
   if (n > cnm)
   {
     cl = (int*)realloc(cl, sizeof(int) * n);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; ++i)
     {
       c[i] = (Real*)realloc(c[i], sizeof(Real) * n);
     }
@@ -138,7 +138,7 @@ void sampleClusters::clearClusters()
 {
   cn = 0;
   clearSpatialHash();
-  for (int i = 0; i < cnm; i++) cl[i] = -1;
+  for (int i = 0; i < cnm; ++i) cl[i] = -1;
 }
 
 void sampleClusters::addCluster(Real x, Real y, Real z, Real r)

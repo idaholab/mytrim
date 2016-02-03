@@ -30,7 +30,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
   Real r1, r2, hh;
   Real eps, eeg, ls, p, b, r, see, dee;
   Real s2, c2, ct, st;
-  Real rr, ex1, ex2, ex3, ex4, v ,v1;
+  Real rr, ex1, ex2, ex3, ex4, v , v1;
   Real fr, fr1, q, roc, sqe;
   Real cc, aa, ff, co, delta;
   Real den;
@@ -353,7 +353,7 @@ TrimPrimaries::vacancyCreation()
     // http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
     Real ed = 0.0115 * std::pow(_material->_az, -7.0/3.0) * _recoil->_E;
     Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-    Real kd = 0.1337 * std::pow(_material->_az, 2.0/3.0) / std::pow(_material->_am, 0.5); //Z,M
+    Real kd = 0.1337 * std::pow(_material->_az, 2.0/3.0) / std::pow(_material->_am, 0.5); //Z, M
     Real Ev = _recoil->_E / (1.0 + kd * g);
     _simconf->vacancies_created += int(0.8 * Ev / (2.0 * _element->_Edisp));
 

@@ -55,14 +55,14 @@ IonBase::parent(IonBase *parent)
 IonBase*
 IonBase::spawnRecoil()
 {
-  IonBase *recoil = new IonBase;
+  IonBase * recoil = new IonBase;
   recoil->parent(this);
   return recoil;
 }
 
 // output operator (implement for derived classes if necessary)
 namespace MyTRIM_NS {
-  std::ostream& operator << (std::ostream & os, const IonBase & i)
+  std::ostream & operator << (std::ostream & os, const IonBase & i)
   {
     os << i._pos(0) << ' ' << i._pos(1) << ' ' << i._pos(2) << ' '
        << i._Z << ' ' << i._m << ' ' << i._E << ' '
@@ -83,7 +83,7 @@ IonMDTag::spawnRecoil()
 
 namespace MyTRIM_NS {
   // leverage the parent class output and augment it
-  std::ostream& operator << (std::ostream& os, const IonMDTag &i)
+  std::ostream & operator << (std::ostream & os, const IonMDTag & i)
   {
     os << (static_cast<const IonBase &>(i)) <<  i._md << ' ';
     return os;

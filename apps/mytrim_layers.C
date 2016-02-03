@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
   MaterialBase *material;
   ElementBase *element;
-  for (int i = 0; i < nlayer; i++)
+  for (int i = 0; i < nlayer; ++i)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

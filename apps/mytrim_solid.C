@@ -143,13 +143,13 @@ int main(int argc, char *argv[])
 
     do
     {
-      for (int i = 0; i < 3; i++) ff1->_dir(i) = dr250() - 0.5;
+      for (int i = 0; i < 3; ++i) ff1->_dir(i) = dr250() - 0.5;
       norm = ff1->_dir.size_sq();
     }
     while (norm <= 0.0001 || norm > 0.25);
     ff1->_dir /= std::sqrt(norm);
 
-    for (int i = 0; i < 3; i++) ff1->_pos(i) = dr250() * sample->w[i];
+    for (int i = 0; i < 3; ++i) ff1->_pos(i) = dr250() * sample->w[i];
 
     ff1->setEf();
     recoils.push(ff1);
