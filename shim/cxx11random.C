@@ -9,7 +9,7 @@ static std::uniform_int_distribution<int> cxx11random_dis_int(0, 65535);
 
 /**** Function: r250_init
         Description: initializes r250 random number generator. ****/
-void r250_init(int seed)
+void r250_init(unsigned int seed)
 {
   delete cxx11random_gen;
   cxx11random_gen = new std::mt19937(seed);

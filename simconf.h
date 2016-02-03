@@ -29,11 +29,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 // building from within MOOSE/Magpie
 #include "MooseError.h"
 #include "MooseTypes.h"
+#include "MooseRandom.h"
 #include "libmesh/point.h"
 namespace MyTRIM_NS {
   const Real drm = Real(RAND_MAX)+1.0;
-  inline Real dr250() { return Real(rand())/drm; }
-  inline void r250_init(int s) { srand(s); }
+  inline Real dr250() { return MooseRandom::rand(); }
+  inline void r250_init(unsigned int s) { MooseRandom::seed(s); }
 }
 #else
 // building standalone (for Travis CI tests)

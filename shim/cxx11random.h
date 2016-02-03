@@ -6,7 +6,7 @@
 namespace MyTRIM_NS {
 
 double dr250();
-void r250_init(int);
+void r250_init(unsigned int);
 
 }
 
