@@ -91,10 +91,10 @@ MaterialBase::getrstop(const IonBase * pka)
 Real
 MaterialBase::rpstop(int z2p, Real e)
 {
-  Real pe, pe0, sl, sh, sp, velpwr;
-  int z2 = z2p-1;
+  Real pe, sl, sh, sp, velpwr;
+  const int z2 = z2p - 1;
   // velocity proportional stopping below pe0
-  pe0 = 25.0;
+  const Real pe0 = 25.0;
   pe = std::max(pe0, e);
 
   // pcoef indices are one less than in the fortran version!
@@ -110,7 +110,7 @@ MaterialBase::rpstop(int z2p, Real e)
       velpwr = 0.25;
     else
       velpwr = 0.45;
-    sp *= std::pow(e/pe0, velpwr);
+    sp *= std::pow(e / pe0, velpwr);
   }
   return sp;
 }
@@ -150,7 +150,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     std::cerr << "proton stopping not yet implemented!\n";
     exit(1);
 #endif
-    // rpstop(z2, e, pcoef, se(i))
+    sp = rpstop(z2, e);
   }
   else if (z1 == 2)
   {
@@ -161,7 +161,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
         exit(1);
     #endif
     // Helium electronic stopping powers [RST0820]
-    Real he0 = 10.0;
+    const Real he0 = 10.0;
     Real he = std::max(he0, e);
     b = std::log(e);
     a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.1135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
@@ -170,7 +170,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     a = (1.0 + (0.007 + 0.00005 * z2) * std::exp(-std::pow((7.6 * std::max(0.0, std::log(he))), 2.0) ));
     heh *= a * a;
 
-    // call rstop(z2, he, pcoeff, sp)
+    sp = rpstop(z2, he);
     se = sp * heh * 4;
     if (e <= he0)
       se *= std::sqrt(e / he0);
