@@ -92,13 +92,6 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<IonBase*> recoils;
 
-  Real norm;
-  MassInverter *m = new MassInverter;
-  EnergyInverter *e = new EnergyInverter;
-
-  Real A1, A2, Etot, E1, E2;
-  int Z1, Z2;
-
   snprintf(fname, 199, "%s.Erec", argv[1]);
   FILE *erec = fopen(fname, "wt");
 
@@ -118,29 +111,11 @@ int main(int argc, char *argv[])
     ff1->_md = 0;
     ff1->id = simconf->id++;
 
-    // generate fission fragment data
-    A1 = m->x(dr250());
-    //A1 = 131;
-
-    A2 = 235.0 - A1;
-    Etot = e->x(dr250());
-    E1 = Etot * A2 / (A1 + A2);
-    //E1 = 100;
-
-    E2 = Etot - E1;
-    Z1 = round((A1 * 92.0) / 235.0);
-    //Z1 = 54;
-
-    Z2 = 92 - Z1;
-
-    /* ff1->_Z = Z1;
-    ff1->_m = A1;
-    ff1->_E  = E1 * 1.0e6; */
-
     ff1->_Z = 53;
     ff1->_m = 127;
     ff1->_E  = 70.0 * 1.0e6;
 
+    Real norm;
     do
     {
       for (int i = 0; i < 3; ++i) ff1->_dir(i) = dr250() - 0.5;

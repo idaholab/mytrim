@@ -91,10 +91,10 @@ MaterialBase::getrstop(const IonBase * pka)
 Real
 MaterialBase::rpstop(int z2p, Real e)
 {
-  Real pe, pe0, sl, sh, sp, velpwr;
-  int z2 = z2p-1;
+  Real pe, sl, sh, sp, velpwr;
+  const int z2 = z2p - 1;
   // velocity proportional stopping below pe0
-  pe0 = 25.0;
+  const Real pe0 = 25.0;
   pe = std::max(pe0, e);
 
   // pcoef indices are one less than in the fortran version!
@@ -110,7 +110,7 @@ MaterialBase::rpstop(int z2p, Real e)
       velpwr = 0.25;
     else
       velpwr = 0.45;
-    sp *= std::pow(e/pe0, velpwr);
+    sp *= std::pow(e / pe0, velpwr);
   }
   return sp;
 }
@@ -119,17 +119,18 @@ Real
 MaterialBase::rstop(const IonBase * ion, int z2)
 {
   Real e, vrmin, yrmin, v, vr, yr, vmin, m1;
-  Real a, b, q, q1, l, l0, l1;
+  Real a, b, q, /*q1,*/ l, l0, l1;
   Real zeta;
-  int z1 = ion->_Z;
-  Real fz1 = Real(z1), fz2 = Real(z2);
+  const int z1 = ion->_Z;
+  const Real fz1 = Real(z1);
+  const Real fz2 = Real(z2);
   Real eee, sp, power;
   Real se;
 
   // scoeff
-  Real lfctr = _simconf->scoef[z1-1].lfctr;
-  Real mm1 = _simconf->scoef[z1-1].mm1;
-  Real vfermi = _simconf->scoef[z2-1].vfermi;
+  const Real lfctr = _simconf->scoef[z1-1].lfctr;
+  const Real mm1 = _simconf->scoef[z1-1].mm1;
+  const Real vfermi = _simconf->scoef[z2-1].vfermi;
   //Real atrho = _simconf->scoef[z2-1].atrho;
 
   if (ion->_m == 0.0)
@@ -137,28 +138,31 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   else
     m1 = ion->_m;
 
-  e = 0.001 * ion->_E / m1;
+  // we store ion energy in eV but ee is needed in keV
+  const Real ee = 0.001 * ion->_E;
+  e = ee / m1;
 
   if (z1 == 1)
   {
-#ifdef MYTRIM_ENABLED
-    mooseError("proton stopping not yet implemented!");
-#else
-    std::cerr << "proton stopping not yet implemented!\n";
-    exit(1);
-#endif
+    // Hydrogen electronic stopping powers [RST0640]
+    se = rpstop(z2, e);
   }
   else if (z1 == 2)
   {
-    #ifdef MYTRIM_ENABLED
-        mooseError("alpha stopping not yet implemented!");
-    #else
-        std::cerr << "alpha stopping not yet implemented!\n";
-        exit(1);
-    #endif
     // Helium electronic stopping powers [RST0820]
-    // Real heo = 10.0;
-    // Real he = std::max(heo, )
+    const Real he0 = 10.0;
+    Real he = std::max(he0, e);
+    b = std::log(e);
+    a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.1135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
+    Real heh = 1.0 - std::exp(-std::min(30.0, a));
+    // add z1^3 effect to He/H stopping power ratio heh
+    a = (1.0 + (0.007 + 0.00005 * z2) * std::exp(-std::pow((7.6 * std::max(0.0, std::log(he))), 2.0) ));
+    heh *= a * a;
+
+    sp = rpstop(z2, he);
+    se = sp * heh * 4;
+    if (e <= he0)
+      se *= std::sqrt(e / he0);
   }
   else
   {
@@ -185,7 +189,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
       l1 = 0.0;
     else if (q < std::max(0.0, 0.9 - 0.025 * fz1))
     {//210
-      q1 = 0.2;
+      // q1 = 0.2; in the original code, but never used
       l1 = b * (q - 0.2) / std::abs(std::max(0.0, 0.9 - 0.025 * fz1) - 0.2000001);
     }
     else if (q < std::max(0.0, 1.0 - 0.025 * std::min(16.0, fz1)))
