@@ -149,6 +149,9 @@ int main(int argc, char *argv[])
       material->prepare(); // all materials added
       sample->material.push_back(material); // add material to sample
       break;
+
+     default:
+        return 1;
   }
 
   const int nstep = 1000;

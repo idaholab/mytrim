@@ -361,7 +361,7 @@ TrimBase::followRecoil()
     _recoil->_md = 0;
   */
   return true;
-};
+}
 
 void
 TrimBase::vacancyCreation()

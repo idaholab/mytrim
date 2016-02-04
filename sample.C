@@ -20,4 +20,4 @@ Real
 SampleBase::rangeMaterial(Point & /* pos */, Point & /* dir */)
 {
   return 100000.0;
-};
+}
