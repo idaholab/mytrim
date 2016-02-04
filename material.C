@@ -144,22 +144,11 @@ MaterialBase::rstop(const IonBase * ion, int z2)
 
   if (z1 == 1)
   {
-#ifdef MYTRIM_ENABLED
-    mooseError("proton stopping not yet implemented!");
-#else
-    std::cerr << "proton stopping not yet implemented!\n";
-    exit(1);
-#endif
-    sp = rpstop(z2, e);
+    // Hydrogen electronic stopping powers [RST0640]
+    se = rpstop(z2, e);
   }
   else if (z1 == 2)
   {
-    #ifdef MYTRIM_ENABLED
-        mooseError("alpha stopping not yet implemented!");
-    #else
-        std::cerr << "alpha stopping not yet implemented!\n";
-        exit(1);
-    #endif
     // Helium electronic stopping powers [RST0820]
     const Real he0 = 10.0;
     Real he = std::max(he0, e);
