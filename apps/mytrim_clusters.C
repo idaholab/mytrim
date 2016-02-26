@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
     do
     {
       for (int i = 0; i < 3; ++i) ff1->_dir(i) = dr250() - 0.5;
-      norm = ff1->_dir.size_sq();
+      norm = ff1->_dir.norm_sq();
     }
     while (norm <= 0.0001 || norm > 0.25);
 
@@ -281,7 +281,7 @@ int main(int argc, char *argv[])
           dif = pos1 - pka->_pos;  // distance to cluster center
           dif2 = pos2 - pka->_pos; // total distance it moved
 
-          fprintf(rdist, "%f %d %f %f %f %f\n", dif.size(), pka->_md, pka->_pos(0), pka->_pos(1), pka->_pos(2), dif2.size());
+          fprintf(rdist, "%f %d %f %f %f %f\n", dif.norm(), pka->_md, pka->_pos(0), pka->_pos(1), pka->_pos(2), dif2.norm());
         }
 
 

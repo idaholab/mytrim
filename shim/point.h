@@ -35,10 +35,10 @@ public:
   const Real & operator() (unsigned int i) const;
 
   /// distance squared form the origin
-  Real size_sq() { return data[0]*data[0] + data[1]*data[1] + data[2]*data[2]; }
+  Real norm_sq() { return data[0]*data[0] + data[1]*data[1] + data[2]*data[2]; }
 
   /// distance form the origin
-  Real size() { return std::sqrt(size_sq()); }
+  Real norm() { return std::sqrt(norm_sq()); }
 
   /// arithmetic operators
   Point operator+ (const Point & rhs);
