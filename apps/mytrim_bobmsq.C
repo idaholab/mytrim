@@ -205,9 +205,9 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing AFTER the cascade here
       if (pka->gen > 0)
-        sqd += (pos2 - pka->_pos).size_sq();
+        sqd += (pos2 - pka->_pos).norm_sq();
       else if (pka->gen > 1)
-        sqd2 += (pos2 - pka->_pos).size_sq();
+        sqd2 += (pos2 - pka->_pos).norm_sq();
 
       // done with this recoil
       delete pka;

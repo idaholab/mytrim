@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
     {
       for (int i = 0; i < 3; ++i)
         ff1->_dir(i) = 2.0 * dr250() - 1.0;
-      norm = ff1->_dir.size_sq();
+      norm = ff1->_dir.norm_sq();
     }
     while (norm <= 0.0001 || norm > 1.0);
     ff1->_dir /= std::sqrt(norm);

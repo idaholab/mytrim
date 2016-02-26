@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
       if (pka->_Z != Z)
       {
-        sum_r2 += (opos - pka->_pos).size_sq();
+        sum_r2 += (opos - pka->_pos).norm_sq();
         nrec++;
       }
 

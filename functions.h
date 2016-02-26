@@ -39,7 +39,7 @@ inline void v_norm(Real * a1, Real b = 1.0) // in-place normalize to b (= 1.0 de
 
 inline void v_norm(Point & a1, Real b = 1.0) // in-place normalize to b (= 1.0 default)
 {
-  a1 *= b / a1.size();
+  a1 *= b / a1.norm();
 }
 
 inline Real sqr(Real a) { return a*a; }
