@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 project(mytrim)
 
 set(DEBUG_FLAGS "-std=c++11 -g -O1 -Wall -Wextra -Werror -pedantic")
@@ -17,6 +18,7 @@ set( MYTRIM_DATA_DIR ${CMAKE_INSTALL_PREFIX}${DATA_INSTALL} )
 configure_file( ${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_SOURCE_DIR}/config.h )
 add_definitions(-DHAVE_CONFIG_H)
 add_library(mytrim invert.C shim/cxx11random.C shim/point.C element.C material.C sample.C ion.C trim.C simconf.C sample_clusters.C sample_solid.C sample_wire.C sample_burried_wire.C sample_layers.C sample_dynamic.C)
+
 
 install(TARGETS mytrim ARCHIVE DESTINATION lib)
 install(FILES simconf.h shim/cxx11random.h shim/point.h element.h material.h ion.h trim.h invert.h sample.h functions.h DESTINATION include/mytrim)
@@ -37,3 +39,11 @@ foreach(program ${PROGRAMS})
   add_executable(${program} apps/${program}.C)
   target_link_libraries(${program}  mytrim m)
 endforeach(program)
+
+find_package(JsonCpp)
+
+if (JSONCPP_FOUND)
+  include_directories(${JSONCPP_INCLUDE_DIRS})
+  add_executable(mytrim_json apps/mytrim_json.C)
+  target_link_libraries(mytrim_json  mytrim m jsoncpp)
+endif (JSONCPP_FOUND)
