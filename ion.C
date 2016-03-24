@@ -6,6 +6,7 @@ using namespace MyTRIM_NS;
 
 IonBase::IonBase() :
     _time(0.0),
+    tag(-1),
     _Ef(3.0),
     state(MOVING)
 {
@@ -16,6 +17,7 @@ IonBase::IonBase(IonBase* prototype) :
     _m(prototype->_m),
     _E(prototype->_E),
     _time(prototype->_time),
+    tag(-1),
     _Ef(prototype->_Ef),
     state(MOVING)
 {
@@ -26,6 +28,7 @@ IonBase::IonBase(int Z, Real m, Real E) :
     _m(m),
     _E(E),
     _time(0.0),
+    tag(-1),
     _Ef(3.0),
     state(MOVING)
 {
