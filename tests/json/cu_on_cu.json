@@ -1,0 +1,16 @@
+{
+  "options": { "seed": 2344 },
+  // 150 keV Copper
+  "ion" : { "Z": 29, "mass": 63.546, "energy": 150000, "number": 1000 },
+  "sample": {
+    "layers": [
+      { "thickness": 1000, "rho": 8.92, "elements": [
+        // Copper
+        { "Z": 29, "mass": 63.546, "fraction": 1 } ]
+      }
+    ]
+  },
+  "output" : {
+    "base": "cu_on_cu"
+  }
+}
