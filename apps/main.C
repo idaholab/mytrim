@@ -39,8 +39,9 @@
 #include "ion.h"
 #include "trim.h"
 #include "invert.h"
-
 #include "functions.h"
+
+#include "include/trimlog.h"
 
 using namespace MyTRIM_NS;
 
@@ -108,7 +109,7 @@ int main(int argc, char *argv[])
 
   // initialize sample structure
   SampleLayers *sample = new SampleLayers(thickness, 100.0, 100.0);
-  TrimBase *trim = new TrimRecoils(simconf, sample);
+  TrimVacCount *trim = new TrimVacCount(simconf, sample);
 
   MaterialBase * material;
   ElementBase * element;
@@ -194,7 +195,7 @@ int main(int argc, char *argv[])
   for (int n = 0; n < npka; n++)
   {
     if (n % 100 == 0)
-      std::cout << "pka #" << n+1 << '\n';
+      std::cerr << "pka #" << n+1 << '\n';
 
     pka = new IonBase(pkaTemplate);
     pka->gen = 0; // generation (0 = PKA)
@@ -245,7 +246,11 @@ int main(int argc, char *argv[])
   fclose(rdist);
   fclose(erec);
 
-  // std::cout << "n=" << nrec << " sum_r2=" << sum_r2 << std::endl;
+  const std::vector<unsigned int> & vac = trim->getVacData();
+  for (unsigned int i = 0; i < vac.size(); ++i)
+    std::cout << i << ' ' << vac[i] << '\n';
+
+  std::cerr << "Vacancies/ion: " << Real(simconf->vacancies_created)/Real(npka) << '\n';
 
   return EXIT_SUCCESS;
 }
