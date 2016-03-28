@@ -114,9 +114,25 @@ int main(int argc, char *argv[])
   // set up TRIM module
   TrimBase * trim;
 
-  trim = new TrimVacCount(simconf, sample);
+  //
+  // process output block
+  //
+  if (!json_root["output"].isObject())
+    mytrimError("Must specify an 'output' block in the input file");
 
-  //trim->setbaseName(...);
+  if (!json_root["output"]["type"].isString())
+    mytrimError("output.type must be a string");
+  const std::string output_type = json_root["output"]["type"].asString();
+
+  // construct TRIM object according to output type
+  if (output_type == "vaccount")
+    trim = new TrimVacCount(simconf, sample);
+  else
+    mytrimError("Unknown output type " << output_type);
+
+  if (json_root["output"]["base"].isString())
+    trim->setBaseName(json_root["output"]["base"].asString());
+
 
   MaterialBase * material;
   ElementBase * element;

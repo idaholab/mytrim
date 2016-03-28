@@ -17,6 +17,7 @@ addons:
       - gcc-4.9
       - g++-4.9
       - clang
+      - jsoncpp
 
 before_script:
   - mkdir build
