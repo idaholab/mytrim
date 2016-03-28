@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <vector>
 #include <queue>
 #include <cmath>
+#include <string>
 
 #include "material.h"
 #include "sample.h"
@@ -34,28 +35,52 @@ namespace MyTRIM_NS {
 class TrimBase
 {
 public:
-  TrimBase(SimconfType * simconf, SampleBase *sample) :
+  TrimBase(SimconfType * simconf, SampleBase * sample) :
       _simconf(simconf),
-      _sample(sample)
+      _sample(sample),
+      _base_name("mytrim")
   {}
 
-  void trim(IonBase *_pka, std::queue<IonBase*> &recoils);
+  /**
+   * The virtual destructor should handle closing output files
+   */
+  virtual ~TrimBase() {}
+
+  /**
+   * Run a TRIM simulation with a given PKA ans push the resulting recoils onto
+   * the recoils queue
+   */
+  void trim(IonBase * _pka, std::queue<IonBase*> & recoils);
+
+  /**
+   * Set the output file base name
+   */
+  void setBaseName(const std::string & name) { _base_name = name; }
 
 protected:
-  // by default only follow recoils with E > 12eV
+  /// by default only follow recoils with E > 12eV
   virtual bool followRecoil();
+
+  /// called whenever a vaccancy is created
   virtual void vacancyCreation();
+
   virtual void checkPKAState() {}
+
+  /// called if recoil energy needs to get dissipated, to record phonons
   virtual void dissipateRecoilEnergy() {}
 
   SimconfType * _simconf;
   SampleBase * _sample;
 
+  /// the current PKA and the last recoil it created
   IonBase * _pka, * _recoil;
   MaterialBase * _material;
   ElementBase * _element;
   std::queue<IonBase*> * recoil_queue_ptr;
   bool terminate;
+
+  // TRIM classes that output stuff use this string as the base name
+  std::string _base_name;
 };
 
 
@@ -150,9 +175,9 @@ public:
       _z2(z2),
       _z3(z3)
   {
-    for (int e = 0; e < 3; e++)
-      for (int x = 0; x < mx; x++)
-        for (int y = 0; y < my; y++)
+    for (unsigned int e = 0; e < 3; ++e)
+      for (unsigned int x = 0; x < mx; ++x)
+        for (unsigned int y = 0; y < my; ++y)
           vmap[x][y][e] = 0;
   }
 
