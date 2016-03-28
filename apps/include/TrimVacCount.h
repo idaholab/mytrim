@@ -1,5 +1,5 @@
-#ifndef TRIMVACCOUNT
-#define TRIMVACCOUNT
+#ifndef TRIMVACCOUNT_H
+#define TRIMVACCOUNT_H
 
 #include "trim.h"
 
@@ -21,4 +21,4 @@ private:
   std::vector<unsigned int> _vac_bin;
 };
 
-#endif //TRIMVACCOUNT
+#endif //TRIMVACCOUNT_H

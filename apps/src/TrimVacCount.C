@@ -36,7 +36,7 @@ TrimVacCount::stopOutput()
 
     // write out vaccancy histogram
     std::ofstream out((_base_name + "_vac.dat").c_str());
-    for (unsigned int i = 0; i < _vac_bin.size(); ++i)
-      out << i << ' ' << _vac_bin[i] << '\n';
+    for (unsigned int x = 0; x < _vac_bin.size(); ++x)
+      out << x << ' ' << _vac_bin[x] << '\n';
   }
 }

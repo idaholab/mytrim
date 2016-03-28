@@ -43,6 +43,7 @@
 
 // TRIM modules
 #include "include/TrimVacCount.h"
+#include "include/TrimVacEnergyCount.h"
 
 using namespace MyTRIM_NS;
 
@@ -127,6 +128,8 @@ int main(int argc, char *argv[])
   // construct TRIM object according to output type
   if (output_type == "vaccount")
     trim = new TrimVacCount(simconf, sample);
+  else if (output_type == "vacenergycount")
+    trim = new TrimVacEnergyCount(simconf, sample);
   else
     mytrimError("Unknown output type " << output_type);
 
@@ -198,13 +201,6 @@ int main(int argc, char *argv[])
     mytrimError("Missing 'number' in ion block");
   unsigned int npka = json_root["ion"]["number"].asInt();
 
-  // process output block
-  if (!json_root["output"].isObject())
-    mytrimError("Must specify an 'output' block in the input file");
-
-  if (!json_root["output"]["base"].isString())
-    mytrimError("Missing 'base' in output block");
-  std::string basename = json_root["output"]["base"].asString();
 
   // start output
   trim->startOutput();
