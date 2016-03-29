@@ -36,6 +36,7 @@ class TrimBase
 {
 public:
   TrimBase(SimconfType * simconf, SampleBase * sample) :
+      _potential(UNIVERSAL),
       _simconf(simconf),
       _sample(sample),
       _base_name("mytrim"),
@@ -64,6 +65,10 @@ public:
   /// overload and call baseclass version from here. Close files necessary for output in this method.
   virtual void stopOutput() { _outputting = false; }
 
+  /// Scattering potential type
+  enum Potential { UNIVERSAL, MOLIERE, CKR };
+  Potential _potential;
+
 protected:
   /// by default only follow recoils with E > 12eV
   virtual bool followRecoil();
@@ -89,7 +94,16 @@ protected:
   std::queue<IonBase*> * recoil_queue_ptr;
   bool terminate;
 
-  // TRIM classes that output stuff use this string as the base name
+  /// current path segment length
+  Real _ls;
+
+  /// current electronic energy loss along _ls
+  Real _dee;
+
+  /// current electronic energy loss at the collison after _ls
+  Real _den;
+
+  /// TRIM classes that output stuff use this string as the base name
   std::string _base_name;
 
 private:
