@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #ifndef MYTRIM_SIMCONF_H
 #define MYTRIM_SIMCONF_H
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <string>
+#include <iostream>
+#include <fstream>
 
 #ifdef MYTRIM_ENABLED
 // building from within MOOSE/Magpie
@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "MooseRandom.h"
 #include "libmesh/point.h"
 namespace MyTRIM_NS {
-  const Real drm = Real(RAND_MAX)+1.0;
+  const Real drm = Real(RAND_MAX) + 1.0;
   inline Real dr250() { return MooseRandom::rand(); }
   inline void r250_init(unsigned int s) { MooseRandom::seed(s); }
 }
@@ -56,9 +56,13 @@ public:
   // tables from files
   // ZBL coefficients a, b, c, d for all element pairs from Z=1..92
   struct ScoefLine {
-    char sym[3], name[30];
+    // from ELNAME.dat
+    std::string sym, name;
+    // from SCOEF.95A
     Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
+    // from SCOEF.95B
   } scoef[92];
+
   Real pcoef[92][8];
   Real snuc[92][92][4];
 
@@ -72,11 +76,11 @@ public:
   int vacancies_created;
 
 private:
-  void readScoef();
-  void readSnuc();
+  void readDataFiles();
 
-  void fileReadError(const char *);
+  void fileReadError(const std::string &);
   void skipLine(FILE * sf);
+  void skipLine(std::ifstream & sf);
 
   std::string _data_dir;
 };
