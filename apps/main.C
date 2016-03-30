@@ -41,7 +41,9 @@
 #include "invert.h"
 #include "functions.h"
 
-#include "include/trimlog.h"
+// TRIM modules
+#include "include/TrimVacCount.h"
+#include "include/TrimVacEnergyCount.h"
 
 using namespace MyTRIM_NS;
 
@@ -109,7 +111,31 @@ int main(int argc, char *argv[])
 
   // initialize sample structure
   SampleLayers *sample = new SampleLayers(thickness, 100.0, 100.0);
-  TrimVacCount *trim = new TrimVacCount(simconf, sample);
+
+  // set up TRIM module
+  TrimBase * trim;
+
+  //
+  // process output block
+  //
+  if (!json_root["output"].isObject())
+    mytrimError("Must specify an 'output' block in the input file");
+
+  if (!json_root["output"]["type"].isString())
+    mytrimError("output.type must be a string");
+  const std::string output_type = json_root["output"]["type"].asString();
+
+  // construct TRIM object according to output type
+  if (output_type == "vaccount")
+    trim = new TrimVacCount(simconf, sample);
+  else if (output_type == "vacenergycount")
+    trim = new TrimVacEnergyCount(simconf, sample);
+  else
+    mytrimError("Unknown output type " << output_type);
+
+  if (json_root["output"]["base"].isString())
+    trim->setBaseName(json_root["output"]["base"].asString());
+
 
   MaterialBase * material;
   ElementBase * element;
@@ -175,16 +201,9 @@ int main(int argc, char *argv[])
     mytrimError("Missing 'number' in ion block");
   unsigned int npka = json_root["ion"]["number"].asInt();
 
-  // process output block
-  if (!json_root["output"].isObject())
-    mytrimError("Must specify an 'output' block in the input file");
 
-  if (!json_root["output"]["base"].isString())
-    mytrimError("Missing 'base' in output block");
-  std::string basename = json_root["output"]["base"].asString();
-
-  FILE *erec = fopen((basename + ".Erec").c_str(), "wt");
-  FILE *rdist = fopen((basename + ".dist").c_str(), "wt");
+  // start output
+  trim->startOutput();
 
   // create a FIFO for recoils
   std::queue<IonBase*> recoils;
@@ -238,17 +257,11 @@ int main(int argc, char *argv[])
 
       // done with this recoil
       delete pka;
-
-      // this should rather be done with spawnRecoil returning false
-      //if (simconf->primariesOnly) while (!recoils.empty()) { delete recoils.front(); recoils.pop(); };
     }
   }
-  fclose(rdist);
-  fclose(erec);
 
-  const std::vector<unsigned int> & vac = trim->getVacData();
-  for (unsigned int i = 0; i < vac.size(); ++i)
-    std::cout << i << ' ' << vac[i] << '\n';
+  // stop output
+  trim->stopOutput();
 
   std::cerr << "Vacancies/ion: " << Real(simconf->vacancies_created)/Real(npka) << '\n';
 

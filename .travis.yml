@@ -19,10 +19,11 @@ addons:
       - clang
 
 before_script:
+  - ./.travis_bootstrap.sh
   - mkdir build
   - cd build
   - cmake --version
-  - cmake ..
+  - cmake .. -DCMAKE_PREFIX_PATH=/home/travis/jsoncpp/install
 
 script:
   - make

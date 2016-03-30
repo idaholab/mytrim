@@ -36,18 +36,20 @@ class TrimBase
 {
 public:
   TrimBase(SimconfType * simconf, SampleBase * sample) :
+      _potential(UNIVERSAL),
       _simconf(simconf),
       _sample(sample),
-      _base_name("mytrim")
+      _base_name("mytrim"),
+      _outputting(false)
   {}
 
   /**
    * The virtual destructor should handle closing output files
    */
-  virtual ~TrimBase() {}
+  virtual ~TrimBase() { stopOutput(); }
 
   /**
-   * Run a TRIM simulation with a given PKA ans push the resulting recoils onto
+   * Run a TRIM simulation with a given PKA and push the resulting recoils onto
    * the recoils queue
    */
   void trim(IonBase * _pka, std::queue<IonBase*> & recoils);
@@ -56,6 +58,16 @@ public:
    * Set the output file base name
    */
   void setBaseName(const std::string & name) { _base_name = name; }
+
+  /// overload and call baseclass version from here. Open files necessary for output in this method.
+  virtual void startOutput() { _outputting = true; }
+
+  /// overload and call baseclass version from here. Close files necessary for output in this method.
+  virtual void stopOutput() { _outputting = false; }
+
+  /// Scattering potential type
+  enum Potential { UNIVERSAL, MOLIERE, CKR };
+  Potential _potential;
 
 protected:
   /// by default only follow recoils with E > 12eV
@@ -69,6 +81,9 @@ protected:
   /// called if recoil energy needs to get dissipated, to record phonons
   virtual void dissipateRecoilEnergy() {}
 
+  /// helper function to determine if the output has been started
+  bool outputting() { return _outputting; }
+
   SimconfType * _simconf;
   SampleBase * _sample;
 
@@ -79,8 +94,21 @@ protected:
   std::queue<IonBase*> * recoil_queue_ptr;
   bool terminate;
 
-  // TRIM classes that output stuff use this string as the base name
+  /// current path segment length
+  Real _ls;
+
+  /// current electronic energy loss along _ls
+  Real _dee;
+
+  /// current electronic energy loss at the collison after _ls
+  Real _den;
+
+  /// TRIM classes that output stuff use this string as the base name
   std::string _base_name;
+
+private:
+  /// has the output been initialized
+  bool _outputting;
 };
 
 

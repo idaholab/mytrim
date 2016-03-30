@@ -21,32 +21,33 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
   // make recoil queue available in overloadable functions
   recoil_queue_ptr = &recoils;
 
-  //e = _pka.e;
   Real pl = 0.0;
-  Real max = 0.0;
+
+  // maximum electronic energy loss observed
+  Real max_dee = 0.0;
+
   //Real e0kev = _pka->_E / 1000.0;
   int ic = 0;
-  unsigned int nn; //, ie;
+  unsigned int nn;
   Real r1, r2, hh;
-  Real eps, eeg, ls, p, b, r, see, dee;
+  Real eps, eeg, p, b, r, see;
   Real s2, c2, ct, st;
   Real rr, ex1, ex2, ex3, ex4, v , v1;
   Real fr, fr1, q, roc, sqe;
   Real cc, aa, ff, co, delta;
-  Real den;
   Point rdir, perp;
   Real norm, psi;
 
   Real p1, p2;
-  //Real range;
 
   // generate random number for use in the first loop iteration only!
   r1 = dr250();
 
-  do // cycle for each collision
+  // cycle for each collision
+  do
   {
     // increase loop counter
-    ic++;
+    ++ic;
 
     // which material is the ion currently in?
     _material = _sample->lookupMaterial(_pka->_pos);
@@ -61,35 +62,35 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     eeg = std::sqrt(eps * _material->epsdg); // [TRI02450]
     _material->pmax = _material->a / (eeg + std::sqrt(eeg) + 0.125 * std::pow(eeg, 0.1));
 
-    ls = 1.0 / (M_PI * std::pow(_material->pmax, 2.0) * _material->_arho);
+    _ls = 1.0 / (M_PI * std::pow(_material->pmax, 2.0) * _material->_arho); // [TRI02470]
     if (ic == 1)
-      ls = r1 * std::min(ls, _simconf->cw);
+      _ls = r1 * std::min(_ls, _simconf->cw); // [TRI02480]
 
     // correct for maximum available range in current _material by increasing maximum impact parameter
     #ifdef RANGECORRECT
       range = _sample->rangeMaterial(_pka->_pos, _pka->_dir);
-      if (range<ls)
+      if (range < _ls)
       {
-        /* std::cout << "range=" << range << " ls=" << ls
+        /* std::cout << "range=" << range << " _ls=" << _ls
               << " pos(0)=" << _pka->_pos(0) << " dir(0)=" << _pka->_dir(0) << '\n';
         std::cout << "CC " << _pka->_pos(0) << ' ' << _pka->_pos(1) << '\n';
         std::cout << "CC " << _pka->_pos(0) + _pka->_dir(0) * range << ' ' << _pka->_pos(1) + _pka->_dir(1) * range << '\n';
         std::cout << "CC " << '\n';*/
 
-        ls = range;
+        _ls = range;
 
-        // correct pmax to correspond with new ls
-        _material->pmax = 1.0 / std::sqrt(M_PI * ls * _material->_arho);
+        // correct pmax to correspond with new _ls
+        _material->pmax = 1.0 / std::sqrt(M_PI * _ls * _material->_arho);
       }
     #endif
 
     // correct for maximum available range in current _material by dropping recoils randomly (faster)
     #ifdef RANGECORRECT2
       range = _sample->rangeMaterial(_pka->_pos, _pka->_dir);
-      if (range < ls)
+      if (range < _ls)
       {
         // skip this recoil, just advance the ion
-        if (range / ls < dr250())
+        if (range / _ls < dr250())
         {
           // electronic stopping
           _pka->_E -= range * _material->getrstop(_pka);
@@ -100,14 +101,14 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
           // start over
           continue;
         }
-        ls = range;
+        _ls = range;
       }
     #endif
 
     // advance clock pathlength/velocity
     // time in fs! m in u, l in Ang, e in eV
     // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
-    _pka->_time += 10.1811859 * (ls - _simconf->tau) / std::sqrt(2.0 * _pka->_E / _pka->_m);
+    _pka->_time += 10.1811859 * (_ls - _simconf->tau) / std::sqrt(2.0 * _pka->_E / _pka->_m);
 
     // choose impact parameter
     r2 = dr250();
@@ -132,11 +133,13 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
     see = _material->getrstop(_pka);
     //if (_pka.e < e0kev) see = _material->se[0] * std::sqrt(_pka.e / e0kev);
-    dee = ls * see;
 
-    if (eps>10.0)
+    // calculate electronic energy loss along the path segment _ls
+    _dee = _ls * see;
+
+    if (eps > 10.0)
     {
-      // use Rutherford scattering
+      // use Rutherford scattering [TRI02690]
       s2 = 1.0 / (1.0 + (1.0 + b * (1.0 + b)) * std::pow(2.0 * eps * b , 2.0));
       c2 = 1.0 - s2;
       ct = 2.0 * c2 - 1.0;
@@ -155,31 +158,40 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
       do
       {
-        // universal potential
-        ex1 = 0.18175 * std::exp(-3.1998 * r);
-        ex2 = 0.50986 * std::exp(-0.94229 * r);
-        ex3 = 0.28022 * std::exp(-0.4029 * r);
-        ex4 = 0.028171 * std::exp(-0.20162 * r);
-        v = (ex1 + ex2 + ex3 + ex4) / r;
-        v1 = -(v + 3.1998 *ex1 + 0.94229 * ex2 + 0.4029 * ex3 + 0.20162 * ex4) / r;
+        switch (_potential)
+        {
+          case UNIVERSAL:
+            // universal potential
+            ex1 = 0.18175 * std::exp(-3.1998 * r);
+            ex2 = 0.50986 * std::exp(-0.94229 * r);
+            ex3 = 0.28022 * std::exp(-0.4029 * r);
+            ex4 = 0.028171 * std::exp(-0.20162 * r);
+            v = (ex1 + ex2 + ex3 + ex4) / r;
+            v1 = -(v + 3.1998 *ex1 + 0.94229 * ex2 + 0.4029 * ex3 + 0.20162 * ex4) / r;
+            break;
 
-        /*
-        // Moliere potential
-        ex1 = std::exp(-0.3 * r);
-        ex2 = std::pow(ex1, 4.0);
-        ex3 = std::pow(ex2, 5.0);
-        v = (0.35 * ex1 + 0.55 * ex2 + 0.1 * ex3) / r;
-        v1 = -(v + 0.105 * ex1 + 0.66 * ex2 + 0.6 * ex3) / r;
-        */
+          case MOLIERE:
+            // Moliere potential
+            ex1 = std::exp(-0.3 * r);
+            ex2 = std::pow(ex1, 4.0);
+            ex3 = std::pow(ex2, 5.0);
+            v = (0.35 * ex1 + 0.55 * ex2 + 0.1 * ex3) / r;
+            v1 = -(v + 0.105 * ex1 + 0.66 * ex2 + 0.6 * ex3) / r;
+            break;
 
-        /*
-        // C-Kr potential
-        ex1 = std::exp(-0.279 * r);
-        ex2 = std::exp(-0.637 * r);
-        ex3 = std::exp(-1.1919 * r);
-        v = (0.191 * ex1 + 0.474 * ex2 + 0.335 * ex3) / r;
-        v1 = -(v + 0.531865 * ex1 + 0.30181 * ex2 + 0.6437 * ex3) / r;
-        */
+          case CKR:
+            // C-Kr potential
+            ex1 = std::exp(-0.279 * r);
+            ex2 = std::exp(-0.637 * r);
+            ex3 = std::exp(-1.1919 * r);
+            v = (0.191 * ex1 + 0.474 * ex2 + 0.335 * ex3) / r;
+            v1 = -(v + 0.531865 * ex1 + 0.30181 * ex2 + 0.6437 * ex3) / r;
+            break;
+
+          default:
+            std::cerr << "Invalid potential" << std::endl;
+            exit(1);
+        }
 
         fr = b*b / r + v * r / eps -r;
         fr1 = - b*b / (r*r) + (v + v1 * r) / eps - 1.0;
@@ -190,24 +202,33 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       roc = -2.0 * (eps - v) / v1;
       sqe = std::sqrt(eps);
 
-      // 5-parameter magic scattering calculation (universal pot.)
-      cc = (0.011615 + sqe) / (0.0071222 + sqe);                  // 2-87 beta
-      aa = 2.0 * eps * (1.0 + (0.99229 / sqe)) * std::pow(b, cc); // 2-87 A
-      ff = (std::sqrt(aa*aa + 1.0) - aa) * ((9.3066 + eps) / (14.813 + eps));
+      switch (_potential)
+      {
+        case UNIVERSAL:
+          // 5-parameter magic scattering calculation (universal pot.)
+          cc = (0.011615 + sqe) / (0.0071222 + sqe);                  // 2-87 beta
+          aa = 2.0 * eps * (1.0 + (0.99229 / sqe)) * std::pow(b, cc); // 2-87 A
+          ff = (std::sqrt(aa*aa + 1.0) - aa) * ((9.3066 + eps) / (14.813 + eps));
+          break;
 
-      /*
-      // Moliere potential
-      cc = (0.009611 + sqe) / (0.005175 + sqe);
-      aa = 2.0 * eps * (1.0 + (0.6743 / sqe)) * std::pow(b, cc);
-      ff = (std::sqrt(aa*aa + 1.0) - aa) * ((6.314 + eps) / (10.0 + eps));
-      */
+        case MOLIERE:
+          // Moliere potential
+          cc = (0.009611 + sqe) / (0.005175 + sqe);
+          aa = 2.0 * eps * (1.0 + (0.6743 / sqe)) * std::pow(b, cc);
+          ff = (std::sqrt(aa*aa + 1.0) - aa) * ((6.314 + eps) / (10.0 + eps));
+          break;
 
-      /*
-      // C-Kr potential
-      cc = (0.235809 + sqe) / (0.126000 + sqe);
-      aa = 2.0 * eps * (1.0 + (1.0144 / sqe)) * std::pow(b, cc);
-      ff = (std::sqrt(aa*aa + 1.0) - aa) * ((6935.0 + eps) / (83550.0 + eps));
-      */
+        case CKR:
+          // C-Kr potential
+          cc = (0.235809 + sqe) / (0.126000 + sqe);
+          aa = 2.0 * eps * (1.0 + (1.0144 / sqe)) * std::pow(b, cc);
+          ff = (std::sqrt(aa*aa + 1.0) - aa) * ((6935.0 + eps) / (83550.0 + eps));
+          break;
+
+        default:
+          std::cerr << "Invalid potential" << std::endl;
+          exit(1);
+      }
 
       delta = (r - b) * aa * ff / (ff + 1.0);
       co = (b + delta + roc) / (r + roc);
@@ -215,45 +236,46 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       s2 = 1.0 - c2;
       ct = 2.0 * c2 - 1.0;
       st = std::sqrt(1.0 - ct*ct);
-    } // end non-rutherford scattering
+    } // end non-Rutherford scattering
 
     // energy transferred to recoil atom [TRI03350]
-    den = _element->ec * s2 * _pka->_E;
+    _den = _element->ec * s2 * _pka->_E;
 
-    if (dee > _pka->_E) {
+    if (_dee > _pka->_E) {
       // avoid getting negative energies
-      dee = _pka->_E;
+      _dee = _pka->_E;
 
       // sanity check
-      if (den > 100.0)
+      if (_den > 100.0)
         std::cerr << " electronic energy loss stopped the ion. Broken _recoil!!\n";
     }
 
     // electronic energy loss
-    _pka->_E -= dee;
-    _simconf->EelTotal += dee;
+    _pka->_E -= _dee;
+    _simconf->EelTotal += _dee;
 
     // momentum transfer
     p1 = std::sqrt(2.0 * _pka->_m * _pka->_E); // momentum before collision
-    if (den > _pka->_E) den = _pka->_E; // avoid negative energy
-    _pka->_E -= den;
+    if (_den > _pka->_E) _den = _pka->_E; // avoid negative energy
+    _pka->_E -= _den;
     p2 = std::sqrt(2.0 * _pka->_m * _pka->_E); // momentum after collision
 
     // track maximum electronic energy loss TODO: might want to track max(see)!
-    if (dee>max) max = dee;
+    if (_dee > max_dee)
+      max_dee = _dee;
 
     // total path lenght
-    pl += ls - _simconf->tau;
+    pl += _ls - _simconf->tau;
 
     // find new position, save old direction to recoil
     _recoil = _pka->spawnRecoil();
 
     // used to assign the new position to the recoil, but
     // we have to make sure the recoil starts in the appropriate _material!
-    _pka->_pos += _pka->_dir * (ls - _simconf->tau);
+    _pka->_pos += _pka->_dir * (_ls - _simconf->tau);
     _recoil->_dir = _pka->_dir * p1;
 
-    _recoil->_E = den;
+    _recoil->_E = _den;
 
     // recoil loses the lattice binding energy
     _recoil->_E -= _element->_Elbind;

@@ -44,6 +44,9 @@ find_package(JsonCpp)
 
 if (JSONCPP_FOUND)
   include_directories(${JSONCPP_INCLUDE_DIRS})
-  add_executable(runmytrim apps/main.C apps/src/trimlog.C)
-  target_link_libraries(runmytrim mytrim m jsoncpp)
+  add_executable(runmytrim apps/main.C
+    apps/src/TrimVacCount.C
+    apps/src/TrimVacEnergyCount.C
+  )
+  target_link_libraries(runmytrim mytrim m ${JSONCPP_LIBRARIES})
 endif (JSONCPP_FOUND)
