@@ -18,7 +18,7 @@ protected:
 
 private:
   /// histogram of vacancies created per log10 Energy and unit depth (Ang)
-  std::vector<std::vector<unsigned int> > _vac_bin;
+  std::vector<std::vector<unsigned int> > _evac_bin;
 };
 
 #endif //TRIMVACENERGYCOUNT_H

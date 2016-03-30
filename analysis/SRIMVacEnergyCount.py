@@ -17,7 +17,7 @@ for i in range(4) :
   header[i] = fileinput.input()
 
 # parse rest of the file
-vac = []
+vac = [[], [0], [0], [0]]
 for line in fileinput.input() :
   # detect recoils
   if recoil.match(line) :
@@ -26,7 +26,7 @@ for line in fileinput.input() :
     # vacancy
     if field[7] == '1' :
       x = int(float(field[4]))
-      E = int(math.log10(float(field[3])))
+      E = int(math.log(float(field[3])))
       E =  max(0, E);
 
       if E not in vac :
