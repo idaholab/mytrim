@@ -13,6 +13,7 @@ namespace MyTRIM_NS {
 using namespace MyTRIM_NS;
 
 SimconfType::SimconfType(Real _alfa) :
+    scoef(_rows),
     _data_dir(std::getenv("MYTRIM_DATADIR") ? std::getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR)
 {
   ed = 25.0; // displacement energy
@@ -71,64 +72,33 @@ SimconfType::readDataFiles()
 
   skipLine(scoef95a); // header
   skipLine(scoef95a); // header
-  for (int i = 0; i < 92; ++i)
-  {
-    scoef95a >> dummy
-             >> scoef[i].mm1 >> scoef[i].m1 >> scoef[i].mnat
-             >> scoef[i].rho >> scoef[i].atrho >> scoef[i].vfermi >> scoef[i].heat
-             >> pcoef[i][0] >> pcoef[i][1] >> pcoef[i][2] >> pcoef[i][3]
-             >> pcoef[i][4] >> pcoef[i][5] >> pcoef[i][6] >> pcoef[i][7];
-
-    if (!scoef95a)
-      fileReadError("contents of SCOEF.95A");
-  }
-
 
   fname = _data_dir + "/SCOEF.95B";
   std::ifstream scoef95b(fname.c_str());
   if (!scoef95b)
     fileReadError(fname);
-
   skipLine(scoef95b); // header
   skipLine(scoef95b); // header
-  for (unsigned int i = 0; i < 92; ++i)
-  {
-    scoef[i].ehigh.resize(4);
-    for (unsigned int j = 0; j < 4; ++j)
-      if (!(scoef95b >> scoef[i].ehigh[j]))
-        fileReadError("high energy coefficient in SCOEF.95B");
-
-    scoef[i].screen.resize(19);
-    for (unsigned int j = 0; j < 19; ++j)
-      if (!(scoef95b >> scoef[i].screen[j]))
-        fileReadError("screening data in SCOEF.95B");
-
-    scoef[i].fermicorr.resize(15);
-    for (unsigned int j = 0; j < 15; ++j)
-      if (!(scoef95b >> scoef[i].fermicorr[j]))
-        fileReadError("fermi correction in SCOEF.95B");
-  }
 
 
   fname = _data_dir + "/SLFCTR.dat";
   std::ifstream slfctr(fname.c_str());
   if (!slfctr)
     fileReadError(fname);
-
   skipLine(slfctr); // header
-  for (int i = 0; i < 92; ++i)
-    if (!(slfctr >> dummy >> scoef[i].lfctr))
-      fileReadError("contents of SLFCTR.dat");
-
 
   fname = _data_dir + "/ELNAME.dat";
   std::ifstream elname(fname.c_str());
   if (!elname)
     fileReadError(fname);
 
-  for (int i = 0; i < 92; ++i)
-    if (!(elname >> dummy >> scoef[i].sym >> scoef[i].name))
-      fileReadError("contents of ELNAME.dat");
+  for (unsigned int i = 0; i < _rows; ++i)
+  {
+    scoef[i].read95A(scoef95a);
+    scoef[i].read95B(scoef95b);
+    scoef[i].readSlfctr(slfctr);
+    scoef[i].readElname(elname);
+  }
 }
 
 void
@@ -155,4 +125,67 @@ SimconfType::skipLine(std::ifstream & sf)
       exit(1);
     #endif
   }
+}
+
+
+SimconfType::ScoefLine::ScoefLine() :
+    mm1(0.0),
+    m1(0.0),
+    mnat(0.0),
+    rho(0.0),
+    atrho(0.0),
+    vfermi(0.0),
+    heat(0.0),
+    lfctr(0.0),
+    pcoef(8),
+    ehigh(4),
+    screen(19),
+    fermicorr(15)
+{
+}
+
+void
+SimconfType::ScoefLine::read95A(std::ifstream & scoef95a)
+{
+  int dummy;
+  scoef95a >> dummy
+           >> mm1 >> m1 >> mnat
+           >> rho >> atrho >> vfermi >> heat;
+
+  if (!scoef95a)
+    SimconfType::fileReadError("contents of SCOEF.95A");
+
+  for (unsigned int j = 0; j < 8; ++j)
+    if (!(scoef95a >> pcoef[j]))
+      SimconfType::fileReadError("proton coefficient in SCOEF.95B");
+}
+
+void
+SimconfType::ScoefLine::read95B(std::ifstream & scoef95b)
+{
+  for (unsigned int j = 0; j < 4; ++j)
+    if (!(scoef95b >> ehigh[j]))
+      SimconfType::fileReadError("high energy coefficient in SCOEF.95B");
+  for (unsigned int j = 0; j < 19; ++j)
+    if (!(scoef95b >> screen[j]))
+      SimconfType::fileReadError("screening data in SCOEF.95B");
+  for (unsigned int j = 0; j < 15; ++j)
+    if (!(scoef95b >> fermicorr[j]))
+      SimconfType::fileReadError("fermi correction in SCOEF.95B");
+}
+
+void
+SimconfType::ScoefLine::readSlfctr(std::ifstream & slfctr)
+{
+  int dummy;
+  if (!(slfctr >> dummy >> lfctr))
+    SimconfType::fileReadError("contents of SLFCTR.dat");
+}
+
+void
+SimconfType::ScoefLine::readElname(std::ifstream & elname)
+{
+  int dummy;
+  if (!(elname >> dummy >> sym >> name))
+    SimconfType::fileReadError("contents of ELNAME.dat");
 }
