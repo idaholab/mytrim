@@ -109,7 +109,7 @@ MaterialBase::rpstop(int z2p, Real e)
   {
     // high energy stopping
     const Real x = std::log(e) / e;
-    const std::vector<Real> & ehigh = _simconf->scoef[z2].ehigh;
+    const std::vector<Real> & ehigh = _simconf->scoef[z2-1].ehigh;
 
     sp = ehigh[0] + ehigh[1] * x + ehigh[2] * x*x + ehigh[3] / x;
   }
@@ -118,7 +118,7 @@ MaterialBase::rpstop(int z2p, Real e)
     pe = std::max(pe0, e);
 
     // pcoef indices are one less than in the fortran version!
-    const std::vector<Real> & pcoef = _simconf->scoef[z2].pcoef;
+    const std::vector<Real> & pcoef = _simconf->scoef[z2-1].pcoef;
 
     sl = pcoef[0] * std::pow(pe, pcoef[1]) + pcoef[2] * std::pow(pe, pcoef[3]);
     sh = pcoef[4] / std::pow(pe, pcoef[5]) * std::log(pcoef[6] / pe + pcoef[7] * pe);
@@ -195,6 +195,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     // Heavy ion electronic stopping powers [RST0990], histop() in MCERD
     yrmin = 0.13;
     vrmin = 1.0;
+
     v = std::sqrt(e / 25.0) / vfermi;
 
     if (v >= 1.0)
