@@ -101,24 +101,38 @@ MaterialBase::rpstop(int z2p, Real e)
 {
   Real pe, sl, sh, sp, velpwr;
   const int z2 = z2p - 1;
-  // velocity proportional stopping below pe0
-  const Real pe0 = 25.0;
-  pe = std::max(pe0, e);
 
-  // pcoef indices are one less than in the fortran version!
-  sl = (_simconf->scoef[z2].pcoef[0] * std::pow(pe, _simconf->scoef[z2].pcoef[1])) +
-       (_simconf->scoef[z2].pcoef[2] * std::pow(pe, _simconf->scoef[z2].pcoef[3]));
-  sh = _simconf->scoef[z2].pcoef[4] / std::pow(pe, _simconf->scoef[z2].pcoef[5]) *
-       std::log(_simconf->scoef[z2].pcoef[6] / pe + _simconf->scoef[z2].pcoef[7] * pe);
-  sp = sl * sh / (sl + sh);
-  if (e <= pe0)
+  // velocity proportional stopping below pe0
+  const Real pe0 = 25.0; // [STO01210], MCERD sets this to 0.10!
+
+  if (e > 1.0e4)
   {
-    // velpwr is the power of velocity stopping below pe0
-    if (z2p <= 6)
-      velpwr = 0.25;
-    else
-      velpwr = 0.45;
-    sp *= std::pow(e / pe0, velpwr);
+    // high energy stopping
+    const Real x = std::log(e) / e;
+    const std::vector<Real> & ehigh = _simconf->scoef[z2].ehigh;
+
+    sp = ehigh[0] + ehigh[1] * x + ehigh[2] * x*x + ehigh[3] / x;
+  }
+  else
+  {
+    pe = std::max(pe0, e);
+
+    // pcoef indices are one less than in the fortran version!
+    const std::vector<Real> & pcoef = _simconf->scoef[z2].pcoef;
+
+    sl = pcoef[0] * std::pow(pe, pcoef[1]) + pcoef[2] * std::pow(pe, pcoef[3]);
+    sh = pcoef[4] / std::pow(pe, pcoef[5]) * std::log(pcoef[6] / pe + pcoef[7] * pe);
+
+    sp = sl * sh / (sl + sh);
+    if (e <= pe0)
+    {
+      // velpwr is the power of velocity stopping below pe0
+      if (z2p <= 6)
+        velpwr = 0.25; // [STO01280], MCERD sets this to 0.35!
+      else
+        velpwr = 0.45;
+      sp *= std::pow(e / pe0, velpwr);
+    }
   }
   return sp;
 }
@@ -152,21 +166,23 @@ MaterialBase::rstop(const IonBase * ion, int z2)
 
   if (z1 == 1)
   {
-    // Hydrogen electronic stopping powers [RST0640]
+    // Hydrogen electronic stopping powers [RST0640], pstop() in MCERD
     se = rpstop(z2, e);
   }
   else if (z1 == 2)
   {
-    // Helium electronic stopping powers [RST0820]
-    const Real he0 = 1.0;
+    // Helium electronic stopping powers [RST0820], hestop() in MCERD
+    const Real he0 = 10.0; // MCERD sets this to 1.0!
+
     Real he = std::max(he0, e);
 
-    b = std::log(he);
-    a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.01135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
+    b = std::log(e);
+    a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.1135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
+
     Real heh = 1.0 - std::exp(-std::min(30.0, a));
 
-    he = std::max(he, 1.0);
-    a = 1.0 + (0.007 + 0.00005 * fz2) * std::exp(-sqr(7.6 - std::log(he)));
+    // add z1^3 effect to He/H stopping power ratio heh
+    a = (1.0 + (0.007 + 0.00005 * z2) * std::exp(-std::pow((7.6 * std::max(0.0, std::log(he))), 2.0) ));
     heh *= a * a;
 
     sp = rpstop(z2, he);
@@ -176,7 +192,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   }
   else
   {
-    // Heavy ion electronic stopping powers [RST0990]
+    // Heavy ion electronic stopping powers [RST0990], histop() in MCERD
     yrmin = 0.13;
     vrmin = 1.0;
     v = std::sqrt(e / 25.0) / vfermi;
