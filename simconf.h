@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #define MYTRIM_SIMCONF_H
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <fstream>
 
@@ -61,6 +62,9 @@ public:
     // from SCOEF.95A
     Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
     // from SCOEF.95B
+    std::vector<Real> ehigh;     // 4 columns
+    std::vector<Real> screen;    // 19 columns
+    std::vector<Real> fermicorr; // 15 columns
   } scoef[92];
 
   Real pcoef[92][8];

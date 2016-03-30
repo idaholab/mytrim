@@ -84,6 +84,32 @@ SimconfType::readDataFiles()
   }
 
 
+  fname = _data_dir + "/SCOEF.95B";
+  std::ifstream scoef95b(fname.c_str());
+  if (!scoef95b)
+    fileReadError(fname);
+
+  skipLine(scoef95b); // header
+  skipLine(scoef95b); // header
+  for (unsigned int i = 0; i < 92; ++i)
+  {
+    scoef[i].ehigh.resize(4);
+    for (unsigned int j = 0; j < 4; ++j)
+      if (!(scoef95b >> scoef[i].ehigh[j]))
+        fileReadError("high energy coefficient in SCOEF.95B");
+
+    scoef[i].screen.resize(19);
+    for (unsigned int j = 0; j < 19; ++j)
+      if (!(scoef95b >> scoef[i].screen[j]))
+        fileReadError("screening data in SCOEF.95B");
+
+    scoef[i].fermicorr.resize(15);
+    for (unsigned int j = 0; j < 15; ++j)
+      if (!(scoef95b >> scoef[i].fermicorr[j]))
+        fileReadError("fermi correction in SCOEF.95B");
+  }
+
+
   fname = _data_dir + "/SLFCTR.dat";
   std::ifstream slfctr(fname.c_str());
   if (!slfctr)
@@ -114,22 +140,6 @@ SimconfType::fileReadError(const std::string & path)
     std::cerr << "Error reading " << path << std::endl;
     exit(1);
 #endif
-}
-
-void
-SimconfType::skipLine(FILE * sf)
-{
-  const unsigned int nbuf = 2000;
-  char buffer[nbuf] = {0};
-  if (!fgets(buffer, nbuf, sf))
-  {
-    #ifdef MYTRIM_ENABLED
-      mooseError("Error reading file");
-    #else
-      std::cerr << "Error reading file" << std::endl;
-      exit(1);
-    #endif
-  }
 }
 
 void
