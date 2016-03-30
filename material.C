@@ -231,15 +231,15 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     a = -sqr(7.6 - std::max(0.0, std::log(e)));
 #else
     unsigned int j;
-    for (j = 1; j < 19 && q > simconf->scoeflast.screen[j]; ++j);
+    for (j = 1; j < 19 && q > _simconf->scoeflast.screen[j]; ++j);
     j =  j > 22 ? j-- : j;
     j = j >= 19 ? 18 : j;
 
-    const std::vector<Real> & screen = simconf->scoef[z1-1].screen;
+    const std::vector<Real> & screen = _simconf->scoef[z1-1].screen;
+    const std::vector<Real> & erange = _simconf->scoeflast.screen;
     l0 = screen[j];
-    l1 = (q - simconf->scoeflast.screen[j])
-         * (screen[j+1] - screen[j]) /
-           (simconf->scoeflast.screen[j+1] - simconf->scoeflast.screen[j]);
+    l1 = (q - erange[j]) * (screen[j+1] - screen[j]) /
+                           (erange[j+1] - erange[j]);
 
     l = (l0 + l1) / std::pow(fz1, 1.0/3.0);
 
