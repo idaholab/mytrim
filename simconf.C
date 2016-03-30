@@ -99,6 +99,9 @@ SimconfType::readDataFiles()
     scoef[i].readSlfctr(slfctr);
     scoef[i].readElname(elname);
   }
+
+  // read the last line from the 95B data which contains energy range data
+  scoeflast.read95B(scoef95b);
 }
 
 void

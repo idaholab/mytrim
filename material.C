@@ -210,6 +210,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     // ionization level of the ion at velocity yr
     q = std::min(1.0, std::max(0.0, 1.0 - std::exp(-std::min(a, 50.0))));
 
+#if 0
     b = (std::min(0.43, std::max(0.32, 0.12 + 0.025 * fz1))) / std::pow(fz1, 0.3333);
     l0 = (0.8 - q * std::min(1.2, 0.6 + fz1 / 30.0)) / std::pow(fz1, 0.3333);
     if (q < 0.2)
@@ -225,10 +226,28 @@ MaterialBase::rstop(const IonBase * ion, int z2)
       l1 = b * (1.0 - q) / (0.025 * std::min(16.0, fz1));
 
     l = std::max(l1, l0 * lfctr);
-    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + sqr(4.0 * l * vfermi / 1.919 ));
 
     // add z1^3 effect
     a = -sqr(7.6 - std::max(0.0, std::log(e)));
+#else
+    unsigned int j;
+    for (j = 1; j < 19 && q > simconf->scoeflast.screen[j]; ++j);
+    j =  j > 22 ? j-- : j;
+    j = j >= 19 ? 18 : j;
+
+    const std::vector<Real> & screen = simconf->scoef[z1-1].screen;
+    l0 = screen[j];
+    l1 = (q - simconf->scoeflast.screen[j])
+         * (screen[j+1] - screen[j]) /
+           (simconf->scoeflast.screen[j+1] - simconf->scoeflast.screen[j]);
+
+    l = (l0 + l1) / std::pow(fz1, 1.0/3.0);
+
+    a = std::log(e);
+    a = std::max(a, 0.0);
+#endif
+
+    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + sqr(4.0 * l * vfermi / 1.919 ));
     zeta *= 1.0 + (1.0 / (fz1*fz1)) * (0.18 + 0.0015 * fz2) * std::exp(a);
 
     if (yr <= std::max(yrmin, vrmin / std::pow(fz1, 0.6667)))
