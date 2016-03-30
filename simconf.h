@@ -56,33 +56,51 @@ public:
 
   // tables from files
   // ZBL coefficients a, b, c, d for all element pairs from Z=1..92
-  struct ScoefLine {
+  struct ScoefLine
+  {
+    ScoefLine();
+    void read95A(std::ifstream &);
+    void read95B(std::ifstream &);
+    void readSlfctr(std::ifstream &);
+    void readElname(std::ifstream &);
+
     // from ELNAME.dat
     std::string sym, name;
+
     // from SCOEF.95A
     Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
+    std::vector<Real> pcoef;     // 8 columns
+
     // from SCOEF.95B
     std::vector<Real> ehigh;     // 4 columns
     std::vector<Real> screen;    // 19 columns
     std::vector<Real> fermicorr; // 15 columns
-  } scoef[92];
+  };
 
-  Real pcoef[92][8];
-  Real snuc[92][92][4];
+  // tables from files
+  static const unsigned int _rows = 92;
+  std::vector<ScoefLine> scoef;
+  ScoefLine scoeflast;
 
+  /// ZBL coefficients
+  Real snuc[_rows][_rows][4];
+
+  /// dump data for full trajectories to std::cout
   bool fullTraj;
 
-  // tally electronic and nuclear stopping losses
+  ///@{ tally electronic and nuclear stopping losses
   Real EelTotal;
   Real EnucTotal;
+  ///@}
 
-  // statistics of the simulation run
+  /// statistics of the simulation run
   int vacancies_created;
 
 private:
   void readDataFiles();
 
-  void fileReadError(const std::string &);
+  static void fileReadError(const std::string &);
+
   void skipLine(FILE * sf);
   void skipLine(std::ifstream & sf);
 
