@@ -103,7 +103,7 @@ MaterialBase::rpstop(int z2p, Real e)
   const int z2 = z2p - 1;
 
   // velocity proportional stopping below pe0
-  const Real pe0 = 25.0; // [STO01210], MCERD sets this to 0.10!
+  const Real pe0 = 10.0; // [STO01210], 25.0 in original TRIM
 
   if (e > 1.0e4)
   {
@@ -128,12 +128,13 @@ MaterialBase::rpstop(int z2p, Real e)
     {
       // velpwr is the power of velocity stopping below pe0
       if (z2p <= 6)
-        velpwr = 0.25; // [STO01280], MCERD sets this to 0.35!
+        velpwr = 0.35; // [STO01280], 0.25 in original TRIM
       else
         velpwr = 0.45;
       sp *= std::pow(e / pe0, velpwr);
     }
   }
+
   return sp;
 }
 
@@ -148,6 +149,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   const Real fz2 = Real(z2);
   Real eee, sp, power;
   Real se;
+  unsigned int j;
 
   // scoeff
   const Real lfctr = _simconf->scoef[z1-1].lfctr;
@@ -172,7 +174,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   else if (z1 == 2)
   {
     // Helium electronic stopping powers [RST0820], hestop() in MCERD
-    const Real he0 = 10.0; // MCERD sets this to 1.0!
+    const Real he0 = 1.0; // 10.0 in original TRIM
 
     Real he = std::max(he0, e);
 
@@ -182,7 +184,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     Real heh = 1.0 - std::exp(-std::min(30.0, a));
 
     // add z1^3 effect to He/H stopping power ratio heh
-    a = (1.0 + (0.007 + 0.00005 * z2) * std::exp(-std::pow((7.6 * std::max(0.0, std::log(he))), 2.0) ));
+    a = (1.0 + (0.007 + 0.00005 * z2) * std::exp(-std::pow((7.6 * std::max(0.0, std::log(he))), 2.0)));
     heh *= a * a;
 
     sp = rpstop(z2, he);
@@ -195,6 +197,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     // Heavy ion electronic stopping powers [RST0990], histop() in MCERD
     yrmin = 0.13;
     vrmin = 1.0;
+    const Real yrmin2 = vrmin / std::pow(fz1, 2.0/3.0);
 
     v = std::sqrt(e / 25.0) / vfermi;
 
@@ -203,74 +206,93 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     else
       vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v*v / 3.0) - std::pow(v, 4.0) / 15.0);
 
-    yr = std::max(yrmin, vr / std::pow(fz1, 0.6667));
-    yr = std::max(yr, vrmin / std::pow(fz1, 0.6667));
+    yr = std::max(yrmin2, yrmin);
+    yr = std::max(yr, vr / std::pow(fz1, 2.0/3.0));
+
     a = -0.803 * std::pow(yr, 0.3) + 1.3167 * std::pow(yr, 0.6) + 0.38157 * yr +  0.008983 * yr*yr;
+    a = std::min(a, 50.0);
 
     // ionization level of the ion at velocity yr
-    q = std::min(1.0, std::max(0.0, 1.0 - std::exp(-std::min(a, 50.0))));
-
-#if 0
-    b = (std::min(0.43, std::max(0.32, 0.12 + 0.025 * fz1))) / std::pow(fz1, 0.3333);
-    l0 = (0.8 - q * std::min(1.2, 0.6 + fz1 / 30.0)) / std::pow(fz1, 0.3333);
-    if (q < 0.2)
-      l1 = 0.0;
-    else if (q < std::max(0.0, 0.9 - 0.025 * fz1))
-    {//210
-      // q1 = 0.2; in the original code, but never used
-      l1 = b * (q - 0.2) / std::abs(std::max(0.0, 0.9 - 0.025 * fz1) - 0.2000001);
-    }
-    else if (q < std::max(0.0, 1.0 - 0.025 * std::min(16.0, fz1)))
-      l1 = b;
-    else
-      l1 = b * (1.0 - q) / (0.025 * std::min(16.0, fz1));
-
-    l = std::max(l1, l0 * lfctr);
-
-    // add z1^3 effect
-    a = -sqr(7.6 - std::max(0.0, std::log(e)));
-#else
-    unsigned int j;
-    for (j = 1; j < 19 && q > _simconf->scoeflast.screen[j]; ++j);
-    j =  j > 22 ? j-- : j;
-    j = j >= 19 ? 18 : j;
+    q = 1.0 - std::exp(a);
+    q = q < 0.0 ? 0.0 : (q > 1.0 ? 1.0 : q);
 
     const std::vector<Real> & screen = _simconf->scoef[z1-1].screen;
     const std::vector<Real> & erange = _simconf->scoeflast.screen;
+
+    for (j = 1; j <= 18 && q > erange[j]; ++j);
+    j = j > 1 ? j - 1 : 1;
+    j = j > 17 ? 17 : j;
+
     l0 = screen[j];
+    // linear interpolation
     l1 = (q - erange[j]) * (screen[j+1] - screen[j]) /
                            (erange[j+1] - erange[j]);
 
     l = (l0 + l1) / std::pow(fz1, 1.0/3.0);
 
+    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + sqr(4.0 * l * vfermi / 1.919));
+
     a = std::log(e);
     a = std::max(a, 0.0);
-#endif
 
-    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + sqr(4.0 * l * vfermi / 1.919 ));
-    zeta *= 1.0 + (1.0 / (fz1*fz1)) * (0.18 + 0.0015 * fz2) * std::exp(a);
+    zeta *= 1.0 + (1.0 / (fz1*fz1)) * (0.08 + 0.0015 * fz2) * std::exp(-sqr(7.6 - a));
 
-    if (yr <= std::max(yrmin, vrmin / std::pow(fz1, 0.6667)))
+    a = std::max(yrmin2, yrmin);
+
+    if (yr <= a)
     {
       // calculate velocity stopping for  yr < yrmin
-      vrmin = std::max(vrmin, yrmin * std::pow(fz1, 0.6667));
-      vmin = 0.5 * (vrmin + std::sqrt(std::max(0.0, vrmin*vrmin - 0.8 * vfermi*vfermi)));
+      vrmin = std::max(vrmin, yrmin * std::pow(fz1, 2.0/3.0));
+      a = sqr(vmin) - 0.8 * sqr(vfermi);
+      a = std::max(a, 0.0);
+
+      vmin = 0.5 * (vrmin + std::sqrt(a));
       eee = 25.0 * vmin*vmin;
       sp = rpstop(z2, eee);
+      Real eion = std::max(eee, 9999.0);
 
-      if (z2 == 6 || ((z2 == 14 || z2 == 32) && z1 <= 19))
+      const std::vector<Real> & vfcorr = _simconf->scoef[z2-1].fermicorr;
+      const std::vector<Real> & vrange = _simconf->scoeflast.fermicorr;
+
+      for (j = 1; j <= 13 && q > vrange[j]; ++j);
+      j = j > 1 ? j - 1 : 1;
+      j = j > 13 ? 13 : j;
+
+      const Real vfcorr0 = vfcorr[j];
+      // linear interpolation
+      const Real vfcorr1 = (eion - vrange[j]) * (vfcorr[j+1] - vfcorr[j]) /
+                                                (vrange[j+1] - vrange[j]);
+      sp *= vfcorr0 + vfcorr1;
+
+      power = 0.47;
+      if (z1 == 3)
+        power = 0.55;
+      else if (z2 < 7)
         power = 0.375;
-      else
-        power = 0.5;
+      else if (z1 < 18 && (z2 == 14 || z2 == 32))
+        power = 0.375;
 
       se = sp * sqr(zeta * fz1) * std::pow(e/eee, power);
     }
     else
     {
+      // sp = pstop(z2,E,scoef);
+      // se = sp*intpow(zeta*z1,2);
+      // eion = min(E,9999.0);
+      // for(j=41;j<=53 && eion>=scoef[93][j];j++);
+      // j--;
+      // j = max(j,41);
+      // j = min(j,53);
+      //
+      // vfcorr0 =scoef[z2][j];
+      // vfcorr1 = (eion - scoef[93][j])*(scoef[z2][j+1] - scoef[z2][j])/
+      //                                 (scoef[93][j+1] - scoef[93][j]);
+      // se *= (vfcorr0 + vfcorr1);
+
       sp = rpstop(z2, e);
       se = sp * sqr(zeta * fz1);
     }
   } // END: heavy-ions
 
-  return se * 10.0;
+  return se * 10.0; // warum *10 ?!
 }
