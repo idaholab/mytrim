@@ -59,6 +59,11 @@ int main(int argc, char *argv[])
   Json::Value json_root;
   std::cin >> json_root;
 
+  if (json_root["stopping"].isObject())
+    json_root = json_root["stopping"];
+  else
+    mytrimError("No 'stopping' top level block found in input");
+
   // initialize global parameter structure and read data tables from file
   SimconfType * simconf = new SimconfType;
   simconf->fullTraj = false;
@@ -121,16 +126,35 @@ int main(int argc, char *argv[])
     mytrimError("Missing 'mass' in ion block");
   pka->_m = json_root["ion"]["mass"].asDouble();
 
-  // construct list of energies
+  // construct list of energies (can be specified as single number, array, or range descriptor)
   std::vector<Real> energies;
-  if (json_root["ion"]["energy"].isArray())
+  if (json_root["ion"]["energy"].isNumeric())
+    energies.push_back(json_root["ion"]["energy"].asDouble());
+  else if (json_root["ion"]["energy"].isArray())
   {
     Json::Value json_energy = json_root["ion"]["energy"];
     for (unsigned int j = 0; j < json_energy.size(); ++j)
       energies.push_back(json_energy[j].asDouble());
   }
-  else if (json_root["ion"]["energy"].isNumeric())
-    energies.push_back(json_root["ion"]["energy"].asDouble());
+  else if (json_root["ion"]["energy"].isObject())
+  {
+    Json::Value json_energy = json_root["ion"]["energy"];
+
+    if (!json_energy["begin"].isNumeric())
+      mytrimError("Missing 'begin' in energy block");
+    const Real ebegin = json_energy["begin"].asDouble();
+
+    if (!json_energy["end"].isNumeric())
+      mytrimError("Missing 'end' in energy block");
+    const Real eend = json_energy["end"].asDouble();
+
+    if (!json_energy["step"].isNumeric())
+      mytrimError("Missing 'step' in energy block");
+    const Real estep = json_energy["step"].asDouble();
+
+    for (Real E = ebegin; E <= eend; E += estep)
+      energies.push_back(E);
+  }
   else
     mytrimError("Missing or invalid 'energy' in ion block");
 
