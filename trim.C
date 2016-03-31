@@ -8,7 +8,7 @@ using namespace MyTRIM_NS;
 //#define RANGECORRECT2
 
 //
-// all energies are in eV
+// all energies are in eV, length unit is Ang
 //
 
 // does a single ion cascade
