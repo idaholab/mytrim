@@ -22,18 +22,18 @@
 
   // parameters for the runstopping executable
   "stopping": {
-    // Carbon ions
+    // Carbon ions (output should be eV/Ang)
     "ion" : {
       "Z": 6, "mass": 12,
 
-      // single energy calculation
+      // single energy calculation [eV]
       // "energy": 1000000
 
-      // list of specific energies
+      // list of specific energies [eV]
       // "energy": [10, 100, 1000, 10000, 100000, 1000000]
 
-      // energy range
-      "energy": { "begin": 10, "end": 1000000, "step": 10000 }
+      // energy range [eV]
+      "energy": { "begin": 10000, "end": 10000000, "step": 100000 }
     },
     "material": {
       // single element target material
