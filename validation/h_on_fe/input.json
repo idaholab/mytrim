@@ -11,8 +11,8 @@
       // list of specific energies [eV]
       // "energy": [10, 100, 1000, 10000, 100000, 1000000]
 
-      // energy range [eV]
-      "energy": { "begin": 10000, "end": 10000000, "step": 100000 }
+      // energy range [eV] with logarithmic spacing
+      "energy": { "begin": 10000, "end": 10000000, "mult": 1.1 }
     },
     "material": {
       // single element target material
