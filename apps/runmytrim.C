@@ -59,6 +59,16 @@ int main(int argc, char *argv[])
   Json::Value json_root;
   std::cin >> json_root;
 
+  if (json_root["mytrim"].isObject())
+    json_root = json_root["mytrim"];
+  else
+    mytrimError("No 'mytrim' top level block found in input");
+
+  // initialize global parameter structure and read data tables from file
+  SimconfType * simconf = new SimconfType;
+  simconf->fullTraj = false;
+  simconf->tmin = 0.2;
+
   //
   // process the "options" block
   //
@@ -103,11 +113,6 @@ int main(int argc, char *argv[])
       thickness += json_layers[i]["thickness"].asDouble();
     else
       mytrimError("No 'thickness' found for layer " << i);
-
-  // initialize global parameter structure and read data tables from file
-  SimconfType * simconf = new SimconfType;
-  simconf->fullTraj = false;
-  simconf->tmin = 0.2;
 
   // initialize sample structure
   SampleLayers *sample = new SampleLayers(thickness, 100.0, 100.0);

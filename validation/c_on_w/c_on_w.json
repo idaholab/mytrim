@@ -1,0 +1,46 @@
+{
+  // parameters for the runmytrim executable
+  "mytrim":
+  {
+    "options": { "seed": 2344 },
+    // 1MeV keV Carbon
+    "ion" : { "Z": 6, "mass": 12, "energy": 1000000, "number": 5000 },
+    "sample": {
+      // single layer sample
+      "layers": [
+        { "thickness": 10000, "rho": 19.35, "elements": [
+          // Tungsten
+          { "Z": 74, "mass": 183.85, "fraction": 1 } ]
+        }
+      ]
+    },
+    "output" : {
+      "type": "vacenergycount",
+      "base": "mytrim_new2"
+    }
+  },
+
+  // parameters for the runstopping executable
+  "stopping": {
+    // Carbon ions (output should be eV/Ang)
+    "ion" : {
+      "Z": 6, "mass": 12,
+
+      // single energy calculation [eV]
+      // "energy": 1000000
+
+      // list of specific energies [eV]
+      // "energy": [10, 100, 1000, 10000, 100000, 1000000]
+
+      // energy range [eV]
+      "energy": { "begin": 10000, "end": 10000000, "step": 100000 }
+    },
+    "material": {
+      // single element target material
+      "rho": 19.35, "elements": [
+        // Tungsten
+        { "Z": 74, "mass": 183.85, "fraction": 1 }
+      ]
+    }
+  }
+}

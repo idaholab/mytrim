@@ -22,10 +22,10 @@ public:
   /// atomic number
   int _Z;
 
-  /// mass
+  /// mass in [amu]
   Real _m;
 
-  /// kinetic energy
+  /// kinetic energy in [eV]
   Real _E;
 
   // normalized velocity vector, and position
@@ -40,7 +40,7 @@ public:
   // material tag
   int tag;
 
-  // final energy up to which this recoil will be followed
+  // final energy up to which this recoil will be followed in [eV]
   Real _Ef;
 
   // state of the recoil:
