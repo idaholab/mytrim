@@ -148,12 +148,24 @@ int main(int argc, char *argv[])
       mytrimError("Missing 'end' in energy block");
     const Real eend = json_energy["end"].asDouble();
 
-    if (!json_energy["step"].isNumeric())
-      mytrimError("Missing 'step' in energy block");
-    const Real estep = json_energy["step"].asDouble();
-
-    for (Real E = ebegin; E <= eend; E += estep)
-      energies.push_back(E);
+    const bool hasStep = json_energy["step"].isNumeric();
+    const bool hasMult = json_energy["mult"].isNumeric();
+    if (hasStep == hasMult)
+      mytrimError("Specify either 'step' or 'mult' energy block");
+    if (hasStep)
+    {
+      const Real estep = json_energy["step"].asDouble();
+      for (Real E = ebegin; E <= eend; E += estep)
+        energies.push_back(E);
+    }
+    if (hasMult)
+    {
+      const Real emult = json_energy["mult"].asDouble();
+      if (emult <= 1.0)
+        mytrimError("'mult' must be larger than 1.0");
+      for (Real E = ebegin; E <= eend; E *= emult)
+        energies.push_back(E);
+    }
   }
   else
     mytrimError("Missing or invalid 'energy' in ion block");

@@ -150,17 +150,19 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   else if (z1 == 2)
   {
     // Helium electronic stopping powers [RST0820]
-    const Real he0 = 10.0;
+    const Real he0 = 1.0;
     Real he = std::max(he0, e);
-    b = std::log(e);
-    a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.1135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
+
+    b = std::log(he);
+    a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.01135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
     Real heh = 1.0 - std::exp(-std::min(30.0, a));
-    // add z1^3 effect to He/H stopping power ratio heh
-    a = (1.0 + (0.007 + 0.00005 * z2) * std::exp(-std::pow((7.6 * std::max(0.0, std::log(he))), 2.0) ));
+
+    he = std::max(he, 1.0);
+    a = 1.0 + (0.007 + 0.00005 * fz2) * std::exp(-sqr(7.6 - std::log(he)));
     heh *= a * a;
 
     sp = rpstop(z2, he);
-    se = sp * heh * 4;
+    se = sp * heh * 4.0;
     if (e <= he0)
       se *= std::sqrt(e / he0);
   }
