@@ -16,6 +16,18 @@ MaterialBase::MaterialBase(SimconfType * simconf, Real rho) :
 {
 }
 
+MaterialBase::MaterialBase(const MaterialBase & m) :
+    _rho(m._rho),
+    _am(m._am),
+    _az(m._az),
+    _arho(m._arho),
+    tag(m.tag),
+    _dirty(m._dirty),
+    _element(m._element),
+    _simconf(m._simconf)
+{
+}
+
 void
 MaterialBase::prepare()
 {

@@ -35,10 +35,13 @@ class MaterialBase
 public:
   MaterialBase(SimconfType * simconf, Real rho);
 
-  // make sure stoiciometry is normalized, compute averages independent of pka
+  /// copy construct a prepared material
+  MaterialBase(const MaterialBase &);
+
+  /// make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
 
-  // compute pka dependent averages
+  /// compute pka dependent averages
   void average(const IonBase *pka);
   Real getrstop(const IonBase *pka);
 
