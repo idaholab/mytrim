@@ -75,6 +75,12 @@ namespace MyTRIM_NS {
   }
 }
 
+bool
+IonBase::operator< (const IonBase & a)
+{
+  return (_Z < a._Z) || (_Z == a._Z && _m < a._m);
+}
+
 
 IonBase*
 IonMDTag::spawnRecoil()
