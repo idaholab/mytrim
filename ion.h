@@ -19,7 +19,7 @@ public:
 
   void setEf();
 
-  bool operator< (const IonBase &);
+  bool operator< (const IonBase &) const;
 
   /// atomic number
   int _Z;

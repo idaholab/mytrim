@@ -76,7 +76,7 @@ namespace MyTRIM_NS {
 }
 
 bool
-IonBase::operator< (const IonBase & a)
+IonBase::operator< (const IonBase & a) const
 {
   return (_Z < a._Z) || (_Z == a._Z && _m < a._m);
 }
