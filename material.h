@@ -35,9 +35,6 @@ class MaterialBase
 public:
   MaterialBase(SimconfType * simconf, Real rho);
 
-  /// copy construct a prepared material
-  MaterialBase(const MaterialBase &);
-
   /// make sure stoiciometry is normalized, compute averages independent of pka
   void prepare();
 
