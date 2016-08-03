@@ -29,6 +29,11 @@ MaterialBase::prepare()
     tt += _element[i]->_t;
   }
 
+#ifdef MYTRIM_ENABLED
+  if (tt == 0.0)
+    mooseError("Stoichiometry invalid, all elements zero.");
+#endif
+
   // normalize relative probabilities to 1
   for (unsigned int i = 0; i < _element.size(); ++i)
     _element[i]->_t /= tt;
