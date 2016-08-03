@@ -20,9 +20,10 @@ void
 MaterialBase::prepare()
 {
   Real tt = 0.0;
+  const unsigned int end = _element.size();
 
   // get total stoichiometry
-  for (unsigned int i = 0; i < _element.size(); ++i)
+  for (unsigned int i = 0; i < end; ++i)
   {
     if (_element[i]->_t < 0.0)
       _element[i]->_t = 0.0;
@@ -35,13 +36,13 @@ MaterialBase::prepare()
 #endif
 
   // normalize relative probabilities to 1
-  for (unsigned int i = 0; i < _element.size(); ++i)
+  for (unsigned int i = 0; i < end; ++i)
     _element[i]->_t /= tt;
 
   // average
   _am = 0.0;
   _az = 0.0;
-  for (unsigned int i = 0; i < _element.size(); ++i)
+  for (unsigned int i = 0; i < end; ++i)
   {
     _am += _element[i]->_m * _element[i]->_t;
     _az += Real(_element[i]->_Z) * _element[i]->_t;
@@ -69,7 +70,8 @@ MaterialBase::average(const IonBase * pka)
   fd = std::pow(0.01 * _az, -7.0 / 3.0);
   kd = std::pow(0.1334 * _az, 2.0 / 3.0) / std::sqrt(_am);
 
-  for (unsigned int i = 0; i < _element.size(); ++i)
+  const unsigned int end = _element.size();
+  for (unsigned int i = 0; i < end; ++i)
   {
     _element[i]->my = pka->_m / _element[i]->_m;
     _element[i]->ec = 4.0 * _element[i]->my / std::pow(1.0 + _element[i]->my, 2.0);
@@ -87,7 +89,8 @@ Real
 MaterialBase::getrstop(const IonBase * pka)
 {
   Real se = 0.0;
-  for (unsigned int i = 0; i < _element.size(); ++i)
+  const unsigned int end = _element.size();
+  for (unsigned int i = 0; i < end; ++i)
     se += rstop(pka, _element[i]->_Z) * _element[i]->_t * _arho;
 
   return se;

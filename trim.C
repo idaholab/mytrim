@@ -116,7 +116,8 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
     // which atom in the _material will be hit
     hh = dr250(); // selects _element inside _material to scatter from
-    for (nn = 0; nn < _material->_element.size(); ++nn)
+    const unsigned int end = _material->_element.size();
+    for (nn = 0; nn < end; ++nn)
     {
       hh -= _material->_element[nn]->_t;
       if (hh <= 0) break;
@@ -288,12 +289,15 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     {
       do
       {
-        for (int i = 0; i < 3; ++i)
+        for (unsigned int i = 0; i < 3; ++i)
           rdir(i) = 2.0 * dr250() - 1.0;
-        } while (rdir.norm_sq() > 1.0);
+      }
+      while (rdir.norm_sq() > 1.0);
+
       v_cross(_pka->_dir, rdir, perp);
       norm = perp.norm();
-    } while (norm == 0.0);
+    }
+    while (norm == 0.0);
     perp /= norm;
 
     // PKA scattering angle
@@ -305,9 +309,11 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     _recoil->_dir -= _pka->_dir * p2;
 
     // end cascade if a CUT boundary is crossed
-    for (int i = 0; i < 3; ++i) {
+    for (unsigned int i = 0; i < 3; ++i)
+    {
       if (_sample->bc[i] == SampleBase::CUT &&
-           (_pka->_pos(i) > _sample->w[i] || _pka->_pos(i)<0.0)) {
+           (_pka->_pos(i) > _sample->w[i] || _pka->_pos(i)<0.0))
+      {
         _pka->state = IonBase::LOST;
         break;
       }
