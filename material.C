@@ -91,9 +91,9 @@ MaterialBase::getrstop(const IonBase * pka)
   Real se = 0.0;
   const unsigned int end = _element.size();
   for (unsigned int i = 0; i < end; ++i)
-    se += rstop(pka, _element[i]->_Z) * _element[i]->_t * _arho;
+    se += rstop(pka, _element[i]->_Z) * _element[i]->_t;
 
-  return se;
+  return se * _arho;
 }
 
 Real
