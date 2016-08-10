@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "MooseTypes.h"
 #include "MooseRandom.h"
 #include "libmesh/point.h"
+#include "libmesh/utility.h"
 namespace MyTRIM_NS {
   const Real drm = Real(RAND_MAX) + 1.0;
   inline Real dr250() { return MooseRandom::rand(); }
@@ -40,6 +41,7 @@ namespace MyTRIM_NS {
 #else
 // building standalone (for Travis CI tests)
 typedef double Real;
+#include "shim/pow.h"
 #include "shim/point.h"
 #include "shim/cxx11random.h"
 #endif
