@@ -106,10 +106,10 @@ MaterialBase::rpstop(int z2p, Real e)
   pe = std::max(pe0, e);
 
   // pcoef indices are one less than in the fortran version!
-  sl = (_simconf->pcoef[z2][0] * std::pow(pe, _simconf->pcoef[z2][1])) +
-       (_simconf->pcoef[z2][2] * std::pow(pe, _simconf->pcoef[z2][3]));
-  sh = _simconf->pcoef[z2][4] / std::pow(pe, _simconf->pcoef[z2][5]) *
-       std::log(_simconf->pcoef[z2][6] / pe + _simconf->pcoef[z2][7] * pe);
+  sl = (_simconf->scoef[z2].pcoef[0] * std::pow(pe, _simconf->scoef[z2].pcoef[1])) +
+       (_simconf->scoef[z2].pcoef[2] * std::pow(pe, _simconf->scoef[z2].pcoef[3]));
+  sh = _simconf->scoef[z2].pcoef[4] / std::pow(pe, _simconf->scoef[z2].pcoef[5]) *
+       std::log(_simconf->scoef[z2].pcoef[6] / pe + _simconf->scoef[z2].pcoef[7] * pe);
   sp = sl * sh / (sl + sh);
   if (e <= pe0)
   {
