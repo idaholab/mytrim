@@ -62,7 +62,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     eeg = std::sqrt(eps * _material->epsdg); // [TRI02450]
     _material->pmax = _material->a / (eeg + std::sqrt(eeg) + 0.125 * std::pow(eeg, 0.1));
 
-    _ls = 1.0 / (M_PI * std::pow(_material->pmax, 2.0) * _material->_arho); // [TRI02470]
+    _ls = 1.0 / (M_PI * Utility::pow<2>(_material->pmax) * _material->_arho); // [TRI02470]
     if (ic == 1)
       _ls = r1 * std::min(_ls, _simconf->cw); // [TRI02480]
 
@@ -141,7 +141,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     if (eps > 10.0)
     {
       // use Rutherford scattering [TRI02690]
-      s2 = 1.0 / (1.0 + (1.0 + b * (1.0 + b)) * std::pow(2.0 * eps * b , 2.0));
+      s2 = 1.0 / (1.0 + (1.0 + b * (1.0 + b)) * Utility::pow<2>(2.0 * eps * b));
       c2 = 1.0 - s2;
       ct = 2.0 * c2 - 1.0;
       st = std::sqrt(1.0 - ct*ct);
@@ -174,8 +174,8 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
           case MOLIERE:
             // Moliere potential
             ex1 = std::exp(-0.3 * r);
-            ex2 = std::pow(ex1, 4.0);
-            ex3 = std::pow(ex2, 5.0);
+            ex2 = Utility::pow<4>(ex1);
+            ex3 = Utility::pow<5>(ex2);
             v = (0.35 * ex1 + 0.55 * ex2 + 0.1 * ex3) / r;
             v1 = -(v + 0.105 * ex1 + 0.66 * ex2 + 0.6 * ex3) / r;
             break;
@@ -409,7 +409,7 @@ TrimPrimaries::vacancyCreation()
     // http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
     Real ed = 0.0115 * std::pow(_material->_az, -7.0/3.0) * _recoil->_E;
     Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-    Real kd = 0.1337 * std::pow(_material->_az, 2.0/3.0) / std::pow(_material->_am, 0.5); //Z, M
+    Real kd = 0.1337 * std::pow(_material->_az, 2.0/3.0) / std::sqrt(_material->_am); //Z, M
     Real Ev = _recoil->_E / (1.0 + kd * g);
     _simconf->vacancies_created += int(0.8 * Ev / (2.0 * _element->_Edisp));
 

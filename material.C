@@ -56,15 +56,17 @@ void
 MaterialBase::average(const IonBase * pka)
 {
   mu = pka->_m / _am;
+  const Real fZ = Real(pka->_Z);
 
   // universal or firsov screening length
-  a = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(_az, 0.23));
+  const Real fZ023 = std::pow(fZ, 0.23);
+  a = .5292 * .8853 / (fZ023 + std::pow(_az, 0.23));
   //a = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_az, 0.5), 2.0/3.0);
 
   // mean flight path0
-  f = a * _am / (_az * Real(pka->_Z) * 14.4 * (pka->_m + _am));
+  f = a * _am / (_az * fZ * 14.4 * (pka->_m + _am));
   //eps0 = e0 * f;
-  epsdg = _simconf->tmin * f * std::pow(1.0 + mu, 2.0) / (4.0 * mu);
+  epsdg = _simconf->tmin * f * Utility::pow<2>(1.0 + mu) / (4.0 * mu);
 
   // fd and kd determine how much recoil energy goes into el. loss and vaccancies
   fd = std::pow(0.01 * _az, -7.0 / 3.0);
@@ -74,11 +76,11 @@ MaterialBase::average(const IonBase * pka)
   for (unsigned int i = 0; i < end; ++i)
   {
     _element[i]->my = pka->_m / _element[i]->_m;
-    _element[i]->ec = 4.0 * _element[i]->my / std::pow(1.0 + _element[i]->my, 2.0);
-    _element[i]->ai = .5292 * .8853 / (std::pow(Real(pka->_Z), 0.23) + std::pow(_element[i]->_Z, 0.23));
+    _element[i]->ec = 4.0 * _element[i]->my / Utility::pow<2>(1.0 + _element[i]->my);
+    _element[i]->ai = .5292 * .8853 / (fZ023 + std::pow(_element[i]->_Z, 0.23));
     //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_element[i].z, 0.5), 2.0/3.0);
     _element[i]->fi = _element[i]->ai * _element[i]->_m /
-                     (Real(pka->_Z) * Real(_element[i]->_Z) * 14.4 * (pka->_m + _element[i]->_m));
+                     (fZ * Real(_element[i]->_Z) * 14.4 * (pka->_m + _element[i]->_m));
   }
 
   _dirty = false;
@@ -162,11 +164,13 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     Real he = std::max(he0, e);
 
     b = std::log(he);
-    a = 0.2865 + 0.1266 * b - 0.001429 * b*b + 0.02402 * b*b*b - 0.01135 * std::pow(b, 4.0) + 0.001475 * std::pow(b, 5.0);
+    const Real b2 = b*b;
+    const Real b4 = b2*b2;
+    a = 0.2865 + 0.1266 * b - 0.001429 * b2 + 0.02402 * b*b2 - 0.01135 * b4 + 0.001475 * b4*b;
     Real heh = 1.0 - std::exp(-std::min(30.0, a));
 
     he = std::max(he, 1.0);
-    a = 1.0 + (0.007 + 0.00005 * fz2) * std::exp(-sqr(7.6 - std::log(he)));
+    a = 1.0 + (0.007 + 0.00005 * fz2) * std::exp(-Utility::pow<2>(7.6 - std::log(he)));
     heh *= a * a;
 
     sp = rpstop(z2, he);
@@ -179,22 +183,27 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     // Heavy ion electronic stopping powers [RST0990]
     yrmin = 0.13;
     vrmin = 1.0;
+
     v = std::sqrt(e / 25.0) / vfermi;
+    const Real v2 = v*v;
 
     if (v >= 1.0)
-      vr = v * vfermi * (1.0 + 1.0 / (5.0 * v*v));
+      vr = v * vfermi * (1.0 + 1.0 / (5.0 * v2));
     else
-      vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v*v / 3.0) - std::pow(v, 4.0) / 15.0);
+      vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v2 / 3.0) - v2*v2 / 15.0);
 
-    yr = std::max(yrmin, vr / std::pow(fz1, 0.6667));
-    yr = std::max(yr, vrmin / std::pow(fz1, 0.6667));
-    a = -0.803 * std::pow(yr, 0.3) + 1.3167 * std::pow(yr, 0.6) + 0.38157 * yr +  0.008983 * yr*yr;
+    const Real cbrt_fz1 = std::cbrt(fz1);
+    const Real cbrt2_fz1 = cbrt_fz1 * cbrt_fz1;
+    yr = std::max(yrmin, vr / cbrt2_fz1);
+    yr = std::max(yr, vrmin / cbrt2_fz1);
+    const Real yr03 = std::pow(yr, 0.3);
+    a = -0.803 * yr03 + 1.3167 * yr03*yr03 + 0.38157 * yr +  0.008983 * yr*yr;
 
     // ionization level of the ion at velocity yr
     q = std::min(1.0, std::max(0.0, 1.0 - std::exp(-std::min(a, 50.0))));
 
-    b = (std::min(0.43, std::max(0.32, 0.12 + 0.025 * fz1))) / std::pow(fz1, 0.3333);
-    l0 = (0.8 - q * std::min(1.2, 0.6 + fz1 / 30.0)) / std::pow(fz1, 0.3333);
+    b = (std::min(0.43, std::max(0.32, 0.12 + 0.025 * fz1))) / cbrt_fz1;
+    l0 = (0.8 - q * std::min(1.2, 0.6 + fz1 / 30.0)) / cbrt_fz1;
     if (q < 0.2)
       l1 = 0.0;
     else if (q < std::max(0.0, 0.9 - 0.025 * fz1))
@@ -208,16 +217,16 @@ MaterialBase::rstop(const IonBase * ion, int z2)
       l1 = b * (1.0 - q) / (0.025 * std::min(16.0, fz1));
 
     l = std::max(l1, l0 * lfctr);
-    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + sqr(4.0 * l * vfermi / 1.919 ));
+    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + Utility::pow<2>(4.0 * l * vfermi / 1.919 ));
 
     // add z1^3 effect
-    a = -sqr(7.6 - std::max(0.0, std::log(e)));
+    a = -Utility::pow<2>(7.6 - std::max(0.0, std::log(e)));
     zeta *= 1.0 + (1.0 / (fz1*fz1)) * (0.18 + 0.0015 * fz2) * std::exp(a);
 
-    if (yr <= std::max(yrmin, vrmin / std::pow(fz1, 0.6667)))
+    if (yr <= std::max(yrmin, vrmin / cbrt2_fz1))
     {
       // calculate velocity stopping for  yr < yrmin
-      vrmin = std::max(vrmin, yrmin * std::pow(fz1, 0.6667));
+      vrmin = std::max(vrmin, yrmin * cbrt2_fz1);
       vmin = 0.5 * (vrmin + std::sqrt(std::max(0.0, vrmin*vrmin - 0.8 * vfermi*vfermi)));
       eee = 25.0 * vmin*vmin;
       sp = rpstop(z2, eee);
@@ -227,12 +236,12 @@ MaterialBase::rstop(const IonBase * ion, int z2)
       else
         power = 0.5;
 
-      se = sp * sqr(zeta * fz1) * std::pow(e/eee, power);
+      se = sp * Utility::pow<2>(zeta * fz1) * std::pow(e/eee, power);
     }
     else
     {
       sp = rpstop(z2, e);
-      se = sp * sqr(zeta * fz1);
+      se = sp * Utility::pow<2>(zeta * fz1);
     }
   } // END: heavy-ions
 
