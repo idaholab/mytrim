@@ -70,16 +70,14 @@ int main(int argc, char *argv[])
   ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z, m, E
   ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z, m, E
 
-  // seed randomnumber generator from system entropy pool
+  // seed random number generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
-  int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
+  unsigned int seed;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
   fclose(urand);
-  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  SimconfType * simconf = new SimconfType;
-  //simconf->fullTraj = true;
+  SimconfType * simconf = new SimconfType(seed);
 
   // initialize sample structure
   SampleWire *sample;
@@ -185,8 +183,8 @@ int main(int argc, char *argv[])
       {
         // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
         // TODO: take theta into account!
-        pka->_pos(0) = (dr250() - 0.5) * (length + sample->w[0]);
-        pka->_pos(1) = (dr250() - 0.5) * (length + sample->w[1]);
+        pka->_pos(0) = (simconf->drand() - 0.5) * (length + sample->w[0]);
+        pka->_pos(1) = (simconf->drand() - 0.5) * (length + sample->w[1]);
         pka->_pos(2) = -250.0; // overcoat thickness
       }
       else
@@ -197,8 +195,8 @@ int main(int argc, char *argv[])
           pka->_pos(2) = 0.0;
           do
           {
-            pka->_pos(0) = dr250() * sample->w[0];
-            pka->_pos(1) = dr250() * sample->w[1];
+            pka->_pos(0) = simconf->drand() * sample->w[0];
+            pka->_pos(1) = simconf->drand() * sample->w[1];
           } while (sample->lookupMaterial(pka->_pos) == 0);
         }
         else
@@ -209,9 +207,9 @@ int main(int argc, char *argv[])
           {
             do
             {
-              vpos[0] = dr250() * sample->w[0];
+              vpos[0] = simconf->drand() * sample->w[0];
               vpos[1] = 0.0;
-              vpos[2] = (dr250() * (length + diameter/tan(theta))) - diameter/tan(theta);
+              vpos[2] = (simconf->drand() * (length + diameter/tan(theta))) - diameter/tan(theta);
 
               t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->_dir(1));
 

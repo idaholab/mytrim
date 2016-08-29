@@ -50,18 +50,16 @@ int main(int argc, char *argv[])
   // PKA energy
   Real E = atof(argv[2]) * 1000.0;
 
-  // seed randomnumber generator from system entropy pool
+  // seed random number generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
-  int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
+  unsigned int seed;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
   fclose(urand);
-  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  SimconfType * simconf = new SimconfType;
+  SimconfType * simconf = new SimconfType(seed);
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
-  //simconf->tmin = 0.2;
 
   // initialize sample structure
   SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);

@@ -63,6 +63,9 @@ int main(int argc, char *argv[])
   RunMode mode = PLAIN;
   //RunMode mode = PHONONS;
 
+  // initialize global parameter structure and read data tables from file
+  SimconfType * simconf = new SimconfType;
+
   // set seed
   int seed;
   char * seedenv = getenv("MYTRIM_SEED");
@@ -79,10 +82,7 @@ int main(int argc, char *argv[])
     if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
     fclose(urand);
   }
-  r250_init(seed<0 ? -seed : seed);
-
-  // initialize global parameter structure and read data tables from file
-  SimconfType * simconf = new SimconfType;
+  simconf->seed(seed<0 ? -seed : seed);
 
   // initialize sample structure
   sampleClusters *sample = new sampleClusters(400.0, 400.0, 400.0);
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
   std::cerr << "adding " << n_cl << " clusters...\n";
 
   // cluster surfaces must be at least 25.0 Ang apart
-  sample->addRandomClusters(n_cl, r, 25.0);
+  sample->addRandomClusters(n_cl, r, 25.0, simconf);
 
   // write cluster coords with tag numbers
   snprintf(fname, 199, "%s.clcoor", argv[1]);
@@ -212,10 +212,10 @@ int main(int argc, char *argv[])
     ff1->_md = 0;
 
     // generate fission fragment data
-    A1 = m->x(dr250());
+    A1 = m->x(simconf->drand());
     A2 = 235.0 - A1;
     e->setMass(A1);
-    Etot = e->x(dr250());
+    Etot = e->x(simconf->drand());
     E1 = Etot * A2 / (A1+A2);
     E2 = Etot - E1;
     Z1 = round((A1 * 92.0) / 235.0);
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
     do
     {
       for (int i = 0; i < 3; ++i)
-        ff1->_dir(i) = 2.0 * dr250() - 1.0;
+        ff1->_dir(i) = 2.0 * simconf->drand() - 1.0;
       norm = ff1->_dir.norm_sq();
     }
     while (norm <= 0.0001 || norm > 1.0);
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
 
     // random origin
     for (int i = 0; i < 3; ++i)
-      ff1->_pos(i) = dr250() * sample->w[i];
+      ff1->_pos(i) = simconf->drand() * sample->w[i];
 
     ff1->setEf();
     recoils.push(ff1);

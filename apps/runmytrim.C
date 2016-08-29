@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
         mytrimError("Unable to access /dev/random");
       fclose(urand);
     }
-    r250_init(seed < 0 ? -seed : seed); // random generator goes haywire with neg. seed
+    simconf->seed(seed < 0 ? -seed : seed); // random generator goes haywire with neg. seed
   }
 
   //

@@ -12,13 +12,14 @@ namespace MyTRIM_NS {
 
 using namespace MyTRIM_NS;
 
-SimconfType::SimconfType(Real _alfa) :
+SimconfType::SimconfType(unsigned int seed) :
     scoef(_rows),
-    _data_dir(std::getenv("MYTRIM_DATADIR") ? std::getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR)
+    _data_dir(std::getenv("MYTRIM_DATADIR") ? std::getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR),
+    cxx11random_gen(new std::mt19937(seed)),
+    cxx11random_dis_Real(0, 1),
+    cxx11random_dis_int(0, 65535)
 {
   ed = 25.0; // displacement energy
-  alfa = _alfa; // angle of incidence (degrees)
-  alpha = alfa * M_PI / 180.0;
   tmin = 1.0; //max impact parameter set by min. transferred energy
   //tmin = 5.0; //max impact parameter set by min. transferred energy
   tau = 0.0;
@@ -38,6 +39,13 @@ SimconfType::SimconfType(Real _alfa) :
 
   // read data tables
   readDataFiles();
+}
+
+void
+SimconfType::seed(unsigned int seed)
+{
+  delete cxx11random_gen;
+  cxx11random_gen = new std::mt19937(seed);
 }
 
 void

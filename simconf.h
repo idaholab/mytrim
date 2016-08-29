@@ -25,25 +25,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <random>
 
 #ifdef MYTRIM_ENABLED
 // building from within MOOSE/Magpie
 #include "MooseError.h"
 #include "MooseTypes.h"
 #include "MooseRandom.h"
+#include "randistrs.h"
 #include "libmesh/point.h"
 #include "libmesh/utility.h"
-namespace MyTRIM_NS {
-  const Real drm = Real(RAND_MAX) + 1.0;
-  inline Real dr250() { return MooseRandom::rand(); }
-  inline void r250_init(unsigned int s) { MooseRandom::seed(s); }
-}
 #else
 // building standalone (for Travis CI tests)
 typedef double Real;
 #include "shim/pow.h"
 #include "shim/point.h"
-#include "shim/cxx11random.h"
 #endif
 
 namespace MyTRIM_NS {
@@ -51,9 +47,13 @@ namespace MyTRIM_NS {
 class SimconfType
 {
 public:
-  SimconfType(Real _alfa = 0.0);
+  SimconfType(unsigned int seed = 12345678);
 
-  Real ed, alfa, alpha, tmin, tau, da, cw;
+  inline Real drand() { return cxx11random_dis_Real(*cxx11random_gen); }
+  inline Real irand() { return cxx11random_dis_int(*cxx11random_gen); }
+  void seed(unsigned int seed);
+
+  Real ed, tmin, tau, da, cw;
   int id;
 
   // tables from files
@@ -107,6 +107,10 @@ private:
   void skipLine(std::ifstream & sf);
 
   std::string _data_dir;
+
+  std::mt19937 * cxx11random_gen;
+  std::uniform_real_distribution<double> cxx11random_dis_Real;
+  std::uniform_int_distribution<int> cxx11random_dis_int;
 };
 
 }
