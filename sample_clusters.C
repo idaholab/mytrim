@@ -172,7 +172,7 @@ void sampleClusters::addCluster(Real x, Real y, Real z, Real r)
 }
 
 // add non-overlapping clusters with a minimum surface-surface separation of dr
-void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr)
+void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr, SimconfType * simconf)
 {
   Point npos;
 
@@ -182,7 +182,7 @@ void sampleClusters::addRandomClusters(unsigned int n, Real r, Real dr)
   {
     while (true)
     {
-      for (unsigned int j = 0; j < 3; ++j) npos(j) = dr250() * w[j];
+      for (unsigned int j = 0; j < 3; ++j) npos(j) = simconf->drand() * w[j];
 
       if (lookupCluster(npos, dr + r) == -1)
       {

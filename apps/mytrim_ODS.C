@@ -48,18 +48,16 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  // seed randomnumber generator from system entropy pool
+  // seed random number generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
-  int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
+  unsigned int seed;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
   fclose(urand);
-  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  SimconfType * simconf = new SimconfType;
+  SimconfType * simconf = new SimconfType(seed);
   simconf->fullTraj = false;
   simconf->tmin = 0.2;
-  //simconf->tmin = 0.2;
 
   // initialize sample structure []
   //sampleClusters *sample = new sampleClusters(50000.0, 400.0, 400.0);
@@ -93,7 +91,7 @@ int main(int argc, char *argv[])
 
   // cluster surfaces must be at least 25.0 Ang apart
   fprintf(stderr, "adding %d clusters...\n", n_cl);
-  sample->addRandomClusters(n_cl, r, 15.0);
+  sample->addRandomClusters(n_cl, r, 15.0, simconf);
 
   // write cluster coords with tag numbers
   snprintf(fname, 199, "%s.clcoor", argv[1]);
@@ -336,7 +334,7 @@ int main(int argc, char *argv[])
 
           do
           {
-            for (int i = 0; i < 3; ++i) pka->_dir(i) = dr250() - 0.5;
+            for (int i = 0; i < 3; ++i) pka->_dir(i) = simconf->drand() - 0.5;
             norm = v_dot(pka->_dir, pka->_dir);
           }
           while (norm <= 0.0001);

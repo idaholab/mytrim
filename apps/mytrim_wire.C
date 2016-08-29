@@ -62,15 +62,14 @@ int main(int argc, char *argv[])
   Real mpka  = atof(argv[6]);
   Real dwire  = atof(argv[7])*20.0;
 
-  // seed randomnumber generator from system entropy pool
+  // seed random number generator from system entropy pool
   FILE *urand = fopen("/dev/random", "r");
-  int seed;
-  if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
+  unsigned int seed;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
   fclose(urand);
-  r250_init(seed<0 ? -seed : seed); // random generator goes haywire with neg. seed
 
   // initialize global parameter structure and read data tables from file
-  SimconfType * simconf = new SimconfType;
+  SimconfType * simconf = new SimconfType(seed);
 
   // initialize sample structure
   SampleWire *sample = new SampleWire(dwire, dwire, 100.0);
@@ -133,8 +132,8 @@ int main(int argc, char *argv[])
 
     v_norm(pka->_dir);
 
-    pka->_pos(0) = dr250() * sample->w[0];
-    pka->_pos(2) = dr250() * sample->w[2];
+    pka->_pos(0) = simconf->drand() * sample->w[0];
+    pka->_pos(2) = simconf->drand() * sample->w[2];
 
     // wire surface
     pka->_pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->_pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;

@@ -41,7 +41,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
   Real p1, p2;
 
   // generate random number for use in the first loop iteration only!
-  r1 = dr250();
+  r1 = _simconf->drand();
 
   // cycle for each collision
   do
@@ -90,7 +90,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       if (range < _ls)
       {
         // skip this recoil, just advance the ion
-        if (range / _ls < dr250())
+        if (range / _ls < _simconf->drand())
         {
           // electronic stopping
           _pka->_E -= range * _material->getrstop(_pka);
@@ -111,11 +111,11 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     _pka->_time += 10.1811859 * (_ls - _simconf->tau) / std::sqrt(2.0 * _pka->_E / _pka->_m);
 
     // choose impact parameter
-    r2 = dr250();
+    r2 = _simconf->drand();
     p = _material->pmax * std::sqrt(r2);
 
     // which atom in the _material will be hit
-    hh = dr250(); // selects _element inside _material to scatter from
+    hh = _simconf->drand(); // selects _element inside _material to scatter from
     const unsigned int end = _material->_element.size();
     for (nn = 0; nn < end; ++nn)
     {
@@ -290,7 +290,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       do
       {
         for (unsigned int i = 0; i < 3; ++i)
-          rdir(i) = 2.0 * dr250() - 1.0;
+          rdir(i) = 2.0 * _simconf->drand() - 1.0;
       }
       while (rdir.norm_sq() > 1.0);
 
