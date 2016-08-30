@@ -33,17 +33,14 @@ public:
   // normalized velocity vector, and position
   Point _dir, _pos;
 
-  // internal clock (needed for visualization)
-  Real _time;
-
   // random number generator seed for this ion and its recoils
   unsigned int _seed;
 
   // recoil generation number, unique ID
-  int gen, id;
+  int _gen, _id;
 
   // material tag
-  int tag;
+  int _tag;
 
   // final energy up to which this recoil will be followed in [eV]
   Real _Ef;
@@ -54,7 +51,7 @@ public:
   //   SUBSTITUTIONAL  pka->_Z != element->_Z && pka->_E < element->_Edisp
   //   INTERSTITIAL    no recoil spawned and pke->_E < pka->_Ef
   //   LOST            ion has left the sample
-  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } state;
+  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } _state;
   static const int DELETE = -1;
 };
 
@@ -77,6 +74,18 @@ public:
 
 /// Serialize ion into text stream
 std::ostream& operator << (std::ostream& os, const IonMDTag &p);
+
+class IonClock : public IonBase
+{
+public:
+  IonClock() : IonBase(), _time(0.0) {}
+  IonClock(IonClock * prototype) : IonBase(prototype), _time(prototype->_time) {}
+
+  void parent(IonBase *parent);
+
+  Real _time;
+};
+
 }
 
 #endif

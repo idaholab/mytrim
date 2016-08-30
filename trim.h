@@ -124,7 +124,7 @@ public:
 
 protected:
   virtual int maxGen() { return 1; }
-  virtual bool followRecoil() { return (_recoil->gen < maxGen()); }
+  virtual bool followRecoil() { return (_recoil->_gen < maxGen()); }
   virtual void vacancyCreation();
 };
 

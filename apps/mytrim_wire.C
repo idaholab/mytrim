@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
     if (n % 1000 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     pka = new IonBase;
-    pka->gen = 0; // generation (0 = PKA)
-    pka->tag = -1;
+    pka->_gen = 0; // generation (0 = PKA)
+    pka->_tag = -1;
     pka->_Z = zpka; // S
     pka->_m = mpka;
     pka->_E  = epka;

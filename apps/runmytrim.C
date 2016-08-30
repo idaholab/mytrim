@@ -222,8 +222,8 @@ int main(int argc, char *argv[])
       std::cerr << "pka #" << n+1 << '\n';
 
     pka = new IonBase(pkaTemplate);
-    pka->gen = 0; // generation (0 = PKA)
-    pka->id = simconf->id++;
+    pka->_gen = 0; // generation (0 = PKA)
+    pka->_id = simconf->_id++;
 
     pka->_dir = Point(1.0, 0.0, 0.0);
     pka->_pos = start;
@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
       // if (pka->_Z == 29)
       // {
       //   // output
-      //   printf("RP %f %d %d\n", pka->_pos(0), n,  pka->gen);
+      //   printf("RP %f %d %d\n", pka->_pos(0), n,  pka->_gen);
       // }
 
       // done with this recoil

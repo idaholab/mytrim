@@ -170,8 +170,8 @@ int main(int argc, char *argv[])
 
       // generate new PKA from prototype ion
       pka = new IonBase(ion_prototype[s]);
-      pka->gen = 0; // generation (0 = PKA)
-      pka->tag = -1;
+      pka->_gen = 0; // generation (0 = PKA)
+      pka->_tag = -1;
 
       pka->_dir(0) = 0.0;
       pka->_dir(1) = sin(theta);

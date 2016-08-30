@@ -81,8 +81,8 @@ int main(int, char **)
   for (unsigned int i = 0; i < 1000; ++i)
   {
     pka = new MyTRIM_NS::IonBase;
-    pka->gen = 0;  // generation (0 = PKA)
-    pka->tag = 0; // tag holds the element type
+    pka->_gen = 0;  // generation (0 = PKA)
+    pka->_tag = 0; // tag holds the element type
     pka->_Z = 20;
     pka->_m = 40;
     pka->_E  = 300;

@@ -108,7 +108,9 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     // advance clock pathlength/velocity
     // time in fs! m in u, l in Ang, e in eV
     // 1000g/kg, 6.022e23/mol, 1.602e-19J/eV, 1e5m/s=1Ang/fs 1.0/0.09822038
-    _pka->_time += 10.1811859 * (_ls - _simconf->tau) / std::sqrt(2.0 * _pka->_E / _pka->_m);
+
+    // requires IonClock PKAs. We could do a dynamic_cast here but it might be too slow...
+    //_pka->_time += 10.1811859 * (_ls - _simconf->tau) / std::sqrt(2.0 * _pka->_E / _pka->_m);
 
     // choose impact parameter
     r2 = _simconf->drand();
@@ -314,7 +316,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       if (_sample->bc[i] == SampleBase::CUT &&
            (_pka->_pos(i) > _sample->w[i] || _pka->_pos(i)<0.0))
       {
-        _pka->state = IonBase::LOST;
+        _pka->_state = IonBase::LOST;
         break;
       }
     }
@@ -322,22 +324,22 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     //
     // decide on the fate of recoil and _pka
     //
-    if (_pka->state != IonBase::LOST) {
+    if (_pka->_state != IonBase::LOST) {
       if (_recoil->_E > _element->_Edisp) {
         // non-physics based descision on recoil following
         if (followRecoil()) {
           v_norm(_recoil->_dir);
-          _recoil->tag = _material->tag;
-          _recoil->id  = _simconf->id++;
+          _recoil->_tag = _material->_tag;
+          _recoil->_id  = _simconf->_id++;
 
           // queue recoil for processing
           recoils.push(_recoil);
           if (_simconf->fullTraj)
-            std::cout << "spawn " << _recoil->id << ' ' << _pka->id << '\n';
+            std::cout << "spawn " << _recoil->_id << ' ' << _pka->_id << '\n';
         } else {
           // this recoil could have left its lattice site, but we chose
           // not to follow it (simulation of PKAs only)
-          _recoil->id = IonBase::DELETE;
+          _recoil->_id = IonBase::DELETE;
         }
 
         // will the knock-on get trapped at the recoil atom site?
@@ -349,24 +351,24 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
         } else {
           // nope, the _pka gets stuck at that site as...
           if (_pka->_Z == _element->_Z)
-            _pka->state = IonBase::REPLACEMENT;
+            _pka->_state = IonBase::REPLACEMENT;
           else
-            _pka->state = IonBase::SUBSTITUTIONAL;
+            _pka->_state = IonBase::SUBSTITUTIONAL;
         }
       } else {
         // this recoil will not leave its lattice site
         dissipateRecoilEnergy();
-        _recoil->id  = IonBase::DELETE;;
+        _recoil->_id  = IonBase::DELETE;;
 
         // if the PKA has no energy left, put it to rest here as an interstitial
         if (_pka->_E < _pka->_Ef) {
-          _pka->state = IonBase::INTERSTITIAL;
+          _pka->_state = IonBase::INTERSTITIAL;
         }
       }
     }
 
     // delete recoil if it was not queued
-    if (_recoil->id  == IonBase::DELETE)
+    if (_recoil->_id  == IonBase::DELETE)
       delete _recoil;
 
     // act on the _pka state change
@@ -374,9 +376,9 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
     // output the full trajectory (state is not output by the ion object)
     if (_simconf->fullTraj)
-      std::cout << _pka->state << ' ' << *_pka << '\n';
+      std::cout << _pka->_state << ' ' << *_pka << '\n';
 
-  } while (_pka->state == IonBase::MOVING);
+  } while (_pka->_state == IonBase::MOVING);
 }
 
 bool
@@ -403,7 +405,7 @@ TrimPrimaries::vacancyCreation()
   _simconf->vacancies_created++;
 
   // Modified Kinchin-Pease
-  if (_recoil->gen == maxGen())
+  if (_recoil->_gen == maxGen())
   {
     // calculate modified kinchin pease data
     // http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
@@ -427,11 +429,11 @@ TrimDefectLog::vacancyCreation()
 void
 TrimDefectLog::checkPKAState()
 {
-  if (_pka->state == IonBase::INTERSTITIAL)
+  if (_pka->_state == IonBase::INTERSTITIAL)
     _os << "I " << *_pka << '\n';
-  else if (_pka->state == IonBase::SUBSTITUTIONAL)
+  else if (_pka->_state == IonBase::SUBSTITUTIONAL)
     _os << "S " << *_pka << '\n';
-  else if (_pka->state == IonBase::REPLACEMENT)
+  else if (_pka->_state == IonBase::REPLACEMENT)
     _os << "R " << *_pka << '\n';
 }
 
@@ -457,8 +459,8 @@ void TrimVacMap::vacancyCreation()
 void
 TrimPhononOut::checkPKAState()
 {
-  if (_pka->state == IonBase::MOVING ||
-      _pka->state == IonBase::LOST) return;
+  if (_pka->_state == IonBase::MOVING ||
+      _pka->_state == IonBase::LOST) return;
 
   _os << _pka->_E << ' ' <<  *_pka << '\n';
   _simconf->EnucTotal += _pka->_E;

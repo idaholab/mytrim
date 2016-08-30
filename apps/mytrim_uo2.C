@@ -207,8 +207,8 @@ int main(int argc, char *argv[])
     if (n % 10 == 0) std::cerr << "event #" << n+1 << "\n";
 
     ff1 = new IonMDTag;
-    ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = -1;
+    ff1->_gen = 0; // generation (0 = PKA)
+    ff1->_tag = -1;
     ff1->_md = 0;
 
     // generate fission fragment data
@@ -274,23 +274,23 @@ int main(int argc, char *argv[])
         if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0)
           pka->_md = 1;
 
-        if (pka->gen > 0)
+        if (pka->_gen > 0)
         {
           // output energy and recoil generation
-          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
+          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_md);
         }
 
-        if (pka->tag >= 0)
+        if (pka->_tag >= 0)
         {
           for (int i = 0; i < 3; ++i)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->_pos(i);
+            dif[i] =  sample->c[i][pka->_tag] - pka->_pos(i);
 
             if (sample->bc[i] == SampleBase::PBC)
               dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
 
             pos1[i] = pka->_pos(i) + dif[i];
-            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->_pos(i), pos1[i]);
+            //printf("%f\t%f\t%f\n",   sample->c[i][pka->_tag], pka->_pos(i), pos1[i]);
           }
           //printf("\n");
         }
@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
       // printf("%f\t%d\n", pka->_E, pka->_Z);
       trim->trim(pka, recoils);
 
-      // printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
+      // printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_tag);
 
       // do ion analysis/processing AFTER the cascade here
 
@@ -308,10 +308,10 @@ int main(int argc, char *argv[])
       if (pka->_Z == gas_z1)
       {
         // output
-        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
+        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if (pka->tag >= 0) {
+        if (pka->_tag >= 0) {
           for (int i = 0; i < 3; ++i)
             dif[i] = pos1[i] - pka->_pos(i);
 

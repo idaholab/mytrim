@@ -13,6 +13,7 @@ namespace MyTRIM_NS {
 using namespace MyTRIM_NS;
 
 SimconfType::SimconfType(unsigned int seed) :
+    _id(0), // ion id
     scoef(_rows),
     _data_dir(std::getenv("MYTRIM_DATADIR") ? std::getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR),
     cxx11random_gen(new std::mt19937(seed)),
@@ -28,9 +29,6 @@ SimconfType::SimconfType(unsigned int seed) :
 
   // output full trajectories
   fullTraj = false;
-
-  // set global ion id to zero (will be incremented for each new projectile)
-  id = 0;
 
   // initialize global statistics
   vacancies_created = 0;

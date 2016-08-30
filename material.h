@@ -57,7 +57,7 @@ public:
 
   Real pmax;
 
-  int tag;
+  int _tag;
   bool _dirty;
 
   std::vector<ElementBase*> _element;

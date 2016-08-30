@@ -25,7 +25,7 @@ MaterialBase* sampleClusters::lookupMaterial(Point & pos)
   if (l == -2) return 0;
   if (l == -1) return material[0];
 
-  material[1]->tag = l;
+  material[1]->_tag = l;
   return material[1];
 }
 

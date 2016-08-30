@@ -104,10 +104,10 @@ int main(int argc, char *argv[])
     if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     ff1 = new IonMDTag;
-    ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = -1;
+    ff1->_gen = 0; // generation (0 = PKA)
+    ff1->_tag = -1;
     ff1->_md = 0;
-    ff1->id = simconf->id++;
+    ff1->_id = simconf->_id++;
 
     ff1->_Z = 53;
     ff1->_m = 127;
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 
 /*
     ff2 = new IonBase(*ff1); // copy constructor
-    //ff1->id = simconf->id++;
+    //ff1->_id = simconf->_id++;
 
     // reverse direction
     ff2->_dir = -ff2->_dir;
@@ -156,10 +156,10 @@ int main(int argc, char *argv[])
         // mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
         if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0) pka->_md = 1;
 
-        if (pka->gen > 0)
+        if (pka->_gen > 0)
         {
           // output energy and recoil generation
-          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
+          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_md);
         }
 
       }
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
       if (pka->_Z == 54 )
       {
         // output
-        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
+        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_tag);
       }
 
       // done with this recoil
