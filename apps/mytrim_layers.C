@@ -132,9 +132,9 @@ int main(int argc, char *argv[])
     if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     ff1 = new IonBase;
-    ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = -1;
-    ff1->id = simconf->id++;
+    ff1->_gen = 0; // generation (0 = PKA)
+    ff1->_tag = -1;
+    ff1->_id = simconf->_id++;
 
     ff1->_Z = Z;
     ff1->_m = A;
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_Z);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_Z);
 
       opos = pka->_pos;
 
@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
       if (pka->_Z == 29)
       {
         // output
-        printf("RP %f %d %d\n", pka->_pos(0), n,  pka->gen);
+        printf("RP %f %d %d\n", pka->_pos(0), n,  pka->_gen);
       }
 
       // done with this recoil

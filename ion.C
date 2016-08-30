@@ -5,10 +5,10 @@
 using namespace MyTRIM_NS;
 
 IonBase::IonBase() :
-    _time(0.0),
-    tag(-1),
+    _seed(0),
+    _tag(-1),
     _Ef(3.0),
-    state(MOVING)
+    _state(MOVING)
 {
 }
 
@@ -16,10 +16,10 @@ IonBase::IonBase(IonBase* prototype) :
     _Z(prototype->_Z),
     _m(prototype->_m),
     _E(prototype->_E),
-    _time(prototype->_time),
-    tag(-1),
+    _seed(0),
+    _tag(-1),
     _Ef(prototype->_Ef),
-    state(MOVING)
+    _state(MOVING)
 {
 }
 
@@ -27,10 +27,10 @@ IonBase::IonBase(int Z, Real m, Real E) :
     _Z(Z),
     _m(m),
     _E(E),
-    _time(0.0),
-    tag(-1),
+    _seed(0),
+    _tag(-1),
     _Ef(3.0),
-    state(MOVING)
+    _state(MOVING)
 {
 }
 
@@ -45,13 +45,11 @@ IonBase::setEf()
 }
 
 void
-IonBase::parent(IonBase *parent)
+IonBase::parent(IonBase * parent)
 {
   _Ef = 3.0; // final energy
 
-  gen = parent->gen + 1;
-  _time = parent->_time;
-
+  _gen = parent->_gen + 1;
   _pos = parent->_pos;
 }
 
@@ -69,8 +67,7 @@ namespace MyTRIM_NS {
   {
     os << i._pos(0) << ' ' << i._pos(1) << ' ' << i._pos(2) << ' '
        << i._Z << ' ' << i._m << ' ' << i._E << ' '
-       << i._time << ' '
-       << i.id << ' ' << i.gen << ' ' << i.tag << ' ';
+       << i._id << ' ' << i._gen << ' ' << i._tag << ' ';
     return os;
   }
 }
@@ -95,6 +92,24 @@ namespace MyTRIM_NS {
   std::ostream & operator << (std::ostream & os, const IonMDTag & i)
   {
     os << (static_cast<const IonBase &>(i)) <<  i._md << ' ';
+    return os;
+  }
+}
+
+void
+IonClock::parent(IonBase * parent)
+{
+  IonBase::parent(parent);
+
+  IonClock * clock_parent = dynamic_cast<IonClock *>(parent);
+  _time = clock_parent ? clock_parent->_time : 0.0;
+}
+
+namespace MyTRIM_NS {
+  // leverage the parent class output and augment it
+  std::ostream & operator << (std::ostream & os, const IonClock & i)
+  {
+    os << (static_cast<const IonBase &>(i)) <<  i._time << ' ';
     return os;
   }
 }

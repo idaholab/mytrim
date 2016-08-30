@@ -238,10 +238,10 @@ int main(int argc, char *argv[])
     if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     ff1 = new IonMDTag;
-    ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = -1;
+    ff1->_gen = 0; // generation (0 = PKA)
+    ff1->_tag = -1;
     ff1->_md = 0;
-    ff1->id = simconf->id++;
+    ff1->_id = simconf->_id++;
 
     ff1->_Z = Z;
     ff1->_m = A;
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
       sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
-      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
+      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_md);
 
       // pka is O or Ti
       //if (pka->_Z == 8 || pka->_Z == 22 || pka->_Z == 39)
@@ -274,24 +274,24 @@ int main(int argc, char *argv[])
       // pka is B or Ti
       if (pka->_Z == 5 || pka->_Z == 22)
       {
-        if (pka->gen > 0)
+        if (pka->_gen > 0)
         {
           // output energy and recoil generation
-          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->gen, pka->_md);
+          fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_md);
         }
 
-        if (pka->tag >= 0)
+        if (pka->_tag >= 0)
         {
           for (int i = 0; i < 3; ++i)
           {
-            dif[i] =  sample->c[i][pka->tag] - pka->_pos(i);
+            dif[i] =  sample->c[i][pka->_tag] - pka->_pos(i);
             pos2[i] = pka->_pos(i);
             if (sample->bc[i] == SampleBase::PBC) dif[i] -= round(dif[i] / sample->w[i]) * sample->w[i];
             pos1[i] = pka->_pos(i) + dif[i];
-            //printf("%f\t%f\t%f\n",   sample->c[i][pka->tag], pka->_pos(i), pos1[i]);
+            //printf("%f\t%f\t%f\n",   sample->c[i][pka->_tag], pka->_pos(i), pos1[i]);
           }
 //printf("\n");
-//if (pka->_Z == 54 && pka->gen > 0 && pka->tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->id);
+//if (pka->_Z == 54 && pka->_gen > 0 && pka->_tag >= 0) printf("clust %f %f %f %d", pos1[0], pos1[1], pos1[2], pka->_id);
   }
       }
 
@@ -311,10 +311,10 @@ int main(int argc, char *argv[])
       if (pka->_Z == 5 || pka->_Z == 22)
       {
         // output
-        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->tag);
+        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_tag);
 
         // print out distance to cluster of origin center (and depth of recoil)
-        if (pka->tag >= 0)
+        if (pka->_tag >= 0)
         {
           for (int i = 0; i < 3; ++i)
           {
@@ -330,7 +330,7 @@ int main(int argc, char *argv[])
         do
         {
           material = sample->lookupLayer(pka->_pos);
-          if (material->tag >= 0) break;
+          if (material->_tag >= 0) break;
 
           do
           {
@@ -345,8 +345,8 @@ int main(int argc, char *argv[])
         }
         while (pka->_pos(0) > 0 && pka->_pos(0) < sample->w[0]);
 
-        if (material->tag >= 0 && jumps > 0)
-          fprintf(stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->tag, pka->tag, jumps); */
+        if (material->_tag >= 0 && jumps > 0)
+          fprintf(stderr, "walked to cluster %d (originated at %d, %d jumps)\n", material->_tag, pka->_tag, jumps); */
       }
 
       // done with this recoil

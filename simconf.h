@@ -54,7 +54,7 @@ public:
   void seed(unsigned int seed);
 
   Real ed, tmin, tau, da, cw;
-  int id;
+  int _id;
 
   // tables from files
   // ZBL coefficients a, b, c, d for all element pairs from Z=1..92

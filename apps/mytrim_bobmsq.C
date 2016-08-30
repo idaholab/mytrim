@@ -169,9 +169,9 @@ int main(int argc, char *argv[])
     if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
 
     ff1 = new IonBase;
-    ff1->gen = 0; // generation (0 = PKA)
-    ff1->tag = -1;
-    ff1->id = simconf->id++;
+    ff1->_gen = 0; // generation (0 = PKA)
+    ff1->_tag = -1;
+    ff1->_id = simconf->_id++;
 
     ff1->_Z = Z;
     ff1->_m = A;
@@ -195,16 +195,16 @@ int main(int argc, char *argv[])
       sample->averages(pka);
 
       // store position
-      if (pka->gen > 0)
+      if (pka->_gen > 0)
         pos2 = pka->_pos;
 
       // follow this ion's trajectory and store recoils
       trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
-      if (pka->gen > 0)
+      if (pka->_gen > 0)
         sqd += (pos2 - pka->_pos).norm_sq();
-      else if (pka->gen > 1)
+      else if (pka->_gen > 1)
         sqd2 += (pos2 - pka->_pos).norm_sq();
 
       // done with this recoil
