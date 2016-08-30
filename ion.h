@@ -36,6 +36,9 @@ public:
   // internal clock (needed for visualization)
   Real _time;
 
+  // random number generator seed for this ion and its recoils
+  unsigned int _seed;
+
   // recoil generation number, unique ID
   int gen, id;
 
