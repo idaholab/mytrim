@@ -26,13 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <memory>
 
 #ifdef MYTRIM_ENABLED
 // building from within MOOSE/Magpie
 #include "MooseError.h"
 #include "MooseTypes.h"
-#include "MooseRandom.h"
-#include "randistrs.h"
 #include "libmesh/point.h"
 #include "libmesh/utility.h"
 #else
@@ -108,7 +107,7 @@ private:
 
   std::string _data_dir;
 
-  std::mt19937 * cxx11random_gen;
+  std::unique_ptr<std::mt19937> cxx11random_gen;
   std::uniform_real_distribution<double> cxx11random_dis_Real;
   std::uniform_int_distribution<int> cxx11random_dis_int;
 };
