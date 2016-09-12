@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 
 
   MaterialBase * material;
-  ElementBase * element;
+  Element element;
   for (unsigned int i = 0; i < nlayers; ++i)
   {
     Real lthick = json_layers[i]["thickness"].asDouble();
@@ -160,19 +160,17 @@ int main(int argc, char *argv[])
 
     for (int j = 0; j < json_elem.size(); ++j)
     {
-      element = new ElementBase;
-
       if (!json_elem[j]["Z"].isNumeric())
         mytrimError("Missing 'Z' in element " << j << " in layer " << i);
-      element->_Z = json_elem[j]["Z"].asInt();
+      element._Z = json_elem[j]["Z"].asInt();
 
       if (!json_elem[j]["mass"].isNumeric())
         mytrimError("Missing 'mass' in element " << j << " in layer " << i);
-      element->_m = json_elem[j]["mass"].asDouble();
+      element._m = json_elem[j]["mass"].asDouble();
 
       if (!json_elem[j]["fraction"].isNumeric())
         mytrimError("Missing 'fraction' in element " << j << " in layer " << i);
-      element->_t = json_elem[j]["fraction"].asDouble();
+      element._t = json_elem[j]["fraction"].asDouble();
 
       material->_element.push_back(element);
     }

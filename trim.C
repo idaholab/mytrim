@@ -121,10 +121,11 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     const unsigned int end = _material->_element.size();
     for (nn = 0; nn < end; ++nn)
     {
-      hh -= _material->_element[nn]->_t;
+      hh -= _material->_element[nn]._t;
       if (hh <= 0) break;
     }
-    _element = _material->getElement(nn);
+
+    _element = &(_material->getElement(nn));
 
     // epsilon and reduced impact parameter b
     eps = _element->fi * _pka->_E;

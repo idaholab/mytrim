@@ -5,10 +5,10 @@
 
 namespace MyTRIM_NS {
 
-class ElementBase
+class Element
 {
 public:
-  ElementBase();
+  Element();
 
   int _Z;
   Real _m, _t; // mass and relative amount

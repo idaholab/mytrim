@@ -76,31 +76,28 @@ int main(int argc, char *argv[])
   Real s_sam = sample->w[1] * sample->w[2];
 
   MaterialBase *material;
-  ElementBase *element;
+  Element element;
 
 /*
   // Fe
   material = new MaterialBase(simconf, 7.87); // rho
-  element = new ElementBase;
-  element->_Z = 26; // Fe
-  element->_m = 56.0;
-  element->_t = 1.0;
-  element->_Edisp = 40.0;
+  element._Z = 26; // Fe
+  element._m = 56.0;
+  element._t = 1.0;
+  element._Edisp = 40.0;
   material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
 
   // ZrO2
   material = new MaterialBase(simconf, 5.68); // rho
-  element = new ElementBase;
-  element->_Z = 40; // Zr
-  element->_m = 91.0;
-  element->_t = 1.0;
+  element._Z = 40; // Zr
+  element._m = 91.0;
+  element._t = 1.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 8; // O
-  element->_m = 16.0;
-  element->_t = 2.0;
+  element._Z = 8; // O
+  element._m = 16.0;
+  element._t = 2.0;
   material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
@@ -108,20 +105,17 @@ int main(int argc, char *argv[])
 
   // ZrO2 Xe 0.01
   material = new MaterialBase(simconf, 5.68); // rho
-  element = new ElementBase;
-  element->_Z = 40; // Zr
-  element->_m = 90.0;//91?
-  element->_t = 1.0;
+  element._Z = 40; // Zr
+  element._m = 90.0;//91?
+  element._t = 1.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 8; // O
-  element->_m = 16.0;
-  element->_t = 2.0;
+  element._Z = 8; // O
+  element._m = 16.0;
+  element._t = 2.0;
   material->_element.push_back(element);
-/*  element = new ElementBase;
-  element->_Z = 54; // Xe
-  element->_m = 132.0;
-  element->_t = 0.01;
+/*element._Z = 54; // Xe
+  element._m = 132.0;
+  element._t = 0.01;
   material->_element.push_back(element);*/
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
@@ -129,55 +123,48 @@ int main(int argc, char *argv[])
 /*
   // TiO2 precipitate
   material = new MaterialBase(simconf, 4.23); // rho
-  element = new ElementBase;
-  element->_Z = 22; // Ti
-  element->_m = 48.0;
-  element->_t = 1.0;
+  element._Z = 22; // Ti
+  element._m = 48.0;
+  element._t = 1.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 8; // O
-  element->_m = 16.0;
-  element->_t = 2.0;
+  element._Z = 8; // O
+  element._m = 16.0;
+  element._t = 2.0;
   material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
    // Y2Ti2O7 precipitate
   material = new MaterialBase(simconf, 4.6); // rho between 4.23 and 5.01
-  element = new ElementBase;
-  element->_Z = 39; // Y
-  element->_m = 89.0;
-  element->_t = 2.0;
-  element->_Edisp = 57.0;
+  element._Z = 39; // Y
+  element._m = 89.0;
+  element._t = 2.0;
+  element._Edisp = 57.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 22; // Ti
-  element->_m = 48.0;
-  element->_t = 2.0;
-  element->_Edisp = 57.0;
+  element._Z = 22; // Ti
+  element._m = 48.0;
+  element._t = 2.0;
+  element._Edisp = 57.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 8; // O
-  element->_m = 16.0;
-  element->_t = 7.0;
-  element->_Edisp = 57.0;
+  element._Z = 8; // O
+  element._m = 16.0;
+  element._t = 7.0;
+  element._Edisp = 57.0;
   material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 
   // xe bubble
   material = new MaterialBase(simconf, 3.5); // rho
-  element = new ElementBase;
-  element->_Z = 54; // Xe
-  element->_m = 132.0;
-  element->_t = 1.0;
+  element._Z = 54; // Xe
+  element._m = 132.0;
+  element._t = 1.0;
   material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample
 */
 
   const int nstep = 10000;
-
 
   // create a FIFO for recoils
   std::queue<IonBase*> recoils;

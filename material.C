@@ -25,9 +25,9 @@ MaterialBase::prepare()
   // get total stoichiometry
   for (unsigned int i = 0; i < end; ++i)
   {
-    if (_element[i]->_t < 0.0)
-      _element[i]->_t = 0.0;
-    tt += _element[i]->_t;
+    if (_element[i]._t < 0.0)
+      _element[i]._t = 0.0;
+    tt += _element[i]._t;
   }
 
 #ifdef MYTRIM_ENABLED
@@ -37,15 +37,15 @@ MaterialBase::prepare()
 
   // normalize relative probabilities to 1
   for (unsigned int i = 0; i < end; ++i)
-    _element[i]->_t /= tt;
+    _element[i]._t /= tt;
 
   // average
   _am = 0.0;
   _az = 0.0;
   for (unsigned int i = 0; i < end; ++i)
   {
-    _am += _element[i]->_m * _element[i]->_t;
-    _az += Real(_element[i]->_Z) * _element[i]->_t;
+    _am += _element[i]._m * _element[i]._t;
+    _az += Real(_element[i]._Z) * _element[i]._t;
   }
 
   _arho = _rho * 0.6022 / _am; //[TRI00310] atoms/Ang^3
@@ -75,12 +75,12 @@ MaterialBase::average(const IonBase * pka)
   const unsigned int end = _element.size();
   for (unsigned int i = 0; i < end; ++i)
   {
-    _element[i]->my = pka->_m / _element[i]->_m;
-    _element[i]->ec = 4.0 * _element[i]->my / Utility::pow<2>(1.0 + _element[i]->my);
-    _element[i]->ai = .5292 * .8853 / (fZ023 + std::pow(_element[i]->_Z, 0.23));
+    _element[i].my = pka->_m / _element[i]._m;
+    _element[i].ec = 4.0 * _element[i].my / Utility::pow<2>(1.0 + _element[i].my);
+    _element[i].ai = .5292 * .8853 / (fZ023 + std::pow(_element[i]._Z, 0.23));
     //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_element[i].z, 0.5), 2.0/3.0);
-    _element[i]->fi = _element[i]->ai * _element[i]->_m /
-                     (fZ * Real(_element[i]->_Z) * 14.4 * (pka->_m + _element[i]->_m));
+    _element[i].fi = _element[i].ai * _element[i]._m /
+                     (fZ * Real(_element[i]._Z) * 14.4 * (pka->_m + _element[i]._m));
   }
 
   _dirty = false;
@@ -93,7 +93,7 @@ MaterialBase::getrstop(const IonBase * pka)
   Real se = 0.0;
   const unsigned int end = _element.size();
   for (unsigned int i = 0; i < end; ++i)
-    se += rstop(pka, _element[i]->_Z) * _element[i]->_t;
+    se += rstop(pka, _element[i]._Z) * _element[i]._t;
 
   return se * _arho;
 }

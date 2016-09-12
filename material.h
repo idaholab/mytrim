@@ -42,7 +42,7 @@ public:
   void average(const IonBase *pka);
   Real getrstop(const IonBase *pka);
 
-  virtual ElementBase * getElement(unsigned int nn) { return _element[nn]; }
+  virtual const Element & getElement(unsigned int nn) { return _element[nn]; }
 
   Real _rho;
 
@@ -60,7 +60,7 @@ public:
   int _tag;
   bool _dirty;
 
-  std::vector<ElementBase*> _element;
+  std::vector<Element> _element;
 
 protected:
   Real rpstop(int z2, Real e);
