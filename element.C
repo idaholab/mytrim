@@ -2,7 +2,7 @@
 
 using namespace MyTRIM_NS;
 
-ElementBase::ElementBase() :
+Element::Element() :
     _Edisp(25.0),
     _Elbind(3.0)
 {

@@ -62,13 +62,12 @@ int main(int, char **)
   sample->bc[2] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 
   MaterialBase *material;
-  ElementBase *element;
+  Element element;
 
   material = new MaterialBase(simconf, 1.0); // rho
-  element = new ElementBase;
-  element->_Z = 20;
-  element->_m = 40.0;
-  element->_t = 1.0;
+  element._Z = 20;
+  element._m = 40.0;
+  element._t = 1.0;
   material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample

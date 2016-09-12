@@ -65,24 +65,21 @@ int main(int argc, char *argv[])
   TrimBase *trim = new TrimBase(simconf, sample);
 
   MaterialBase *material;
-  ElementBase *element;
+  Element element;
 
   // UO2
   material = new MaterialBase(simconf, 9.4); // rho
-  element = new ElementBase;
-  element->_Z = 92; // U
-  element->_m = 235.0;
-  element->_t = 1.0;
+  element._Z = 92; // U
+  element._m = 235.0;
+  element._t = 1.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 16; // O
-  element->_m = 32.0;
-  element->_t = 2.0;
+  element._Z = 16; // O
+  element._m = 32.0;
+  element._t = 2.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 54; // Xe
-  element->_m = 131.0;
-  element->_t = 0.0024;
+  element._Z = 54; // Xe
+  element._m = 131.0;
+  element._t = 0.0024;
   material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample

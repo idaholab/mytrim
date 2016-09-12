@@ -47,8 +47,8 @@ public:
 
   // state of the recoil:
   //   MOVING          ion is still being tracked
-  //   REPLACEMENT     pka->_Z == element->_Z && pka->_E < element->_Edisp
-  //   SUBSTITUTIONAL  pka->_Z != element->_Z && pka->_E < element->_Edisp
+  //   REPLACEMENT     pka->_Z == element._Z && pka->_E < element._Edisp
+  //   SUBSTITUTIONAL  pka->_Z != element._Z && pka->_E < element._Edisp
   //   INTERSTITIAL    no recoil spawned and pke->_E < pka->_Ef
   //   LOST            ion has left the sample
   enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST } _state;

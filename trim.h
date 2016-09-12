@@ -90,7 +90,8 @@ protected:
   /// the current PKA and the last recoil it created
   IonBase * _pka, * _recoil;
   MaterialBase * _material;
-  ElementBase * _element;
+  const Element * _element;
+
   std::queue<IonBase*> * recoil_queue_ptr;
   bool terminate;
 

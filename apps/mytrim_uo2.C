@@ -144,19 +144,17 @@ int main(int argc, char *argv[])
   std::cerr << "sample built.\n";
 
   MaterialBase *material;
-  ElementBase *element;
+  Element element;
 
   // UO2 TODO: Eidplacement and binding energies!
   material = new MaterialBase(simconf, 10.0); // rho
-  element = new ElementBase;
-  element->_Z = 92; // U
-  element->_m = 235.0;
-  element->_t = 1.0;
+  element._Z = 92; // U
+  element._m = 235.0;
+  element._t = 1.0;
   material->_element.push_back(element);
-  element = new ElementBase;
-  element->_Z = 8; // O
-  element->_m = 16.0;
-  element->_t = 2.0;
+  element._Z = 8; // O
+  element._m = 16.0;
+  element._t = 2.0;
   material->_element.push_back(element);
   material->prepare(); // all materials added
   sample->material.push_back(material); // add material to sample
@@ -165,10 +163,9 @@ int main(int argc, char *argv[])
   // xe bubble
   int gas_z1 = 54;
   material = new MaterialBase(simconf, 3.5); // rho
-  element = new ElementBase;
-  element->_Z = gas_z1; // Xe
-  element->_m = 132.0;
-  element->_t = 1.0;
+  element._Z = gas_z1; // Xe
+  element._m = 132.0;
+  element._t = 1.0;
   material->_element.push_back(element);
   material->prepare();
   sample->material.push_back(material); // add material to sample

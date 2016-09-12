@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   std::cout << "n_layers=" << nlayer << std::endl;
 
   MaterialBase *material;
-  ElementBase *element;
+  Element element;
 
   for (int i = 0; i < nlayer; ++i)
   {
@@ -92,11 +92,10 @@ int main(int argc, char *argv[])
 
     for (int j = 0; j < nelem; j++)
     {
-      element = new ElementBase;
-      std::cin >> lename >> element->_Z >> element->_m >> element->_t;
+      std::cin >> lename >> element._Z >> element._m >> element._t;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::cout << "  Element: " << lename << "  Z=" << element->_Z
-           << "  m=" << element->_m << "  fraction=" << element->_t << std::endl;
+      std::cout << "  Element: " << lename << "  Z=" << element._Z
+           << "  m=" << element._m << "  fraction=" << element._t << std::endl;
       material->_element.push_back(element);
     }
     std::cout << material << std::endl;
@@ -198,7 +197,7 @@ int main(int argc, char *argv[])
     std::cout << sample->layerThickness[i] << ' ';
     for (unsigned int j = 0; j < sample->material[i]->_element.size(); j++)
     {
-      std::cout << sample->material[i]->_element[j]->_Z << ' ' << sample->material[i]->_element[j]->_t << ' ';
+      std::cout << sample->material[i]->_element[j]._Z << ' ' << sample->material[i]->_element[j]._t << ' ';
     }
     std::cout << std::endl;
   }
