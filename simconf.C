@@ -42,8 +42,9 @@ SimconfType::SimconfType(unsigned int seed) :
 void
 SimconfType::seed(unsigned int seed)
 {
-  delete cxx11random_gen;
-  cxx11random_gen = new std::mt19937(seed);
+  cxx11random_gen.reset(new std::mt19937(seed));
+  cxx11random_dis_Real.reset();
+  cxx11random_dis_int.reset();
 }
 
 void
