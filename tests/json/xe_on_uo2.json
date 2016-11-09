@@ -1,0 +1,21 @@
+{ "mytrim" : {
+  "options": { "seed": 2344 },
+  // 100 MeV Xenon
+  "ion" : { "Z": 54, "mass": 131.904, "energy": 10000000, "number": 100 },
+  "sample": {
+    "layers": [
+      { "thickness": 100000, "rho":  10.97, "elements":
+        [
+          // Uranium
+          { "Z": 92, "mass": 238.03, "fraction": 1 },
+          // Oxide
+          { "Z": 8, "mass": 15.999, "fraction": 2 }
+        ]
+      }
+    ]
+  },
+  "output" : {
+    "base": "xe_on_uo2",
+    "type": "vaccount"
+  }
+} }

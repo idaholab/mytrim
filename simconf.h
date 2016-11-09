@@ -52,6 +52,16 @@ public:
   inline Real irand() { return cxx11random_dis_int(*cxx11random_gen); }
   void seed(unsigned int seed);
 
+  // length scale in Angstrom
+  // 1  =>    Units are Angstrom
+  // 10 =>    Units are Nanometers
+  // 10000 => Units are Mircometers
+  // etc.
+  void setLengthScale(Real l);
+  Real lengthScale() { return _length_scale; }
+  Real areaScale() { return _area_scale; }
+  Real volumeScale() { return _volume_scale; }
+
   Real ed, tmin, tau, da, cw;
   int _id;
 
@@ -110,6 +120,10 @@ private:
   std::unique_ptr<std::mt19937> cxx11random_gen;
   std::uniform_real_distribution<double> cxx11random_dis_Real;
   std::uniform_int_distribution<int> cxx11random_dis_int;
+
+  Real _length_scale;
+  Real _area_scale;
+  Real _volume_scale;
 };
 
 }

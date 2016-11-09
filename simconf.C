@@ -35,6 +35,8 @@ SimconfType::SimconfType(unsigned int seed) :
   EelTotal = 0.0;
   EnucTotal = 0.0;
 
+  setLengthScale(1.0);
+
   // read data tables
   readDataFiles();
 }
@@ -45,6 +47,14 @@ SimconfType::seed(unsigned int seed)
   cxx11random_gen.reset(new std::mt19937(seed));
   cxx11random_dis_Real.reset();
   cxx11random_dis_int.reset();
+}
+
+void
+SimconfType::setLengthScale(Real l)
+{
+  _length_scale = l;
+  _area_scale   = l * l;
+  _volume_scale = l * l;
 }
 
 void

@@ -23,9 +23,9 @@ TrimVacEnergyCount::vacancyCreation()
   E = E < 0 ? 0 : E;
 
   // dynamically resize the arrays
-  if (E >= _evac_bin.size())
+  if (E >= int(_evac_bin.size()))
     _evac_bin.resize(E + 1);
-  if (x >= _evac_bin[E].size())
+  if (x >= int(_evac_bin[E].size()))
     _evac_bin[E].resize(x + 1, 0);
 
   // increment counter

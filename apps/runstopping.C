@@ -53,7 +53,7 @@ using namespace MyTRIM_NS;
     return 1;                                            \
   } while(0)
 
-int main(int argc, char *argv[])
+int main()
 {
   // open the input
   Json::Value json_root;
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
   material = new MaterialBase(simconf, rho);
 
-  for (int j = 0; j < json_elem.size(); ++j)
+  for (unsigned int j = 0; j < json_elem.size(); ++j)
   {
     if (!json_elem[j]["Z"].isNumeric())
       mytrimError("Missing 'Z' in element " << j);
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
   else
     mytrimError("Missing or invalid 'energy' in ion block");
 
-  for (int n = 0; n < energies.size(); ++n)
+  for (unsigned int n = 0; n < energies.size(); ++n)
   {
     pka->_E = energies[n];
     std::cout << pka->_E << ' ' << material->getrstop(pka) << '\n';

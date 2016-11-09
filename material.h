@@ -33,9 +33,10 @@ namespace MyTRIM_NS {
 class MaterialBase
 {
 public:
+  // rho is always in unitis of g/cm^3
   MaterialBase(SimconfType * simconf, Real rho);
 
-  /// make sure stoiciometry is normalized, compute averages independent of pka
+  /// make sure stoichiometry is normalized, compute averages independent of pka
   void prepare();
 
   /// compute pka dependent averages
@@ -48,7 +49,7 @@ public:
 
   // set in prepare
   Real _am, _az; // average mass and atomic number
-  Real _arho;
+  Real _arho;    // atomic density in atoms / Ang^3
 
   // set in average
   Real mu;

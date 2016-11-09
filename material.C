@@ -19,10 +19,10 @@ MaterialBase::MaterialBase(SimconfType * simconf, Real rho) :
 void
 MaterialBase::prepare()
 {
-  Real tt = 0.0;
   const unsigned int end = _element.size();
 
   // get total stoichiometry
+  Real tt = 0.0;
   for (unsigned int i = 0; i < end; ++i)
   {
     if (_element[i]._t < 0.0)
@@ -48,7 +48,12 @@ MaterialBase::prepare()
     _az += Real(_element[i]._Z) * _element[i]._t;
   }
 
-  _arho = _rho * 0.6022 / _am; //[TRI00310] atoms/Ang^3
+#ifdef MYTRIM_ENABLED
+  if (_am == 0.0)
+    mooseError("Stoichiometry invalid, atomic density is zero.");
+#endif
+
+  _arho = _rho * 0.6022 / _am; //[TRI00310] atoms/Ang^3  (6.022e23 * (1e-8**3))
 }
 
 // make sure layers are prepare'd first!

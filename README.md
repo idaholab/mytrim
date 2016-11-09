@@ -1,4 +1,4 @@
-MyTRIM [![Build Status](https://travis-ci.org/idaholab/mytrim.svg?branch=master)](https://travis-ci.org/idaholab/mytrim) 
+MyTRIM [![Build Status](https://travis-ci.org/idaholab/mytrim.svg?branch=master)](https://travis-ci.org/idaholab/mytrim)
 ======
 
 Three dimensional binary collision Monte Carlo library for sampling ion
@@ -27,6 +27,17 @@ Displacement events calculated by *MyTRIM*, colored by inelastic energy loss. Th
 The video linked below shows ion cascades in a ceramic material knocking gas atoms out of a bubble inclusion.
 
 [MyTRIM cascade video](http://idaholab.github.io/img/mytrim/3dtrim.mp4)
+
+JSONCPP
+----
+The `runmytrim` executable needs the jsoncpp library compile it in teh jsoncpp directory with
+
+```
+mkdir build && cd build
+cmake -DBUILD_STATIC_LIBS=ON -DBUILD_SHARED_LIBS=OFF  -G "Unix Makefiles" ..
+sudo make install
+```
+
 
 About
 ----
