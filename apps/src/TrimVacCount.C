@@ -16,7 +16,7 @@ TrimVacCount::vacancyCreation()
 
   int x = _recoil->_pos(0);
   if (x < 0) return;
-  if (x >= _vac_bin.size())
+  if (x >= int(_vac_bin.size()))
     _vac_bin.resize(x + 1, 0);
   _vac_bin[x]++;
 }

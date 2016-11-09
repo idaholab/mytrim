@@ -18,6 +18,10 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
   // simconf should already be initialized
   _pka = pka;
 
+  // get length scale
+  const Real scale = _simconf->lengthScale();
+  const Real invscale = 1.0 / scale;
+
   // make recoil queue available in overloadable functions
   recoil_queue_ptr = &recoils;
 
@@ -68,7 +72,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
     // correct for maximum available range in current _material by increasing maximum impact parameter
     #ifdef RANGECORRECT
-      range = _sample->rangeMaterial(_pka->_pos, _pka->_dir);
+      range = _sample->rangeMaterial(_pka->_pos, _pka->_dir) * scale;
       if (range < _ls)
       {
         /* std::cout << "range=" << range << " _ls=" << _ls
@@ -86,7 +90,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
     // correct for maximum available range in current _material by dropping recoils randomly (faster)
     #ifdef RANGECORRECT2
-      range = _sample->rangeMaterial(_pka->_pos, _pka->_dir);
+      range = _sample->rangeMaterial(_pka->_pos, _pka->_dir) * scale;
       if (range < _ls)
       {
         // skip this recoil, just advance the ion
@@ -276,7 +280,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
 
     // used to assign the new position to the recoil, but
     // we have to make sure the recoil starts in the appropriate _material!
-    _pka->_pos += _pka->_dir * (_ls - _simconf->tau);
+    _pka->_pos += _pka->_dir * (_ls - _simconf->tau) * invscale;
     _recoil->_dir = _pka->_dir * p1;
 
     _recoil->_E = _den;

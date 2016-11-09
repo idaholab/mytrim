@@ -53,7 +53,7 @@ using namespace MyTRIM_NS;
     return 1;                                            \
   } while(0)
 
-int main(int argc, char *argv[])
+int main()
 {
   // open the input
   Json::Value json_root;
@@ -90,6 +90,14 @@ int main(int argc, char *argv[])
       fclose(urand);
     }
     simconf->seed(seed < 0 ? -seed : seed); // random generator goes haywire with neg. seed
+
+    double scale;
+    if (json_root["options"]["scale"].isNumeric())
+    {
+      scale = json_root["options"]["scale"].asDouble();
+      std::cerr << "Using provided length scale " << scale << '\n';
+      simconf->setLengthScale(scale);
+    }
   }
 
   //
@@ -146,8 +154,6 @@ int main(int argc, char *argv[])
   Element element;
   for (unsigned int i = 0; i < nlayers; ++i)
   {
-    Real lthick = json_layers[i]["thickness"].asDouble();
-
     if (!json_layers[i]["rho"].isNumeric())
       mytrimError("Missing 'rho' in layer " << i);
     Real lrho   = json_layers[i]["rho"].asDouble();
@@ -158,7 +164,7 @@ int main(int argc, char *argv[])
 
     material = new MaterialBase(simconf, lrho); // rho
 
-    for (int j = 0; j < json_elem.size(); ++j)
+    for (unsigned int j = 0; j < json_elem.size(); ++j)
     {
       if (!json_elem[j]["Z"].isNumeric())
         mytrimError("Missing 'Z' in element " << j << " in layer " << i);
@@ -214,7 +220,7 @@ int main(int argc, char *argv[])
   IonBase *pka;
   Point start(0.0, sample->w[1] / 2.0, sample->w[2] / 2.0);
 
-  for (int n = 0; n < npka; n++)
+  for (unsigned int n = 0; n < npka; n++)
   {
     if (n % 100 == 0)
       std::cerr << "pka #" << n+1 << '\n';
