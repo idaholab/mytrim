@@ -49,7 +49,7 @@ public:
   SimconfType(unsigned int seed = 12345678);
 
   inline Real drand() { return cxx11random_dis_Real(*cxx11random_gen); }
-  inline Real irand() { return cxx11random_dis_int(*cxx11random_gen); }
+  inline unsigned int irand() { return cxx11random_dis_int(*cxx11random_gen); }
   void seed(unsigned int seed);
 
   // length scale in Angstrom
@@ -119,7 +119,7 @@ private:
 
   std::unique_ptr<std::mt19937> cxx11random_gen;
   std::uniform_real_distribution<double> cxx11random_dis_Real;
-  std::uniform_int_distribution<int> cxx11random_dis_int;
+  std::uniform_int_distribution<unsigned int> cxx11random_dis_int;
 
   Real _length_scale;
   Real _area_scale;

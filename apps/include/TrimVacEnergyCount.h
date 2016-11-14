@@ -1,11 +1,11 @@
 #ifndef TRIMVACENERGYCOUNT_H
 #define TRIMVACENERGYCOUNT_H
 
-#include "trim.h"
+#include "ThreadedTrimBase.h"
 
 using namespace MyTRIM_NS;
 
-class TrimVacEnergyCount : public TrimBase
+class TrimVacEnergyCount : public ThreadedTrimBase
 {
 public:
   TrimVacEnergyCount(SimconfType * simconf, SampleBase * sample);
@@ -13,8 +13,8 @@ public:
 protected:
   virtual void vacancyCreation();
 
-  virtual void startOutput();
-  virtual void stopOutput();
+  virtual void threadJoin(const ThreadedTrimBase & ttb);
+  virtual void writeOutput();
 
 private:
   /// histogram of vacancies created per log10 Energy and unit depth (Ang)
