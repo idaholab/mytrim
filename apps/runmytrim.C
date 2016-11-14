@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <queue>
+#include <list>
 #include <iostream>
 #include <string>
 #include <limits>
@@ -38,11 +39,11 @@
 #include "material.h"
 #include "sample_layers.h"
 #include "ion.h"
-#include "trim.h"
 #include "invert.h"
 #include "functions.h"
 
 // TRIM modules
+#include "include/ThreadedTrimBase.h"
 #include "include/TrimVacCount.h"
 #include "include/TrimVacEnergyCount.h"
 
@@ -58,8 +59,9 @@ using namespace MyTRIM_NS;
 struct ThreadData {
   SimconfType _simconf;
   SampleLayers * _sample;
-  TrimBase * _trim;
-  std::queue<IonBase*> _recoils;
+  ThreadedTrimBase * _trim;
+  std::queue<IonBase *> _recoils;
+  std::list<IonBase *> _pka;
 };
 std::vector<ThreadData> thread_data;
 
@@ -67,18 +69,23 @@ std::vector<ThreadData> thread_data;
 void computeThread(int tid)
 {
   auto & td = thread_data[tid];
-  IonBase * pka;
 
-  while (!td._recoils.empty())
+  for (auto pka: td._pka)
   {
-    pka = td._recoils.front();
-    td._recoils.pop();
-    td._sample->averages(pka);
+    td._simconf.seed(pka->_seed);
+    td._recoils.push(pka);
 
-    td._trim->trim(pka, td._recoils);
+    while (!td._recoils.empty())
+    {
+      IonBase * recoil = td._recoils.front();
+      td._recoils.pop();
+      td._sample->averages(recoil);
 
-    // done with this recoil
-    delete pka;
+      td._trim->trim(recoil, td._recoils);
+
+      // done with this recoil
+      delete recoil;
+    }
   }
 }
 
@@ -116,25 +123,23 @@ int main()
   //
   // process the "options" block
   //
+  int master_seed;
   if (json_root["options"].isObject())
   {
     // random seed
-    int seed;
     if (json_root["options"]["seed"].isNumeric())
     {
-      seed = json_root["options"]["seed"].asInt();
-      std::cerr << "Using provided seed " << seed << '\n';
+      master_seed = json_root["options"]["seed"].asInt();
+      std::cerr << "Using provided master seed " << master_seed << '\n';
     }
     else
     {
       // seed randomnumber generator from system entropy pool
       FILE *urand = fopen("/dev/random", "r");
-      if (fread(&seed, sizeof(int), 1, urand) != 1)
+      if (fread(&master_seed, sizeof(int), 1, urand) != 1)
         mytrimError("Unable to access /dev/random");
       fclose(urand);
     }
-    for (auto & td: thread_data)
-      td._simconf.seed(seed < 0 ? -seed : seed);
 
     double scale;
     if (json_root["options"]["scale"].isNumeric())
@@ -264,12 +269,13 @@ int main()
     mytrimError("Missing 'number' in ion block");
   unsigned int npka = json_root["ion"]["number"].asInt();
 
+  // use the rng in thread 0 to generate the pka seeds from the master seed
+  thread_data[0]._simconf.seed(master_seed);
 
   // fill PKA queues
   for (unsigned int n = 0; n < npka; n++)
   {
     auto & td = thread_data[n % nthreads];
-
     IonBase * pka = new IonBase(pkaTemplate);
     pka->_gen = 0; // generation (0 = PKA)
     pka->_dir = Point(1.0, 0.0, 0.0);
@@ -278,7 +284,8 @@ int main()
     pka->_pos = start;
 
     pka->setEf();
-    td._recoils.push(pka);
+    pka->_seed = thread_data[0]._simconf.irand();
+    td._pka.push_back(pka);
   }
 
   // launch threads
@@ -291,7 +298,17 @@ int main()
     thread[i].join();
 
   // join trim data into thread 0
-  // ...
+  for (unsigned int i = 1; i < nthreads; ++i)
+  {
+    thread_data[0]._trim->threadJoin(*thread_data[i]._trim);
+
+    thread_data[0]._simconf.vacancies_created += thread_data[i]._simconf.vacancies_created;
+    thread_data[0]._simconf.EelTotal += thread_data[i]._simconf.EelTotal;
+    thread_data[0]._simconf.EnucTotal += thread_data[i]._simconf.EnucTotal;
+  }
+
+  // write output files
+  thread_data[0]._trim->writeOutput();
 
   // summary
   std::cerr << "Vacancies/ion: " << Real(thread_data[0]._simconf.vacancies_created) / Real(npka) << '\n';

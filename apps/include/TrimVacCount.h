@@ -1,11 +1,11 @@
 #ifndef TRIMVACCOUNT_H
 #define TRIMVACCOUNT_H
 
-#include "trim.h"
+#include "ThreadedTrimBase.h"
 
 using namespace MyTRIM_NS;
 
-class TrimVacCount : public TrimBase
+class TrimVacCount : public ThreadedTrimBase
 {
 public:
   TrimVacCount(SimconfType * simconf, SampleBase * sample);
@@ -13,8 +13,8 @@ public:
 protected:
   virtual void vacancyCreation();
 
-  virtual void startOutput();
-  virtual void stopOutput();
+  virtual void threadJoin(const ThreadedTrimBase & ttb);
+  virtual void writeOutput();
 
 private:
   /// histogram of vacancies created per unit depth (Ang)

@@ -39,14 +39,13 @@ public:
       _potential(UNIVERSAL),
       _simconf(simconf),
       _sample(sample),
-      _base_name("mytrim"),
-      _outputting(false)
+      _base_name("mytrim")
   {}
 
   /**
    * The virtual destructor should handle closing output files
    */
-  virtual ~TrimBase() { stopOutput(); }
+  virtual ~TrimBase() {}
 
   /**
    * Run a TRIM simulation with a given PKA and push the resulting recoils onto
@@ -59,11 +58,7 @@ public:
    */
   void setBaseName(const std::string & name) { _base_name = name; }
 
-  /// overload and call baseclass version from here. Open files necessary for output in this method.
-  virtual void startOutput() { _outputting = true; }
-
-  /// overload and call baseclass version from here. Close files necessary for output in this method.
-  virtual void stopOutput() { _outputting = false; }
+  virtual void writeOutput() {};
 
   /// Scattering potential type
   enum Potential { UNIVERSAL, MOLIERE, CKR };
@@ -80,9 +75,6 @@ protected:
 
   /// called if recoil energy needs to get dissipated, to record phonons
   virtual void dissipateRecoilEnergy() {}
-
-  /// helper function to determine if the output has been started
-  bool outputting() { return _outputting; }
 
   SimconfType * _simconf;
   SampleBase * _sample;
@@ -106,10 +98,6 @@ protected:
 
   /// TRIM classes that output stuff use this string as the base name
   std::string _base_name;
-
-private:
-  /// has the output been initialized
-  bool _outputting;
 };
 
 
