@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# does not work with clang yet
-if [ "$CXX" = "clang++" ]; then exit; fi
-
 git clone https://github.com/open-source-parsers/jsoncpp.git
 cd jsoncpp
 

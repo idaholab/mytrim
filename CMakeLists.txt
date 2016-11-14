@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-project(mytrim)
+project(mytrim C CXX)
+
+find_package(Threads REQUIRED)
 
 set(DEBUG_FLAGS "-std=c++11 -g -O1 -Wall -Wextra -Werror -pedantic")
 set(RELEASE_FLAGS "-std=c++11 -O3")
@@ -49,6 +51,6 @@ if (JSONCPP_FOUND)
     apps/src/TrimVacEnergyCount.C
   )
   add_executable(runstopping apps/runstopping.C)
-  target_link_libraries(runmytrim mytrim m ${JSONCPP_LIBRARIES})
+  target_link_libraries(runmytrim mytrim m ${JSONCPP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
   target_link_libraries(runstopping mytrim m ${JSONCPP_LIBRARIES})
 endif (JSONCPP_FOUND)
