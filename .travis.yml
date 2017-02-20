@@ -1,3 +1,4 @@
+dist: trusty
 sudo: false
 
 language: cpp
@@ -5,20 +6,6 @@ language: cpp
 compiler:
   - gcc
   - clang
-
-install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-  - if [ "$CXX" = "clang++" ]; then export CXX="clang++-3.8" CC="clang-3.8"; fi
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.8
-    packages:
-      - gcc-4.9
-      - g++-4.9
-      - clang-3.8
 
 before_script:
   - ./.travis_bootstrap.sh
