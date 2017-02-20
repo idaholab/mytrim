@@ -122,7 +122,7 @@ void
 SimconfType::fileReadError(const std::string & path)
 {
 #ifdef MYTRIM_ENABLED
-    mooseError("Error reading " << path);
+    mooseError("Error reading " + path);
 #else
     std::cerr << "Error reading " << path << std::endl;
     exit(1);
