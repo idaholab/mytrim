@@ -47,6 +47,7 @@ find_package(JsonCpp)
 if (JSONCPP_FOUND)
   include_directories(${JSONCPP_INCLUDE_DIRS})
   add_executable(runmytrim apps/runmytrim.C
+    apps/src/TrimRange.C
     apps/src/TrimVacCount.C
     apps/src/TrimVacEnergyCount.C
   )

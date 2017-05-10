@@ -44,6 +44,7 @@
 
 // TRIM modules
 #include "include/ThreadedTrimBase.h"
+#include "include/TrimRange.h"
 #include "include/TrimVacCount.h"
 #include "include/TrimVacEnergyCount.h"
 
@@ -53,7 +54,7 @@ using namespace MyTRIM_NS;
   do {                                                   \
     std::cerr << "ERROR: " << msg << '\n' << std::flush; \
     return 1;                                            \
-  } while(0)
+  } while (0)
 
 // thread data
 struct ThreadData {
@@ -194,6 +195,9 @@ int main()
   else if (output_type == "vacenergycount")
     for (auto & td: thread_data)
       td._trim = new TrimVacEnergyCount(&(td._simconf), td._sample);
+  else if (output_type == "range")
+    for (auto & td: thread_data)
+      td._trim = new TrimRange(&(td._simconf), td._sample);
   else
     mytrimError("Unknown output type " << output_type);
 
