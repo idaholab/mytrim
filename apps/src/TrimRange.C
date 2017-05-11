@@ -10,6 +10,13 @@ TrimRange::TrimRange(SimconfType * simconf, SampleBase * sample) :
 }
 
 void
+TrimRange::vacancyCreation()
+{
+  // Quick calculation of Damage
+  _simconf->vacancies_created += _recoil->_E * 0.4 / _element->_Edisp;
+}
+
+void
 TrimRange::dissipateRecoilEnergy()
 {
   // store the x-component of the stopped ion position

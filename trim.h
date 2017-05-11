@@ -71,6 +71,9 @@ protected:
   /// called whenever a vaccancy is created
   virtual void vacancyCreation();
 
+  /// called whenever a replacement collision takes place
+  virtual void replacementCollision() {}
+
   virtual void checkPKAState() {}
 
   /// called if recoil energy needs to get dissipated, to record phonons
