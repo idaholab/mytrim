@@ -11,6 +11,7 @@ public:
   TrimRange(SimconfType * simconf, SampleBase * sample);
 
 protected:
+  virtual void vacancyCreation();
   virtual void dissipateRecoilEnergy();
   virtual bool followRecoil() { return (_recoil->_gen < 1); }
 

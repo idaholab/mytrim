@@ -235,10 +235,10 @@ int main()
           mytrimError("Missing 'fraction' in element " << j << " in layer " << i);
         element._t = json_elem[j]["fraction"].asDouble();
 
-        if (!json_elem[j]["edisp"].isNumeric())
+        if (json_elem[j]["edisp"].isNumeric())
           element._Edisp = json_elem[j]["edisp"].asDouble();
 
-        if (!json_elem[j]["elbind"].isNumeric())
+        if (json_elem[j]["elbind"].isNumeric())
           element._Elbind = json_elem[j]["elbind"].asDouble();
 
         material->_element.push_back(element);

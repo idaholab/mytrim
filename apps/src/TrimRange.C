@@ -10,6 +10,24 @@ TrimRange::TrimRange(SimconfType * simconf, SampleBase * sample) :
 }
 
 void
+TrimRange::vacancyCreation()
+{
+  const Real Ed = _element->_Edisp;
+  const Real ed = 0.0115 * std::pow(_recoil->_Z, -7.0/3.0) * _recoil->_E;
+  const Real kd = 0.1337 * std::pow(_recoil->_Z, 2.0/3.0) / std::sqrt(_recoil->_m);
+  const Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+  const Real Ev = _recoil->_E / (1.0 + kd * g);
+
+  // Quick calculation of Damage
+  if (Ev < Ed)
+    return;
+  if (Ev >= Ed/0.4)
+    _simconf->vacancies_created += Ev * 0.4 / Ed;
+  else
+    _simconf->vacancies_created++;
+}
+
+void
 TrimRange::dissipateRecoilEnergy()
 {
   // store the x-component of the stopped ion position

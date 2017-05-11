@@ -355,6 +355,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
           vacancyCreation();
         } else {
           // nope, the _pka gets stuck at that site as...
+          replacementCollision();
           if (_pka->_Z == _element->_Z)
             _pka->_state = IonBase::REPLACEMENT;
           else

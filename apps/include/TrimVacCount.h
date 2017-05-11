@@ -12,13 +12,15 @@ public:
 
 protected:
   virtual void vacancyCreation();
+  virtual void replacementCollision();
 
   virtual void threadJoin(const ThreadedTrimBase & ttb);
   virtual void writeOutput();
 
 private:
-  /// histogram of vacancies created per unit depth (Ang)
+  /// histogram of vacancies and replacements  created per unit depth (Ang)
   std::vector<unsigned int> _vac_bin;
+  std::vector<unsigned int> _repl_bin;
 };
 
 #endif //TRIMVACCOUNT_H
