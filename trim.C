@@ -330,7 +330,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     // decide on the fate of recoil and _pka
     //
     if (_pka->_state != IonBase::LOST) {
-      if (_recoil->_E > _element->_Edisp) {
+      if (_recoil->_E > _element->_Edisp - _element->_Elbind) {
         // non-physics based descision on recoil following
         if (followRecoil()) {
           v_norm(_recoil->_dir);
