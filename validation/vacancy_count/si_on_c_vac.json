@@ -1,0 +1,19 @@
+{
+  "mytrim" : {
+    "options": { "seed": 2344, "threads": 12 },
+    // Si
+    "ion" : { "Z": 14, "mass": 27.977, "energy": 1000, "number": 1000 },
+    "sample": {
+      "layers": [
+        { "thickness": 100000, "rho": 2.253, "elements": [
+          // C
+          { "Z": 6, "mass": 12.01, "fraction": 1 } ]
+        }
+      ]
+    },
+    "output" : {
+      "base": "si_on_c_vac",
+      "type": "vaccount"
+    }
+  }
+}

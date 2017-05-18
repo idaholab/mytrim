@@ -1,0 +1,19 @@
+{
+  "mytrim" : {
+    "options": { "seed": 2344, "threads": 12 },
+    // Xe
+    "ion" : { "Z": 54, "mass": 131.904, "energy": 1000, "number": 10000 },
+    "sample": {
+      "layers": [
+        { "thickness": 100000, "rho": 19.043, "elements": [
+          // U
+          { "Z": 92, "mass": 238.0, "fraction": 1 } ]
+        }
+      ]
+    },
+    "output" : {
+      "base": "xe_on_u_range",
+      "type": "range"
+    }
+  }
+}
