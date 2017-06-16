@@ -1,0 +1,19 @@
+{
+  "mytrim" : {
+    "options": { "seed": 2344, "threads": 12 },
+    // Copper
+    "ion" : { "Z": 29, "mass": 63.546, "energy": 1000, "number": 10000 },
+    "sample": {
+      "layers": [
+        { "thickness": 100000, "rho": 8.92, "elements": [
+          // Copper
+          { "Z": 29, "mass": 63.546, "fraction": 1 } ]
+        }
+      ]
+    },
+    "output" : {
+      "base": "cu_on_cu",
+      "type": "range"
+    }
+  }
+}
