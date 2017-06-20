@@ -21,7 +21,7 @@ SimconfType::SimconfType(unsigned int seed) :
     cxx11random_dis_int(0, 65535)
 {
   ed = 25.0; // displacement energy
-  tmin = 1.0; //max impact parameter set by min. transferred energy
+  tmin = 0.2; //max impact parameter set by min. transferred energy
   //tmin = 5.0; //max impact parameter set by min. transferred energy
   tau = 0.0;
   da = 3.0; // angular grid for transmitted ions
