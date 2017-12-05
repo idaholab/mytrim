@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
 
 using namespace MyTRIM_NS;
 
@@ -33,6 +34,17 @@ MaterialBase::prepare()
 #ifdef MYTRIM_ENABLED
   if (tt == 0.0)
     mooseError("Stoichiometry invalid, all elements zero.");
+
+  for (unsigned int i = 0; i < end; ++i)
+    if (_element[i]._Z > 92)
+      mooseError("currently data is not available for Z > 92.");
+#else
+  if (tt == 0.0)
+    throw std::invalid_argument("Stoichiometry invalid, all elements zero");
+
+  for (unsigned int i = 0; i < end; ++i)
+    if (_element[i]._Z > 92)
+      throw std::invalid_argument("currently data is not available for Z > 92.");
 #endif
 
   // normalize relative probabilities to 1
