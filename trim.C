@@ -344,7 +344,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
         } else {
           // this recoil could have left its lattice site, but we chose
           // not to follow it (simulation of PKAs only)
-          _recoil->_id = IonBase::DELETE;
+          _recoil->_state = IonBase::DELETE;
         }
 
         // will the knock-on get trapped at the recoil atom site?
@@ -364,7 +364,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
       } else {
         // this recoil will not leave its lattice site
         dissipateRecoilEnergy();
-        _recoil->_id  = IonBase::DELETE;;
+        _recoil->_state  = IonBase::DELETE;;
 
         // if the PKA has no energy left, put it to rest here as an interstitial
         if (_pka->_E < _pka->_Ef) {
@@ -374,7 +374,7 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
     }
 
     // delete recoil if it was not queued
-    if (_recoil->_id  == IonBase::DELETE)
+    if (_recoil->_state  == IonBase::DELETE)
       delete _recoil;
 
     // act on the _pka state change
