@@ -63,9 +63,10 @@ public:
 
   std::vector<Element> _element;
 
+  Real rstop(const IonBase *ion, int z2);
+
 protected:
   Real rpstop(int z2, Real e);
-  Real rstop(const IonBase *ion, int z2);
 
   SimconfType * _simconf;
 };
