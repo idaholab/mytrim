@@ -43,6 +43,9 @@ public:
   void average(const IonBase *pka);
   Real getrstop(const IonBase *pka);
 
+  /// derivative of the stopping power of pka w.r.t. component
+  Real getDrstopDcomp(const IonBase *pka, const Element & component);
+
   virtual const Element & getElement(unsigned int nn) { return _element[nn]; }
 
   Real _rho;
