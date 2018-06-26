@@ -104,6 +104,15 @@ MaterialBase::getrstop(const IonBase * pka)
 }
 
 Real
+MaterialBase::getDrstopDcomp(const IonBase *pka, const Element & component)
+{
+  for (auto & e : _element)
+    if (component._Z == e._Z && std::abs(component._m - e._m))
+      return rstop(pka, e._Z);
+  return 0;
+}
+
+Real
 MaterialBase::rpstop(int z2p, Real e)
 {
   Real pe, sl, sh, sp, velpwr;
