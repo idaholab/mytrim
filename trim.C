@@ -18,6 +18,9 @@ TrimBase::trim(IonBase * pka, std::queue<IonBase*> & recoils)
   // simconf should already be initialized
   _pka = pka;
 
+  // set state to MOVING
+  _pka->_state = IonBase::MOVING;
+
   // get length scale
   const Real scale = _simconf->lengthScale();
   const Real invscale = 1.0 / scale;
