@@ -51,7 +51,7 @@ public:
   //   SUBSTITUTIONAL  pka->_Z != element._Z && pka->_E < element._Edisp
   //   INTERSTITIAL    no recoil spawned and pke->_E < pka->_Ef
   //   LOST            ion has left the sample
-  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST, DELETE } _state;
+  enum StateType { MOVING, REPLACEMENT, SUBSTITUTIONAL, INTERSTITIAL, LOST, DELETE, VACANCY } _state;
 };
 
 /// Serialize ion into text stream
