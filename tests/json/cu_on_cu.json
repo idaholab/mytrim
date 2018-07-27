@@ -1,4 +1,4 @@
-{
+{ "mytrim" : {
   "options": { "seed": 2344 },
   // 150 keV Copper
   "ion" : { "Z": 29, "mass": 63.546, "energy": 150000, "number": 1000 },
@@ -11,6 +11,7 @@
     ]
   },
   "output" : {
-    "base": "cu_on_cu"
+    "base": "cu_on_cu",
+    "type": "vaccount"
   }
-}
+} }
