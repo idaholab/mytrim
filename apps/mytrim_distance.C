@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Schwen   *
+ *   Copyright (C) 2018 by Daniel Schwen   *
  *   daniel@schwen.de   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -46,14 +45,18 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   // initialize global parameter structure and read data tables from file
   SimconfType * simconf = new SimconfType;
 
   if (argc != 4)
   {
-    std::cerr << "syntax:\n" << argv[0] << " Epka Npka El\nEpka\tPKA energy in eV\nNpka\tNumber of PKA to simulate\nEl\tElement symbol for the PKA atom type\n";
+    std::cerr << "syntax:\n"
+              << argv[0]
+              << " Epka Npka El\nEpka\tPKA energy in eV\nNpka\tNumber of PKA to "
+                 "simulate\nEl\tElement symbol for the PKA atom type\n";
     return 1;
   }
   const Real Epka = atof(argv[1]);
@@ -72,38 +75,39 @@ int main(int argc, char *argv[])
   {
     // seed random number generator from system entropy pool
     // we internally use the libc random function (not r250c, which is not threadsafe)
-    FILE *urand = fopen("/dev/random", "r");
-    if (fread(&seed, sizeof(int), 1, urand) != 1) return 1;
+    FILE * urand = fopen("/dev/random", "r");
+    if (fread(&seed, sizeof(int), 1, urand) != 1)
+      return 1;
     fclose(urand);
   }
-  simconf->seed(seed<0 ? -seed : seed);
+  simconf->seed(seed < 0 ? -seed : seed);
 
   // initialize sample structure
-  auto *sample = new SampleSolid(400.0, 400.0, 400.0);
+  auto * sample = new SampleSolid(400.0, 400.0, 400.0);
 
   // initialize trim engine for the sample
-  TrimBase *trim = new TrimBase(simconf, sample);
+  TrimBase * trim = new TrimBase(simconf, sample);
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
 
   // site volume
-  const Real site_volume = 0.01181; // nm^3 / Cu_atom
+  const Real site_volume = 0.01181;      // nm^3 / Cu_atom
   const Real amu_in_g = 1.660539040e-24; // g / amu
-  const Real m = 63.5; // amu
+  const Real m = 63.5;                   // amu
   const Real rho = m * amu_in_g / (site_volume * 1e-21);
   std::cerr << "Rho = " << rho << " g/cm^3\n";
 
   material = new MaterialBase(simconf, 10.0); // rho
-  element._Z = 29; // Cu
+  element._Z = 29;                            // Cu
   element._m = m;
   element._t = 1.0;
   material->_element.push_back(element);
-  material->prepare(); // all materials added
+  material->prepare();                  // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<IonBase*> recoils;
+  std::queue<IonBase *> recoils;
 
   // distance histogram
   std::vector<int> hist;
@@ -112,7 +116,8 @@ int main(int argc, char *argv[])
   // find projectile
   Real Mpka = -1, Zpka;
   for (unsigned int i = 0; i < simconf->scoef.size(); ++i)
-    if (simconf->scoef[i].sym == Elpka) {
+    if (simconf->scoef[i].sym == Elpka)
+    {
       Mpka = simconf->scoef[i].mm1;
       Zpka = i + 1;
       break;
@@ -128,7 +133,8 @@ int main(int argc, char *argv[])
   IonMDTag *projectile, *pka;
   for (int n = 0; n < Npka; n++)
   {
-    if (n % 10 == 0) std::cerr << "event #" << n+1 << "\n";
+    if (n % 10 == 0)
+      std::cerr << "event #" << n + 1 << "\n";
 
     projectile = new IonMDTag;
     projectile->_gen = 0; // generation (0 = PKA)
@@ -137,7 +143,7 @@ int main(int argc, char *argv[])
 
     projectile->_Z = Zpka;
     projectile->_m = Mpka;
-    projectile->_E  = Epka;
+    projectile->_E = Epka;
 
     Real norm;
     do
@@ -145,8 +151,7 @@ int main(int argc, char *argv[])
       for (int i = 0; i < 3; ++i)
         projectile->_dir(i) = 2.0 * simconf->drand() - 1.0;
       norm = projectile->_dir.norm_sq();
-    }
-    while (norm <= 0.0001 || norm > 1.0);
+    } while (norm <= 0.0001 || norm > 1.0);
     projectile->_dir /= std::sqrt(norm);
 
     // random origin
@@ -158,12 +163,12 @@ int main(int argc, char *argv[])
 
     while (!recoils.empty())
     {
-      pka = dynamic_cast<IonMDTag*>(recoils.front());
+      pka = dynamic_cast<IonMDTag *>(recoils.front());
       recoils.pop();
       sample->averages(pka);
 
       for (int i = 0; i < 3; ++i)
-          pos1[i] = pka->_pos(i);
+        pos1[i] = pka->_pos(i);
 
       trim->trim(pka, recoils);
 

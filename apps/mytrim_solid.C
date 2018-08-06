@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -39,7 +38,8 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   char fname[200];
   if (argc != 3) // 2
@@ -49,9 +49,10 @@ int main(int argc, char *argv[])
   }
 
   // seed random number generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
+  FILE * urand = fopen("/dev/random", "r");
   unsigned int seed;
-  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1)
+    return 1;
   fclose(urand);
 
   // initialize global parameter structure and read data tables from file
@@ -60,16 +61,16 @@ int main(int argc, char *argv[])
   simconf->tmin = 0.2;
 
   // initialize sample structure
-  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
+  SampleSolid * sample = new SampleSolid(200.0, 200.0, 200.0);
 
-  TrimBase *trim = new TrimBase(simconf, sample);
+  TrimBase * trim = new TrimBase(simconf, sample);
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
 
   // UO2
   material = new MaterialBase(simconf, 9.4); // rho
-  element._Z = 92; // U
+  element._Z = 92;                           // U
   element._m = 235.0;
   element._t = 1.0;
   material->_element.push_back(element);
@@ -81,24 +82,25 @@ int main(int argc, char *argv[])
   element._m = 131.0;
   element._t = 0.0024;
   material->_element.push_back(element);
-  material->prepare(); // all materials added
+  material->prepare();                  // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<IonBase*> recoils;
+  std::queue<IonBase *> recoils;
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
-  FILE *erec = fopen(fname, "wt");
+  FILE * erec = fopen(fname, "wt");
 
   snprintf(fname, 199, "%s.dist", argv[1]);
-  FILE *rdist = fopen(fname, "wt");
+  FILE * rdist = fopen(fname, "wt");
 
   IonMDTag *ff1, *pka;
 
   // 5 fission events
   for (int n = 0; n < 10; n++) // 10 ff
   {
-    if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
+    if (n % 100 == 0)
+      fprintf(stderr, "pka #%d\n", n + 1);
 
     ff1 = new IonMDTag;
     ff1->_gen = 0; // generation (0 = PKA)
@@ -108,57 +110,59 @@ int main(int argc, char *argv[])
 
     ff1->_Z = 53;
     ff1->_m = 127;
-    ff1->_E  = 70.0 * 1.0e6;
+    ff1->_E = 70.0 * 1.0e6;
 
     Real norm;
     do
     {
-      for (int i = 0; i < 3; ++i) ff1->_dir(i) = simconf->drand() - 0.5;
+      for (int i = 0; i < 3; ++i)
+        ff1->_dir(i) = simconf->drand() - 0.5;
       norm = ff1->_dir.norm_sq();
-    }
-    while (norm <= 0.0001 || norm > 0.25);
+    } while (norm <= 0.0001 || norm > 0.25);
     ff1->_dir /= std::sqrt(norm);
 
-    for (int i = 0; i < 3; ++i) ff1->_pos(i) = simconf->drand() * sample->w[i];
+    for (int i = 0; i < 3; ++i)
+      ff1->_pos(i) = simconf->drand() * sample->w[i];
 
     ff1->setEf();
     recoils.push(ff1);
 
-/*
-    ff2 = new IonBase(*ff1); // copy constructor
-    //ff1->_id = simconf->_id++;
+    /*
+        ff2 = new IonBase(*ff1); // copy constructor
+        //ff1->_id = simconf->_id++;
 
-    // reverse direction
-    ff2->_dir = -ff2->_dir;
+        // reverse direction
+        ff2->_dir = -ff2->_dir;
 
-    ff2->_Z = Z2;
-    ff2->_m = A2;
-    ff2->_E  = E2 * 1.0e6;
+        ff2->_Z = Z2;
+        ff2->_m = A2;
+        ff2->_E  = E2 * 1.0e6;
 
-    ff2->setEf();
-    recoils.push(ff2);
+        ff2->setEf();
+        recoils.push(ff2);
 
-    fprintf(stderr, "A1=%f Z1=%d (%f MeV)\tA2=%f Z2=%d (%f MeV)\n", A1, Z1, E1, A2, Z2, E2);
-*/
+        fprintf(stderr, "A1=%f Z1=%d (%f MeV)\tA2=%f Z2=%d (%f MeV)\n", A1, Z1, E1, A2, Z2, E2);
+    */
     while (!recoils.empty())
     {
-      pka = dynamic_cast<IonMDTag*>(recoils.front());
+      pka = dynamic_cast<IonMDTag *>(recoils.front());
       recoils.pop();
       sample->averages(pka);
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if (pka->_Z == 54 )
+      if (pka->_Z == 54)
       {
-        // mark the first recoil that falls into the MD energy gap with 1 (child generations increase the number)
-        if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0) pka->_md = 1;
+        // mark the first recoil that falls into the MD energy gap with 1 (child generations
+        // increase the number)
+        if (pka->_E > 200 && pka->_E < 12000 && pka->_md == 0)
+          pka->_md = 1;
 
         if (pka->_gen > 0)
         {
           // output energy and recoil generation
           fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_md);
         }
-
       }
 
       // follow this ion's trajectory and store recoils
@@ -168,17 +172,18 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // pka is Xe
-      if (pka->_Z == 54 )
+      if (pka->_Z == 54)
       {
         // output
-        //printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_tag);
+        // printf("%f %f %f %d\n", pka->_pos(0), pka->_pos(1), pka->_pos(2), pka->_tag);
       }
 
       // done with this recoil
       delete pka;
 
       // this should rather be done with spawnRecoil returning false
-      //if (simconf->primariesOnly) while (!recoils.empty()) { delete recoils.front(); recoils.pop(); };
+      // if (simconf->primariesOnly) while (!recoils.empty()) { delete recoils.front();
+      // recoils.pop(); };
     }
   }
   fclose(rdist);

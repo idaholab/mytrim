@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -24,20 +24,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "sample.h"
 #include <vector>
 
-namespace MyTRIM_NS {
+namespace MyTRIM_NS
+{
 
 class SampleLayers : public SampleBase
 {
 public:
-  SampleLayers(Real x, Real y, Real z): SampleBase(x, y, z) {};
+  SampleLayers(Real x, Real y, Real z) : SampleBase(x, y, z){};
 
-  virtual MaterialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase * lookupMaterial(Point & pos);
   virtual Real rangeMaterial(Point & pos, Point & dir);
 
   virtual int lookupLayer(Point & pos);
   std::vector<Real> layerThickness;
 };
-
 }
 
 #endif

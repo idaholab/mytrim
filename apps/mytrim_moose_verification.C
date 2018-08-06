@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Schwen   *
+ *   Copyright (C) 2015 by Daniel Schwen   *
  *   daniel@schwen.de   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -39,12 +38,14 @@
 
 using namespace MyTRIM_NS;
 
-int main(int, char **)
+int
+main(int, char **)
 {
   // seed random number generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
+  FILE * urand = fopen("/dev/random", "r");
   unsigned int seed;
-  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1)
+    return 1;
   fclose(urand);
 
   // initialize global parameter structure and read data tables from file
@@ -53,15 +54,15 @@ int main(int, char **)
   simconf->tmin = 0.2;
 
   // initialize sample structure
-  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
+  SampleSolid * sample = new SampleSolid(200.0, 200.0, 200.0);
 
-  TrimBase *trim = new TrimBase(simconf, sample);
+  TrimBase * trim = new TrimBase(simconf, sample);
 
   sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
   sample->bc[1] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
   sample->bc[2] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
 
   material = new MaterialBase(simconf, 1.0); // rho
@@ -69,22 +70,22 @@ int main(int, char **)
   element._m = 40.0;
   element._t = 1.0;
   material->_element.push_back(element);
-  material->prepare(); // all materials added
+  material->prepare();                  // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<IonBase*> recoils;
+  std::queue<IonBase *> recoils;
 
   // create a bunch of ions
   MyTRIM_NS::IonBase * pka;
   for (unsigned int i = 0; i < 1000; ++i)
   {
     pka = new MyTRIM_NS::IonBase;
-    pka->_gen = 0;  // generation (0 = PKA)
+    pka->_gen = 0; // generation (0 = PKA)
     pka->_tag = 0; // tag holds the element type
     pka->_Z = 20;
     pka->_m = 40;
-    pka->_E  = 300;
+    pka->_E = 300;
 
     pka->_dir(0) = 0.0;
     pka->_dir(1) = 1.0;

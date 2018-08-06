@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -46,7 +45,8 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   char fname[200];
   if (argc != 8)
@@ -55,36 +55,38 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  Real epka  = atof(argv[2]);
-  Real theta = atof(argv[3]) * M_PI/180.0; // 0 = perpendicular to wire
-  int numpka  = atoi(argv[4]);
-  int   zpka  = atoi(argv[5]);
-  Real mpka  = atof(argv[6]);
-  Real dwire  = atof(argv[7])*20.0;
+  Real epka = atof(argv[2]);
+  Real theta = atof(argv[3]) * M_PI / 180.0; // 0 = perpendicular to wire
+  int numpka = atoi(argv[4]);
+  int zpka = atoi(argv[5]);
+  Real mpka = atof(argv[6]);
+  Real dwire = atof(argv[7]) * 20.0;
 
   // seed random number generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
+  FILE * urand = fopen("/dev/random", "r");
   unsigned int seed;
-  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1)
+    return 1;
   fclose(urand);
 
   // initialize global parameter structure and read data tables from file
   SimconfType * simconf = new SimconfType(seed);
 
   // initialize sample structure
-  SampleWire *sample = new SampleWire(dwire, dwire, 100.0);
+  SampleWire * sample = new SampleWire(dwire, dwire, 100.0);
 
   // initialize trim engine for the sample
-  const int z1 = 29; //Cu
-  const int z2 = 22; //Ti
-  const int z3 = 47; //Ag
-  TrimVacMap *trim = new TrimVacMap(simconf, sample, z1, z2, z3); // GaCW
+  const int z1 = 29;                                               // Cu
+  const int z2 = 22;                                               // Ti
+  const int z3 = 47;                                               // Ag
+  TrimVacMap * trim = new TrimVacMap(simconf, sample, z1, z2, z3); // GaCW
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
 
-  material = new MaterialBase(simconf, (56.0*8.920 + 38.0*4.507 + 8.0*10.490)/(56.0+38.0+8.0)); // rho
-  element._Z = z1; // Cu
+  material = new MaterialBase(
+      simconf, (56.0 * 8.920 + 38.0 * 4.507 + 8.0 * 10.490) / (56.0 + 38.0 + 8.0)); // rho
+  element._Z = z1;                                                                  // Cu
   element._m = 63.546;
   element._t = 56.0;
   material->_element.push_back(element);
@@ -96,13 +98,13 @@ int main(int argc, char *argv[])
   element._m = 107.87;
   element._t = 8.0;
   material->_element.push_back(element);
-  material->prepare(); // all materials added
+  material->prepare();                  // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<IonBase*> recoils;
+  std::queue<IonBase *> recoils;
 
-  IonBase *pka;
+  IonBase * pka;
 
   const int mx = 20, my = 20;
   int imap[mx][my][3];
@@ -114,14 +116,15 @@ int main(int argc, char *argv[])
   // 10000 ions
   for (int n = 0; n < numpka; n++)
   {
-    if (n % 1000 == 0) fprintf(stderr, "pka #%d\n", n+1);
+    if (n % 1000 == 0)
+      fprintf(stderr, "pka #%d\n", n + 1);
 
     pka = new IonBase;
     pka->_gen = 0; // generation (0 = PKA)
     pka->_tag = -1;
     pka->_Z = zpka; // S
     pka->_m = mpka;
-    pka->_E  = epka;
+    pka->_E = epka;
 
     pka->_dir(0) = 0.0;
     pka->_dir(1) = -cos(theta);
@@ -133,7 +136,9 @@ int main(int argc, char *argv[])
     pka->_pos(2) = simconf->drand() * sample->w[2];
 
     // wire surface
-    pka->_pos(1) = sample->w[1] / 2.0 * (1.0 + std::sqrt(1.0 - sqr((pka->_pos(0) / sample->w[0]) * 2.0 - 1.0))) - 0.5;
+    pka->_pos(1) = sample->w[1] / 2.0 *
+                       (1.0 + std::sqrt(1.0 - sqr((pka->_pos(0) / sample->w[0]) * 2.0 - 1.0))) -
+                   0.5;
 
     pka->setEf();
     recoils.push(pka);
@@ -146,9 +151,9 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      if (pka->_Z == zpka )
+      if (pka->_Z == zpka)
       {
-        //printf( "p1 %f\t%f\t%f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
+        // printf( "p1 %f\t%f\t%f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
       }
 
       // follow this ion's trajectory and store recoils
@@ -158,18 +163,21 @@ int main(int argc, char *argv[])
       // do ion analysis/processing AFTER the cascade here
 
       // ion is still in sample
-      if ( sample->lookupMaterial(pka->_pos) != 0)
+      if (sample->lookupMaterial(pka->_pos) != 0)
       {
         int x, y;
         x = ((pka->_pos(0) * mx) / sample->w[0]);
         y = ((pka->_pos(1) * my) / sample->w[1]);
-        x -= int(x/mx) * mx;
-        y -= int(y/my) * my;
+        x -= int(x / mx) * mx;
+        y -= int(y / my) * my;
 
         // keep track of interstitials for the two constituents
-        if (pka->_Z == z1) imap[x][y][0]++;
-        else if (pka->_Z == z2) imap[x][y][1]++;
-        else if (pka->_Z == z3) imap[x][y][2]++;
+        if (pka->_Z == z1)
+          imap[x][y][0]++;
+        else if (pka->_Z == z2)
+          imap[x][y][1]++;
+        else if (pka->_Z == z3)
+          imap[x][y][2]++;
       }
 
       // done with this recoil
@@ -177,7 +185,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  const char *elnam[3] = { "Cu", "Ti", "Ag" };
+  const char * elnam[3] = {"Cu", "Ti", "Ag"};
 
   FILE *intf, *vacf, *netf;
   // e<numberofelementsinwire
@@ -194,11 +202,15 @@ int main(int argc, char *argv[])
     {
       for (int x = 0; x <= mx; x++)
       {
-        Real x1 = Real(x)/Real(mx)*sample->w[0];
-        Real y1 = Real(y)/Real(my)*sample->w[1];
-        fprintf(intf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? imap[x][y][e] : 0);
-        fprintf(vacf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? trim->vmap[x][y][e] : 0);
-        fprintf(netf, "%f %f %d\n", x1, y1, (x<mx && y<my) ? (imap[x][y][e] - trim->vmap[x][y][e]) : 0);
+        Real x1 = Real(x) / Real(mx) * sample->w[0];
+        Real y1 = Real(y) / Real(my) * sample->w[1];
+        fprintf(intf, "%f %f %d\n", x1, y1, (x < mx && y < my) ? imap[x][y][e] : 0);
+        fprintf(vacf, "%f %f %d\n", x1, y1, (x < mx && y < my) ? trim->vmap[x][y][e] : 0);
+        fprintf(netf,
+                "%f %f %d\n",
+                x1,
+                y1,
+                (x < mx && y < my) ? (imap[x][y][e] - trim->vmap[x][y][e]) : 0);
       }
       fprintf(intf, "\n");
       fprintf(vacf, "\n");

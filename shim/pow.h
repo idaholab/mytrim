@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as

@@ -1,11 +1,30 @@
+/*
+MyTRIM - a three dimensional binary collision Monte Carlo library.
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA
+*/
+
 #include "../include/TrimRange.h"
 #include <fstream>
 
 using namespace MyTRIM_NS;
 
-TrimRange::TrimRange(SimconfType * simconf, SampleBase * sample) :
-    ThreadedTrimBase(simconf, sample),
-    _range(112) // reserve space for all physical Z
+TrimRange::TrimRange(SimconfType * simconf, SampleBase * sample)
+  : ThreadedTrimBase(simconf, sample), _range(112) // reserve space for all physical Z
 {
 }
 
@@ -13,15 +32,15 @@ void
 TrimRange::vacancyCreation()
 {
   const Real Ed = _element->_Edisp;
-  const Real ed = 0.0115 * std::pow(_recoil->_Z, -7.0/3.0) * _recoil->_E;
-  const Real kd = 0.1337 * std::pow(_recoil->_Z, 2.0/3.0) / std::sqrt(_recoil->_m);
-  const Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+  const Real ed = 0.0115 * std::pow(_recoil->_Z, -7.0 / 3.0) * _recoil->_E;
+  const Real kd = 0.1337 * std::pow(_recoil->_Z, 2.0 / 3.0) / std::sqrt(_recoil->_m);
+  const Real g = 3.4008 * std::pow(ed, 1.0 / 6.0) + 0.40244 * std::pow(ed, 3.0 / 4.0) + ed;
   const Real Ev = _recoil->_E / (1.0 + kd * g);
 
   // Quick calculation of Damage
   if (Ev < Ed)
     return;
-  if (Ev >= Ed/0.4)
+  if (Ev >= Ed / 0.4)
     _simconf->vacancies_created += Ev * 0.4 / Ed;
   else
     _simconf->vacancies_created++;

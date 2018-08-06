@@ -1,19 +1,32 @@
-#include <cmath>
+/*
+MyTRIM - a three dimensional binary collision Monte Carlo library.
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA
+*/
 
 #include "ion.h"
+#include <cmath>
 
 using namespace MyTRIM_NS;
 
-IonBase::IonBase() :
-    _seed(0),
-    _tag(-1),
-    _Ef(3.0),
-    _state(MOVING)
-{
-}
+IonBase::IonBase() : _seed(0), _tag(-1), _Ef(3.0), _state(MOVING) {}
 
-IonBase::IonBase(IonBase* prototype) :
-    _Z(prototype->_Z),
+IonBase::IonBase(IonBase * prototype)
+  : _Z(prototype->_Z),
     _m(prototype->_m),
     _E(prototype->_E),
     _seed(0),
@@ -23,14 +36,8 @@ IonBase::IonBase(IonBase* prototype) :
 {
 }
 
-IonBase::IonBase(int Z, Real m, Real E) :
-    _Z(Z),
-    _m(m),
-    _E(E),
-    _seed(0),
-    _tag(-1),
-    _Ef(3.0),
-    _state(MOVING)
+IonBase::IonBase(int Z, Real m, Real E)
+  : _Z(Z), _m(m), _E(E), _seed(0), _tag(-1), _Ef(3.0), _state(MOVING)
 {
 }
 
@@ -41,7 +48,7 @@ IonBase::setEf()
   _Ef = 3.0;
 
   // final energy TODO: 100Mev*0.00001 = 1keV - do we really want to stop there?!
-  //fmax(5.0, 0.00001 * e);
+  // fmax(5.0, 0.00001 * e);
 }
 
 void
@@ -52,7 +59,7 @@ IonBase::parent(IonBase * parent)
   _Ef = parent->_Ef; // final energy
 }
 
-IonBase*
+IonBase *
 IonBase::spawnRecoil()
 {
   IonBase * recoil = new IonBase;
@@ -61,38 +68,40 @@ IonBase::spawnRecoil()
 }
 
 // output operator (implement for derived classes if necessary)
-namespace MyTRIM_NS {
-  std::ostream & operator << (std::ostream & os, const IonBase & i)
-  {
-    os << i._pos(0) << ' ' << i._pos(1) << ' ' << i._pos(2) << ' '
-       << i._Z << ' ' << i._m << ' ' << i._E << ' '
-       << i._id << ' ' << i._gen << ' ' << i._tag << ' ';
-    return os;
-  }
+namespace MyTRIM_NS
+{
+std::ostream &
+operator<<(std::ostream & os, const IonBase & i)
+{
+  os << i._pos(0) << ' ' << i._pos(1) << ' ' << i._pos(2) << ' ' << i._Z << ' ' << i._m << ' '
+     << i._E << ' ' << i._id << ' ' << i._gen << ' ' << i._tag << ' ';
+  return os;
+}
 }
 
 bool
-IonBase::operator< (const IonBase & a) const
+IonBase::operator<(const IonBase & a) const
 {
   return (_Z < a._Z) || (_Z == a._Z && _m < a._m);
 }
 
-
-IonBase*
+IonBase *
 IonMDTag::spawnRecoil()
 {
-  IonBase *recoil = new IonMDTag;
+  IonBase * recoil = new IonMDTag;
   recoil->parent(this);
   return recoil;
 }
 
-namespace MyTRIM_NS {
-  // leverage the parent class output and augment it
-  std::ostream & operator << (std::ostream & os, const IonMDTag & i)
-  {
-    os << (static_cast<const IonBase &>(i)) <<  i._md << ' ';
-    return os;
-  }
+namespace MyTRIM_NS
+{
+// leverage the parent class output and augment it
+std::ostream &
+operator<<(std::ostream & os, const IonMDTag & i)
+{
+  os << (static_cast<const IonBase &>(i)) << i._md << ' ';
+  return os;
+}
 }
 
 void
@@ -104,11 +113,13 @@ IonClock::parent(IonBase * parent)
   _time = clock_parent ? clock_parent->_time : 0.0;
 }
 
-namespace MyTRIM_NS {
-  // leverage the parent class output and augment it
-  std::ostream & operator << (std::ostream & os, const IonClock & i)
-  {
-    os << (static_cast<const IonBase &>(i)) <<  i._time << ' ';
-    return os;
-  }
+namespace MyTRIM_NS
+{
+// leverage the parent class output and augment it
+std::ostream &
+operator<<(std::ostream & os, const IonClock & i)
+{
+  os << (static_cast<const IonBase &>(i)) << i._time << ' ';
+  return os;
+}
 }

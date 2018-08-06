@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -42,7 +41,8 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   char fname[200];
   if (argc != 2) // 2
@@ -52,9 +52,10 @@ int main(int argc, char *argv[])
   }
 
   // seed random number generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
+  FILE * urand = fopen("/dev/random", "r");
   unsigned int seed;
-  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1)
+    return 1;
   fclose(urand);
 
   // initialize global parameter structure and read data tables from file
@@ -71,9 +72,9 @@ int main(int argc, char *argv[])
   const int nmax = 10000;
   std::cout << "NN " << nmax << " PKAs" << std::endl;
 
-  SampleLayers *sample = new SampleLayers(sx, sy, sz);
-  //TrimBase *trim = new TrimBase(sample);
-  TrimBase *trim = new TrimRecoils(simconf, sample);
+  SampleLayers * sample = new SampleLayers(sx, sy, sz);
+  // TrimBase *trim = new TrimBase(sample);
+  TrimBase * trim = new TrimRecoils(simconf, sample);
 
   // Read Materials description from stdin
   int nlayer;
@@ -83,14 +84,14 @@ int main(int argc, char *argv[])
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   std::cout << "n_layers=" << nlayer << std::endl;
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
   for (int i = 0; i < nlayer; ++i)
   {
     std::cin >> lename >> lthick >> lrho >> nelem;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho="
-         << lrho << "g/ccm  n_elements=" << nelem << std::endl;
+    std::cout << "Layer: " << lename << "  d=" << lthick << "Ang  rho=" << lrho
+              << "g/ccm  n_elements=" << nelem << std::endl;
 
     material = new MaterialBase(simconf, lrho); // rho
 
@@ -98,27 +99,28 @@ int main(int argc, char *argv[])
     {
       std::cin >> lename >> element._Z >> element._m >> element._t;
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::cout << "  Element: " << lename << "  Z=" << element._Z
-           << "  m=" << element._m << "  fraction=" << element._t << std::endl;
+      std::cout << "  Element: " << lename << "  Z=" << element._Z << "  m=" << element._m
+                << "  fraction=" << element._t << std::endl;
       material->_element.push_back(element);
     }
 
-    material->prepare(); // all elements added
+    material->prepare();                  // all elements added
     sample->material.push_back(material); // add material to sample
     sample->layerThickness.push_back(lthick);
   }
 
   // create a FIFO for recoils
-  std::queue<IonBase*> recoils;
+  std::queue<IonBase *> recoils;
 
-  //Real A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
-  Real A = 131.0, E = 5.0e5; int Z = 54; // 500keV Xe
+  // Real A = 74.0, E = 1.0e5; int Z = 36; // 100keV Kr
+  Real A = 131.0, E = 5.0e5;
+  int Z = 54; // 500keV Xe
 
   snprintf(fname, 199, "%s.Erec", argv[1]);
-  FILE *erec = fopen(fname, "wt");
+  FILE * erec = fopen(fname, "wt");
 
   snprintf(fname, 199, "%s.dist", argv[1]);
-  FILE *rdist = fopen(fname, "wt");
+  FILE * rdist = fopen(fname, "wt");
 
   IonBase *ff1, *pka;
   int nrec = 0;
@@ -128,7 +130,8 @@ int main(int argc, char *argv[])
   // 1000 PKA
   for (int n = 0; n < nmax; n++)
   {
-    if (n % 100 == 0) fprintf(stderr, "pka #%d\n", n+1);
+    if (n % 100 == 0)
+      fprintf(stderr, "pka #%d\n", n + 1);
 
     ff1 = new IonBase;
     ff1->_gen = 0; // generation (0 = PKA)
@@ -137,7 +140,7 @@ int main(int argc, char *argv[])
 
     ff1->_Z = Z;
     ff1->_m = A;
-    ff1->_E  = E;
+    ff1->_E = E;
 
     ff1->_dir(0) = 1;
     ff1->_dir(1) = 0;
@@ -158,13 +161,13 @@ int main(int argc, char *argv[])
 
       // do ion analysis/processing BEFORE the cascade here
 
-      //fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_Z);
+      // fprintf(erec, "%f\t%d\t%d\n", pka->_E, pka->_gen, pka->_Z);
 
       opos = pka->_pos;
 
       // follow this ion's trajectory and store recoils
-      //if (pka->_Z == 29 || pka->_Z == Z)
-      //if (pka->_Z == 29 || pka->_Z == Z)
+      // if (pka->_Z == 29 || pka->_Z == Z)
+      // if (pka->_Z == 29 || pka->_Z == Z)
       trim->trim(pka, recoils);
 
       // do ion analysis/processing AFTER the cascade here
@@ -175,18 +178,19 @@ int main(int argc, char *argv[])
       }
 
       // pka is O or Ag
-      //if (pka->_Z == 29 && pka->_pos(0) >= 500.0)
+      // if (pka->_Z == 29 && pka->_pos(0) >= 500.0)
       if (pka->_Z == 29)
       {
         // output
-        printf("RP %f %d %d\n", pka->_pos(0), n,  pka->_gen);
+        printf("RP %f %d %d\n", pka->_pos(0), n, pka->_gen);
       }
 
       // done with this recoil
       delete pka;
 
       // this should rather be done with spawnRecoil returning false
-      //if (simconf->primariesOnly) while (!recoils.empty()) { delete recoils.front(); recoils.pop(); };
+      // if (simconf->primariesOnly) while (!recoils.empty()) { delete recoils.front();
+      // recoils.pop(); };
     }
   }
   fclose(rdist);

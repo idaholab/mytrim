@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -41,7 +41,8 @@ typedef double Real;
 #include "shim/point.h"
 #endif
 
-namespace MyTRIM_NS {
+namespace MyTRIM_NS
+{
 
 class SimconfType
 {
@@ -80,7 +81,7 @@ public:
 
     // from SCOEF.95A
     Real mm1, m1, mnat, rho, atrho, vfermi, heat, lfctr;
-    std::vector<Real> pcoef;     // 8 columns
+    std::vector<Real> pcoef; // 8 columns
 
     // from SCOEF.95B
     std::vector<Real> ehigh;     // 4 columns
@@ -125,7 +126,6 @@ private:
   Real _area_scale;
   Real _volume_scale;
 };
-
 }
 
 #endif

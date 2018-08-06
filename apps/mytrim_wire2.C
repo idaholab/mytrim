@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -43,44 +42,49 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc != 8)
   {
-    std::cerr << "syntax: " << argv[0] << " basename angle[deg] diameter(nm) burried[0, 1] numbermultiplier xyzout[0, 1] lbinout[0, 1]" << std::endl;
+    std::cerr << "syntax: " << argv[0]
+              << " basename angle[deg] diameter(nm) burried[0, 1] numbermultiplier xyzout[0, 1] "
+                 "lbinout[0, 1]"
+              << std::endl;
     return 1;
   }
 
-  Real theta = atof(argv[2]) * M_PI/180.0; // 0 = parallel to wire
-  Real diameter  = 10.0*atof(argv[3]);
-  Real length  = 11000.0; // 1.1 mu
+  Real theta = atof(argv[2]) * M_PI / 180.0; // 0 = parallel to wire
+  Real diameter = 10.0 * atof(argv[3]);
+  Real length = 11000.0; // 1.1 mu
   bool burried = (atoi(argv[4]) != 0);
   Real mult = atof(argv[5]);
-  bool xyz_out  = (atoi(argv[6]) != 0);
+  bool xyz_out = (atoi(argv[6]) != 0);
   bool ldat_out = (atoi(argv[7]) != 0);
 
   // ion series
   const int nstep = 5;
-  Real ion_dose[nstep] = { 3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13 }; // in ions/cm^2
+  Real ion_dose[nstep] = {3.0e13, 2.2e13, 1.5e13, 1.2e13, 2.5e13}; // in ions/cm^2
   int ion_count[nstep];
-  IonBase* ion_prototype[nstep];
-  ion_prototype[0] = new IonBase( 5, 11.0 , 320.0e3); // Z, m, E
-  ion_prototype[1] = new IonBase( 5, 11.0 , 220.0e3); // Z, m, E
-  ion_prototype[2] = new IonBase( 5, 11.0 , 160.0e3); // Z, m, E
-  ion_prototype[3] = new IonBase( 5, 11.0 , 120.0e3); // Z, m, E
-  ion_prototype[4] = new IonBase(15, 31.0 , 250.0e3); // Z, m, E
+  IonBase * ion_prototype[nstep];
+  ion_prototype[0] = new IonBase(5, 11.0, 320.0e3);  // Z, m, E
+  ion_prototype[1] = new IonBase(5, 11.0, 220.0e3);  // Z, m, E
+  ion_prototype[2] = new IonBase(5, 11.0, 160.0e3);  // Z, m, E
+  ion_prototype[3] = new IonBase(5, 11.0, 120.0e3);  // Z, m, E
+  ion_prototype[4] = new IonBase(15, 31.0, 250.0e3); // Z, m, E
 
   // seed random number generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
+  FILE * urand = fopen("/dev/random", "r");
   unsigned int seed;
-  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1)
+    return 1;
   fclose(urand);
 
   // initialize global parameter structure and read data tables from file
   SimconfType * simconf = new SimconfType(seed);
 
   // initialize sample structure
-  SampleWire *sample;
+  SampleWire * sample;
   if (burried)
     sample = new SampleBurriedWire(diameter, diameter, length);
   else
@@ -94,7 +98,7 @@ int main(int argc, char *argv[])
   {
     Real A; // irradiated area in Ang^2
     if (burried)
-      A =(length + sample->w[0]) * (length + sample->w[1]);
+      A = (length + sample->w[0]) * (length + sample->w[1]);
     else
       A = cos(theta) * M_PI * 0.25 * sample->w[0] * sample->w[1] + //   slanted top face
           sin(theta) * length * sample->w[0];                      // + projected side
@@ -109,24 +113,24 @@ int main(int argc, char *argv[])
       const int z2 = 33;
       TrimVacMap *trim = new TrimVacMap(sample, z1, z2); // GaAs
   */
-  //TrimBase *trim = new TrimBase(sample);
-  TrimBase *trim = new TrimPrimaries(simconf, sample);
+  // TrimBase *trim = new TrimBase(sample);
+  TrimBase * trim = new TrimPrimaries(simconf, sample);
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
 
   // Si
   material = new MaterialBase(simconf, 2.329); // rho
-  element._Z = 14; // Si
+  element._Z = 14;                             // Si
   element._m = 28.0;
   element._t = 1.0;
   material->_element.push_back(element);
-  material->prepare(); // all materials added
+  material->prepare();                  // all materials added
   sample->material.push_back(material); // add material to sample
 
   // SiO2 (material[1] for the cover layer in SampleBurriedWire)
   material = new MaterialBase(simconf, 2.634); // rho
-  element._Z = 14; // Si
+  element._Z = 14;                             // Si
   element._m = 28.0;
   element._t = 1.0;
   material->_element.push_back(element);
@@ -134,18 +138,18 @@ int main(int argc, char *argv[])
   element._m = 16.0;
   element._t = 2.0;
   material->_element.push_back(element);
-  material->prepare(); // all materials added
+  material->prepare();                  // all materials added
   sample->material.push_back(material); // add material to sample
 
   // create a FIFO for recoils
-  std::queue<IonBase*> recoils;
+  std::queue<IonBase *> recoils;
 
-  IonBase *pka;
+  IonBase * pka;
 
   // map concentration along length
-  int *lbins[2];
+  int * lbins[2];
   int lx = 100; // 100 bins
-  int dl = length/Real(lx);
+  int dl = length / Real(lx);
   lbins[1] = new int[lx]; // P z=15
   for (int i = 0; i < 2; ++i)
   {
@@ -163,7 +167,7 @@ int main(int argc, char *argv[])
     for (int n = 0; n < ion_count[s]; ++n)
     {
       if (n % 10000 == 0)
-        std::cerr << "pka #" << n+1 << std::endl;
+        std::cerr << "pka #" << n + 1 << std::endl;
 
       // generate new PKA from prototype ion
       pka = new IonBase(ion_prototype[s]);
@@ -178,7 +182,8 @@ int main(int argc, char *argv[])
 
       if (burried)
       {
-        // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big surface
+        // cannot anticipate the straggling in the burrial layer, thus have to shoot onto a big
+        // surface
         // TODO: take theta into account!
         pka->_pos(0) = (simconf->drand() - 0.5) * (length + sample->w[0]);
         pka->_pos(1) = (simconf->drand() - 0.5) * (length + sample->w[1]);
@@ -206,26 +211,29 @@ int main(int argc, char *argv[])
             {
               vpos[0] = simconf->drand() * sample->w[0];
               vpos[1] = 0.0;
-              vpos[2] = (simconf->drand() * (length + diameter/tan(theta))) - diameter/tan(theta);
+              vpos[2] =
+                  (simconf->drand() * (length + diameter / tan(theta))) - diameter / tan(theta);
 
-              t = (1.0 - std::sqrt(1.0 - sqr(2*vpos[0]/diameter - 1.0))) * diameter/(2.0*pka->_dir(1));
+              t = (1.0 - std::sqrt(1.0 - sqr(2 * vpos[0] / diameter - 1.0))) * diameter /
+                  (2.0 * pka->_dir(1));
 
               // if we start beyond wire length (that would be inside the substrate) then retry
-            } while (t*pka->_dir(2) + vpos[2] >= length);
+            } while (t * pka->_dir(2) + vpos[2] >= length);
 
-            // if first intersection with cylinder is at z<0 then check if we hit the top face instead
-            if (t*pka->_dir(2) + vpos[2] < 0.0)
-              t = -vpos[2]/pka->_dir(2);
+            // if first intersection with cylinder is at z<0 then check if we hit the top face
+            // instead
+            if (t * pka->_dir(2) + vpos[2] < 0.0)
+              t = -vpos[2] / pka->_dir(2);
 
             // start PKA at calculated intersection point
             for (int i = 0; i < 3; ++i)
-                pka->_pos(i) = t*pka->_dir(i) + vpos[i];
+              pka->_pos(i) = t * pka->_dir(i) + vpos[i];
 
           } while (sample->lookupMaterial(pka->_pos) == 0);
         }
       }
-      //cout << "START " << pka->_pos(0) << ' ' << pka->_pos(1) << ' ' << pka->_pos(2) << ' ' << std::endl;
-      //continue;
+      // cout << "START " << pka->_pos(0) << ' ' << pka->_pos(1) << ' ' << pka->_pos(2) << ' ' <<
+      // std::endl;  continue;
 
       pka->setEf();
       recoils.push(pka);
@@ -238,9 +246,9 @@ int main(int argc, char *argv[])
 
         // do ion analysis/processing BEFORE the cascade here
 
-        if (pka->_Z == ion_prototype[s]->_Z )
+        if (pka->_Z == ion_prototype[s]->_Z)
         {
-          //printf( "p1 %f\t%f\t%f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
+          // printf( "p1 %f\t%f\t%f\n", pka->_pos(0), pka->_pos(1), pka->_pos(2));
         }
 
         // follow this ion's trajectory and store recoils
@@ -249,20 +257,20 @@ int main(int argc, char *argv[])
         // do ion analysis/processing AFTER the cascade here
 
         // ion is in the wire
-        if ( sample->lookupMaterial(pka->_pos) == sample->material[0])
+        if (sample->lookupMaterial(pka->_pos) == sample->material[0])
         {
           int l = pka->_pos(2) / dl;
-          if (l >=0 && l < lx)
+          if (l >= 0 && l < lx)
           {
             if (xyz_out)
             {
-              xyz_data << simconf->scoef[pka->_Z-1].sym << ' '
-                      << pka->_pos(0)/100.0 << ' ' << pka->_pos(1)/100.0 << ' ' << pka->_pos(2)/100.0 << std::endl;
+              xyz_data << simconf->scoef[pka->_Z - 1].sym << ' ' << pka->_pos(0) / 100.0 << ' '
+                       << pka->_pos(1) / 100.0 << ' ' << pka->_pos(2) / 100.0 << std::endl;
               xyz_lines++;
             }
 
             if (ldat_out)
-              lbins[ (pka->_Z == 5) ? 0 : 1 ][l]++;
+              lbins[(pka->_Z == 5) ? 0 : 1][l]++;
           }
         }
 
@@ -288,9 +296,10 @@ int main(int argc, char *argv[])
     std::stringstream ldat_name;
     ldat_name << argv[1] << ".ldat";
     std::ofstream ldat(ldat_name.str().c_str());
-    Real dv = 1e-3 * dl * M_PI * 0.25 *sample->w[0] * sample->w[1]; // volume per bin in nm^3
+    Real dv = 1e-3 * dl * M_PI * 0.25 * sample->w[0] * sample->w[1]; // volume per bin in nm^3
     for (int l = 0; l < lx; ++l)
-      ldat << l*dl << ' ' << lbins[0][l]/(mult*dv) << ' ' << lbins[1][l]/(mult*dv) << std::endl;
+      ldat << l * dl << ' ' << lbins[0][l] / (mult * dv) << ' ' << lbins[1][l] / (mult * dv)
+           << std::endl;
     ldat.close();
   }
   delete[] lbins[0];
