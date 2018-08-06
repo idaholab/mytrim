@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -31,32 +31,32 @@ public:
   Point(Real x, Real y, Real z);
 
   /// component access for backwards compatibility
-  Real & operator() (unsigned int i);
-  const Real & operator() (unsigned int i) const;
+  Real & operator()(unsigned int i);
+  const Real & operator()(unsigned int i) const;
 
   /// distance squared form the origin
-  Real norm_sq() { return data[0]*data[0] + data[1]*data[1] + data[2]*data[2]; }
+  Real norm_sq() { return data[0] * data[0] + data[1] * data[1] + data[2] * data[2]; }
 
   /// distance form the origin
   Real norm() { return std::sqrt(norm_sq()); }
 
   /// arithmetic operators
-  Point operator+ (const Point & rhs);
-  Point operator- (const Point & rhs);
-  Point operator* (Real rhs);
-  Point operator/ (Real rhs);
+  Point operator+(const Point & rhs);
+  Point operator-(const Point & rhs);
+  Point operator*(Real rhs);
+  Point operator/(Real rhs);
 
   // unary minus
-  Point operator- ();
+  Point operator-();
 
   /// compound operators
-  Point & operator+= (const Point & rhs);
-  Point & operator-= (const Point & rhs);
-  Point & operator*= (Real rhs);
-  Point & operator/= (Real rhs);
+  Point & operator+=(const Point & rhs);
+  Point & operator-=(const Point & rhs);
+  Point & operator*=(Real rhs);
+  Point & operator/=(Real rhs);
 
 private:
   Real data[3];
 };
 
-#endif //MYTRIM_POINT_H
+#endif // MYTRIM_POINT_H

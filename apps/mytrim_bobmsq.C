@@ -39,7 +39,8 @@
 
 using namespace MyTRIM_NS;
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc != 3)
   {
@@ -51,9 +52,10 @@ int main(int argc, char *argv[])
   Real E = atof(argv[2]) * 1000.0;
 
   // seed random number generator from system entropy pool
-  FILE *urand = fopen("/dev/random", "r");
+  FILE * urand = fopen("/dev/random", "r");
   unsigned int seed;
-  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1) return 1;
+  if (fread(&seed, sizeof(unsigned int), 1, urand) != 1)
+    return 1;
   fclose(urand);
 
   // initialize global parameter structure and read data tables from file
@@ -62,25 +64,27 @@ int main(int argc, char *argv[])
   simconf->tmin = 0.2;
 
   // initialize sample structure
-  SampleSolid *sample = new SampleSolid(200.0, 200.0, 200.0);
+  SampleSolid * sample = new SampleSolid(200.0, 200.0, 200.0);
 
   // initialize trim engine for the sample
-  TrimBase *trim = new TrimBase(simconf, sample);
-  //TrimBase *trim = new TrimPrimaries(sample);
+  TrimBase * trim = new TrimBase(simconf, sample);
+  // TrimBase *trim = new TrimPrimaries(sample);
 
-  //sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
+  // sample->bc[0] = SampleBase::CUT; // no PBC in x (just clusterless matrix)
 
   // Real atp = 0.1; // 10at% Mo 90at%Cu
   Real v_sam = sample->w[0] * sample->w[1] * sample->w[2];
   Real s_sam = sample->w[1] * sample->w[2];
 
-  MaterialBase *material;
+  MaterialBase * material;
   Element element;
 
-  const char *choice[4] = {"Fe", "Si", "Cu", "Au"};
+  const char * choice[4] = {"Fe", "Si", "Cu", "Au"};
   int i;
-  for (i = 0; i < 4 && strcmp(choice[i], argv[1]) != 0; ++i);
-  if (i==4) {
+  for (i = 0; i < 4 && strcmp(choice[i], argv[1]) != 0; ++i)
+    ;
+  if (i == 4)
+  {
     fprintf(stderr, "Element choice not supported: %s\n", argv[1]);
     return 1;
   }
@@ -98,7 +102,7 @@ int main(int argc, char *argv[])
       element._t = 1.0;
       element._Edisp = 25.0;
       material->_element.push_back(element);
-      material->prepare(); // all materials added
+      material->prepare();                  // all materials added
       sample->material.push_back(material); // add material to sample
       break;
 
@@ -112,7 +116,7 @@ int main(int argc, char *argv[])
       element._t = 1.0;
       element._Edisp = 25.0;
       material->_element.push_back(element);
-      material->prepare(); // all materials added
+      material->prepare();                  // all materials added
       sample->material.push_back(material); // add material to sample
       break;
 
@@ -126,7 +130,7 @@ int main(int argc, char *argv[])
       element._t = 1.0;
       element._Edisp = 25.0;
       material->_element.push_back(element);
-      material->prepare(); // all materials added
+      material->prepare();                  // all materials added
       sample->material.push_back(material); // add material to sample
       break;
 
@@ -140,12 +144,12 @@ int main(int argc, char *argv[])
       element._t = 1.0;
       element._Edisp = 25.0;
       material->_element.push_back(element);
-      material->prepare(); // all materials added
+      material->prepare();                  // all materials added
       sample->material.push_back(material); // add material to sample
       break;
 
-     default:
-        return 1;
+    default:
+      return 1;
   }
 
   const int nstep = 1000;
@@ -154,7 +158,7 @@ int main(int argc, char *argv[])
   std::queue<IonBase *> recoils;
 
   Point pos2;
-  IonBase * ff1, * pka;
+  IonBase *ff1, *pka;
 
   // squared displacement
   Real sqd = 0.0, sqd2 = 0.0;
@@ -162,7 +166,8 @@ int main(int argc, char *argv[])
   // main loop
   for (int n = 0; n < nstep; n++)
   {
-    if (n % 10 == 0) fprintf(stderr, "pka #%d\n", n+1);
+    if (n % 10 == 0)
+      fprintf(stderr, "pka #%d\n", n + 1);
 
     ff1 = new IonBase;
     ff1->_gen = 0; // generation (0 = PKA)
@@ -210,29 +215,39 @@ int main(int argc, char *argv[])
 
   // output full damage data
   printf("total sum of square displacements: %g Ang^2\n", sqd);
-  printf("%d vacancies per %d ions = %d vac/ion\n", simconf->vacancies_created, nstep, simconf->vacancies_created/nstep);
+  printf("%d vacancies per %d ions = %d vac/ion\n",
+         simconf->vacancies_created,
+         nstep,
+         simconf->vacancies_created / nstep);
 
   Real natom = v_sam * sample->material[0]->_arho;
   printf("volume = %f Ang^3, surface area = %f Ang^2, containing %f atoms => %f dpa/(ion/Ang^2)\n",
-          v_sam, s_sam, natom, simconf->vacancies_created / (natom * nstep/s_sam));
-  printf("sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g\nnvac = %d", sqd/(simconf->vacancies_created/natom), sqd/simconf->vacancies_created, sqd2/simconf->vacancies_created, simconf->vacancies_created );
+         v_sam,
+         s_sam,
+         natom,
+         simconf->vacancies_created / (natom * nstep / s_sam));
+  printf("sqd/dpa = %g\n  sqd/vac = %g\n  sqd2/vac = %g\nnvac = %d",
+         sqd / (simconf->vacancies_created / natom),
+         sqd / simconf->vacancies_created,
+         sqd2 / simconf->vacancies_created,
+         simconf->vacancies_created);
 
-/*
-  // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
-  // just for the PKA
-  Real Zatoms = 26.0, Matoms = 56.0;
-  Real Epka = 5.0e6;
-  Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
-  Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
-  Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z, M
-  Real Ev = Epka / (1.0 + kd * g);
-  Real Ed = 40.0;
-  printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
-          100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed));
+  /*
+    // calculate modified kinchin pease data http://www.iue.tuwien.ac.at/phd/hoessinger/node47.html
+    // just for the PKA
+    Real Zatoms = 26.0, Matoms = 56.0;
+    Real Epka = 5.0e6;
+    Real ed = 0.0115 * std::pow(Zatoms, -7.0/3.0) * Epka;
+    Real g = 3.4008 * std::pow(ed, 1.0/6.0) + 0.40244 * std::pow(ed, 3.0/4.0) + ed;
+    Real kd = 0.1337 * std::pow(Zatoms, 2.0/3.0) / std::pow(Matoms, 0.5); //Z, M
+    Real Ev = Epka / (1.0 + kd * g);
+    Real Ed = 40.0;
+    printf("%f modified PKA kinchin-pease vacancies per 100 ions = %f vac/ion\n",
+            100*0.8*Ev/(2.0*Ed), 0.8*Ev/(2.0*Ed));
 
-  // do Kinchin-Pease for all primary recoils
-  printf("%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
-          simconf->KP_vacancies, simconf->KP_vacancies / 100.0);
-*/
+    // do Kinchin-Pease for all primary recoils
+    printf("%f modified 1REC kinchin-pease vacancies per 100 ions = %f vac/ion\n",
+            simconf->KP_vacancies, simconf->KP_vacancies / 100.0);
+  */
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -24,40 +24,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "simconf.h"
 #include <cmath>
 
-namespace MyTRIM_NS {
+namespace MyTRIM_NS
+{
 
 class Inverter
 {
-public :
+public:
   Inverter() : maxx(0.0), maxf(0.0), tol(1e-13) {}
 
   /// Evaluate inverse of function (iteratively)
   Real x(Real f) const;
 
-protected :
+protected:
   /// Evaluate function
   virtual Real f(Real x) const = 0;
 
   Real maxx, maxf, tol;
 };
 
-
 class MassInverter : public Inverter
 {
 public:
-  MassInverter() { maxx = 235.0; tol = 1e-7; maxf = f(maxx); }
+  MassInverter()
+  {
+    maxx = 235.0;
+    tol = 1e-7;
+    maxf = f(maxx);
+  }
 
 protected:
   virtual Real f(Real x) const;
 };
 
-
 class EnergyInverter : public Inverter
 {
 public:
-  EnergyInverter() { maxx = 186.98; tol = 1e-7; setMass(100.0); }
+  EnergyInverter()
+  {
+    maxx = 186.98;
+    tol = 1e-7;
+    setMass(100.0);
+  }
 
-  void setMass(Real A) {
+  void setMass(Real A)
+  {
     _A = A;
     maxf = f(maxx);
   }
@@ -68,7 +78,6 @@ protected:
 private:
   Real _A;
 };
-
 }
 
 #endif

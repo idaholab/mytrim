@@ -1,3 +1,23 @@
+/*
+MyTRIM - a three dimensional binary collision Monte Carlo library.
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA
+*/
+
 #include "material.h"
 #include "simconf.h"
 
@@ -8,11 +28,8 @@
 
 using namespace MyTRIM_NS;
 
-MaterialBase::MaterialBase(SimconfType * simconf, Real rho) :
-    _rho(rho),
-    _tag(-1),
-    _dirty(true),
-    _simconf(simconf)
+MaterialBase::MaterialBase(SimconfType * simconf, Real rho)
+  : _rho(rho), _tag(-1), _dirty(true), _simconf(simconf)
 {
 }
 
@@ -66,11 +83,11 @@ MaterialBase::average(const IonBase * pka)
   // universal or firsov screening length
   const Real fZ023 = std::pow(fZ, 0.23);
   a = .5292 * .8853 / (fZ023 + std::pow(_az, 0.23));
-  //a = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_az, 0.5), 2.0/3.0);
+  // a = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_az, 0.5), 2.0/3.0);
 
   // mean flight path0
   f = a * _am / (_az * fZ * 14.4 * (pka->_m + _am));
-  //eps0 = e0 * f;
+  // eps0 = e0 * f;
   epsdg = _simconf->tmin * f * Utility::pow<2>(1.0 + mu) / (4.0 * mu);
 
   // fd and kd determine how much recoil energy goes into el. loss and vaccancies
@@ -83,7 +100,8 @@ MaterialBase::average(const IonBase * pka)
     _element[i].my = pka->_m / _element[i]._m;
     _element[i].ec = 4.0 * _element[i].my / Utility::pow<2>(1.0 + _element[i].my);
     _element[i].ai = .5292 * .8853 / (fZ023 + std::pow(_element[i]._Z, 0.23));
-    //ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_element[i].z, 0.5), 2.0/3.0);
+    // ai = .5292 * .8853 / std::pow(pow(Real(pka._Z), 0.5) + std::pow(_element[i].z,
+    // 0.5), 2.0/3.0);
     _element[i].fi = _element[i].ai * _element[i]._m /
                      (fZ * Real(_element[i]._Z) * 14.4 * (pka->_m + _element[i]._m));
   }
@@ -104,7 +122,7 @@ MaterialBase::getrstop(const IonBase * pka)
 }
 
 Real
-MaterialBase::getDrstopDcomp(const IonBase *pka, const Element & component)
+MaterialBase::getDrstopDcomp(const IonBase * pka, const Element & component)
 {
   for (auto & e : _element)
     if (component._Z == e._Z && std::abs(component._m - e._m))
@@ -152,10 +170,10 @@ MaterialBase::rstop(const IonBase * ion, int z2)
   Real se;
 
   // scoeff
-  const Real lfctr = _simconf->scoef[z1-1].lfctr;
-  const Real mm1 = _simconf->scoef[z1-1].mm1;
-  const Real vfermi = _simconf->scoef[z2-1].vfermi;
-  //Real atrho = _simconf->scoef[z2-1].atrho;
+  const Real lfctr = _simconf->scoef[z1 - 1].lfctr;
+  const Real mm1 = _simconf->scoef[z1 - 1].mm1;
+  const Real vfermi = _simconf->scoef[z2 - 1].vfermi;
+  // Real atrho = _simconf->scoef[z2-1].atrho;
 
   if (ion->_m == 0.0)
     m1 = mm1;
@@ -178,9 +196,9 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     Real he = std::max(he0, e);
 
     b = std::log(he);
-    const Real b2 = b*b;
-    const Real b4 = b2*b2;
-    a = 0.2865 + 0.1266 * b - 0.001429 * b2 + 0.02402 * b*b2 - 0.01135 * b4 + 0.001475 * b4*b;
+    const Real b2 = b * b;
+    const Real b4 = b2 * b2;
+    a = 0.2865 + 0.1266 * b - 0.001429 * b2 + 0.02402 * b * b2 - 0.01135 * b4 + 0.001475 * b4 * b;
     Real heh = 1.0 - std::exp(-std::min(30.0, a));
 
     he = std::max(he, 1.0);
@@ -199,19 +217,19 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     vrmin = 1.0;
 
     v = std::sqrt(e / 25.0) / vfermi;
-    const Real v2 = v*v;
+    const Real v2 = v * v;
 
     if (v >= 1.0)
       vr = v * vfermi * (1.0 + 1.0 / (5.0 * v2));
     else
-      vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v2 / 3.0) - v2*v2 / 15.0);
+      vr = (3.0 * vfermi / 4.0) * (1.0 + (2.0 * v2 / 3.0) - v2 * v2 / 15.0);
 
     const Real cbrt_fz1 = std::cbrt(fz1);
     const Real cbrt2_fz1 = cbrt_fz1 * cbrt_fz1;
     yr = std::max(yrmin, vr / cbrt2_fz1);
     yr = std::max(yr, vrmin / cbrt2_fz1);
     const Real yr03 = std::pow(yr, 0.3);
-    a = -0.803 * yr03 + 1.3167 * yr03*yr03 + 0.38157 * yr +  0.008983 * yr*yr;
+    a = -0.803 * yr03 + 1.3167 * yr03 * yr03 + 0.38157 * yr + 0.008983 * yr * yr;
 
     // ionization level of the ion at velocity yr
     q = std::min(1.0, std::max(0.0, 1.0 - std::exp(-std::min(a, 50.0))));
@@ -221,7 +239,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
     if (q < 0.2)
       l1 = 0.0;
     else if (q < std::max(0.0, 0.9 - 0.025 * fz1))
-    {//210
+    { // 210
       // q1 = 0.2; in the original code, but never used
       l1 = b * (q - 0.2) / std::abs(std::max(0.0, 0.9 - 0.025 * fz1) - 0.2000001);
     }
@@ -231,18 +249,19 @@ MaterialBase::rstop(const IonBase * ion, int z2)
       l1 = b * (1.0 - q) / (0.025 * std::min(16.0, fz1));
 
     l = std::max(l1, l0 * lfctr);
-    zeta = q + (1.0 / (2.0 * vfermi*vfermi)) * (1.0 - q) * std::log(1.0 + Utility::pow<2>(4.0 * l * vfermi / 1.919 ));
+    zeta = q + (1.0 / (2.0 * vfermi * vfermi)) * (1.0 - q) *
+                   std::log(1.0 + Utility::pow<2>(4.0 * l * vfermi / 1.919));
 
     // add z1^3 effect
     a = -Utility::pow<2>(7.6 - std::max(0.0, std::log(e)));
-    zeta *= 1.0 + (1.0 / (fz1*fz1)) * (0.18 + 0.0015 * fz2) * std::exp(a);
+    zeta *= 1.0 + (1.0 / (fz1 * fz1)) * (0.18 + 0.0015 * fz2) * std::exp(a);
 
     if (yr <= std::max(yrmin, vrmin / cbrt2_fz1))
     {
       // calculate velocity stopping for  yr < yrmin
       vrmin = std::max(vrmin, yrmin * cbrt2_fz1);
-      vmin = 0.5 * (vrmin + std::sqrt(std::max(0.0, vrmin*vrmin - 0.8 * vfermi*vfermi)));
-      eee = 25.0 * vmin*vmin;
+      vmin = 0.5 * (vrmin + std::sqrt(std::max(0.0, vrmin * vrmin - 0.8 * vfermi * vfermi)));
+      eee = 25.0 * vmin * vmin;
       sp = rpstop(z2, eee);
 
       if (z2 == 6 || ((z2 == 14 || z2 == 32) && z1 <= 19))
@@ -250,7 +269,7 @@ MaterialBase::rstop(const IonBase * ion, int z2)
       else
         power = 0.5;
 
-      se = sp * Utility::pow<2>(zeta * fz1) * std::pow(e/eee, power);
+      se = sp * Utility::pow<2>(zeta * fz1) * std::pow(e / eee, power);
     }
     else
     {

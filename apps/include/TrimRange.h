@@ -23,4 +23,4 @@ private:
   std::vector<std::vector<Real>> _range;
 };
 
-#endif //TRIMRANGE_H
+#endif // TRIMRANGE_H

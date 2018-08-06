@@ -18,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -47,13 +46,15 @@
 
 using namespace MyTRIM_NS;
 
-#define mytrimError(msg)                                 \
-  do {                                                   \
-    std::cerr << "ERROR: " << msg << '\n' << std::flush; \
-    return 1;                                            \
-  } while(0)
+#define mytrimError(msg)                                                                           \
+  do                                                                                               \
+  {                                                                                                \
+    std::cerr << "ERROR: " << msg << '\n' << std::flush;                                           \
+    return 1;                                                                                      \
+  } while (0)
 
-int main()
+int
+main()
 {
   // open the input
   Json::Value json_root;
@@ -75,13 +76,12 @@ int main()
   if (!json_root["material"].isObject())
     mytrimError("Must specify a 'material' block in the input file");
 
-
   MaterialBase * material;
   Element element;
 
   if (!json_root["material"]["rho"].isNumeric())
     mytrimError("Missing 'rho'");
-  const Real rho   = json_root["material"]["rho"].asDouble();
+  const Real rho = json_root["material"]["rho"].asDouble();
 
   if (!json_root["material"]["elements"].isArray())
     mytrimError("Missing 'elements' in material");

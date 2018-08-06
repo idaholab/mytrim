@@ -23,4 +23,4 @@ private:
   std::vector<unsigned int> _repl_bin;
 };
 
-#endif //TRIMVACCOUNT_H
+#endif // TRIMVACCOUNT_H

@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -30,17 +30,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "sample.h"
 #include "simconf.h"
 
-namespace MyTRIM_NS {
+namespace MyTRIM_NS
+{
 
 class TrimBase
 {
 public:
-  TrimBase(SimconfType * simconf, SampleBase * sample) :
-      _potential(UNIVERSAL),
-      _simconf(simconf),
-      _sample(sample),
-      _base_name("mytrim")
-  {}
+  TrimBase(SimconfType * simconf, SampleBase * sample)
+    : _potential(UNIVERSAL), _simconf(simconf), _sample(sample), _base_name("mytrim")
+  {
+  }
 
   /**
    * The virtual destructor should handle closing output files
@@ -51,17 +50,22 @@ public:
    * Run a TRIM simulation with a given PKA and push the resulting recoils onto
    * the recoils queue
    */
-  void trim(IonBase * _pka, std::queue<IonBase*> & recoils);
+  void trim(IonBase * _pka, std::queue<IonBase *> & recoils);
 
   /**
    * Set the output file base name
    */
   void setBaseName(const std::string & name) { _base_name = name; }
 
-  virtual void writeOutput() {};
+  virtual void writeOutput(){};
 
   /// Scattering potential type
-  enum Potential { UNIVERSAL, MOLIERE, CKR };
+  enum Potential
+  {
+    UNIVERSAL,
+    MOLIERE,
+    CKR
+  };
   Potential _potential;
 
 protected:
@@ -83,11 +87,11 @@ protected:
   SampleBase * _sample;
 
   /// the current PKA and the last recoil it created
-  IonBase * _pka, * _recoil;
+  IonBase *_pka, *_recoil;
   MaterialBase * _material;
   const Element * _element;
 
-  std::queue<IonBase*> * recoil_queue_ptr;
+  std::queue<IonBase *> * recoil_queue_ptr;
   bool terminate;
 
   /// current path segment length
@@ -103,16 +107,13 @@ protected:
   std::string _base_name;
 };
 
-
 //
 // Only follow the primary knock ons (i.e. fission fragments)
 //
 class TrimPrimaries : public TrimBase
 {
 public:
-  TrimPrimaries(SimconfType * simconf, SampleBase * sample) :
-      TrimBase(simconf, sample)
-  {}
+  TrimPrimaries(SimconfType * simconf, SampleBase * sample) : TrimBase(simconf, sample) {}
 
 protected:
   virtual int maxGen() { return 1; }
@@ -120,21 +121,17 @@ protected:
   virtual void vacancyCreation();
 };
 
-
 //
 // Only follow the first generation of recoils
 //
 class TrimRecoils : public TrimPrimaries
 {
 public:
-  TrimRecoils(SimconfType * simconf, SampleBase * sample) :
-      TrimPrimaries(simconf, sample)
-  {}
+  TrimRecoils(SimconfType * simconf, SampleBase * sample) : TrimPrimaries(simconf, sample) {}
 
 protected:
   virtual int maxGen() { return 2; }
 };
-
 
 //
 // store a history of all recoils
@@ -142,9 +139,7 @@ protected:
 class TrimHistory : public TrimBase
 {
 public:
-  TrimHistory(SimconfType * simconf, SampleBase * sample) :
-      TrimBase(simconf, sample)
-  {}
+  TrimHistory(SimconfType * simconf, SampleBase * sample) : TrimBase(simconf, sample) {}
 
   const std::vector<Point> & getHistory() { return _pos_hist; }
 
@@ -158,17 +153,16 @@ protected:
   std::vector<Point> _pos_hist;
 };
 
-
 //
 // Log vaccancy/interstitial creation
 //
 class TrimDefectLog : public TrimBase
 {
 public:
-  TrimDefectLog(SimconfType * simconf, SampleBase * sample, std::ostream & os) :
-      TrimBase(simconf, sample),
-      _os(os)
-  {}
+  TrimDefectLog(SimconfType * simconf, SampleBase * sample, std::ostream & os)
+    : TrimBase(simconf, sample), _os(os)
+  {
+  }
 
 protected:
   std::ostream & _os;
@@ -180,7 +174,6 @@ protected:
   virtual void checkPKAState();
 };
 
-
 //
 // Map vaccancy creation
 //
@@ -189,11 +182,8 @@ class TrimVacMap : public TrimBase
   static const int mx = 20, my = 20;
 
 public:
-  TrimVacMap(SimconfType * simconf, SampleBase * sample, int z1, int z2, int z3 = -1) :
-      TrimBase(simconf, sample),
-      _z1(z1),
-      _z2(z2),
-      _z3(z3)
+  TrimVacMap(SimconfType * simconf, SampleBase * sample, int z1, int z2, int z3 = -1)
+    : TrimBase(simconf, sample), _z1(z1), _z2(z2), _z3(z3)
   {
     for (unsigned int e = 0; e < 3; ++e)
       for (unsigned int x = 0; x < mx; ++x)
@@ -210,17 +200,16 @@ protected:
   virtual void vacancyCreation();
 };
 
-
 //
 // Output all phonon energy losses
 //
 class TrimPhononOut : public TrimBase
 {
 public:
-  TrimPhononOut(SimconfType * simconf, SampleBase * sample,  std::ostream & os) :
-      TrimBase(simconf, sample),
-      _os(os)
-  {}
+  TrimPhononOut(SimconfType * simconf, SampleBase * sample, std::ostream & os)
+    : TrimBase(simconf, sample), _os(os)
+  {
+  }
 
 protected:
   std::ostream & _os;
@@ -235,7 +224,6 @@ protected:
   // dissipate lattice binding energy where recoil branches off
   virtual bool followRecoil();
 };
-
 }
 
 #endif

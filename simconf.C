@@ -1,3 +1,23 @@
+/*
+MyTRIM - a three dimensional binary collision Monte Carlo library.
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA
+*/
+
 #include "simconf.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -6,25 +26,26 @@
 #include <cmath>
 #include <cstdlib>
 
-namespace MyTRIM_NS {
-  SimconfType *simconf;
+namespace MyTRIM_NS
+{
+SimconfType * simconf;
 }
 
 using namespace MyTRIM_NS;
 
-SimconfType::SimconfType(unsigned int seed) :
-    _id(0), // ion id
+SimconfType::SimconfType(unsigned int seed)
+  : _id(0), // ion id
     scoef(_rows),
     _data_dir(std::getenv("MYTRIM_DATADIR") ? std::getenv("MYTRIM_DATADIR") : MYTRIM_DATA_DIR),
     cxx11random_gen(new std::mt19937(seed)),
     cxx11random_dis_Real(0, 1),
     cxx11random_dis_int(0, 65535)
 {
-  ed = 25.0; // displacement energy
-  tmin = 0.2; //max impact parameter set by min. transferred energy
-  //tmin = 5.0; //max impact parameter set by min. transferred energy
+  ed = 25.0;  // displacement energy
+  tmin = 0.2; // max impact parameter set by min. transferred energy
+  // tmin = 5.0; //max impact parameter set by min. transferred energy
   tau = 0.0;
-  da = 3.0; // angular grid for transmitted ions
+  da = 3.0;   // angular grid for transmitted ions
   cw = 0.001; // channel width 1% of layer thickness
 
   // output full trajectories
@@ -53,7 +74,7 @@ void
 SimconfType::setLengthScale(Real l)
 {
   _length_scale = l;
-  _area_scale   = l * l;
+  _area_scale = l * l;
   _volume_scale = l * l;
 }
 
@@ -71,8 +92,7 @@ SimconfType::readDataFiles()
   for (int i = 0; i < 92; ++i)
     for (int j = i; j < 92; j++)
     {
-      snuc03 >> dummy >> dummy
-             >> snuc[j][i][0] >> snuc[j][i][1] >> snuc[j][i][2] >> snuc[j][i][3];
+      snuc03 >> dummy >> dummy >> snuc[j][i][0] >> snuc[j][i][1] >> snuc[j][i][2] >> snuc[j][i][3];
 
       if (!snuc03)
         fileReadError("contents of SNUC03.dat");
@@ -80,7 +100,6 @@ SimconfType::readDataFiles()
       for (int n = 0; n < 4; n++)
         snuc[i][j][n] = snuc[j][i][n];
     }
-
 
   fname = _data_dir + "/SCOEF.95A";
   std::ifstream scoef95a(fname.c_str());
@@ -96,7 +115,6 @@ SimconfType::readDataFiles()
     fileReadError(fname);
   skipLine(scoef95b); // header
   skipLine(scoef95b); // header
-
 
   fname = _data_dir + "/SLFCTR.dat";
   std::ifstream slfctr(fname.c_str());
@@ -122,10 +140,10 @@ void
 SimconfType::fileReadError(const std::string & path)
 {
 #ifdef MYTRIM_ENABLED
-    mooseError("Error reading " + path);
+  mooseError("Error reading " + path);
 #else
-    std::cerr << "Error reading " << path << std::endl;
-    exit(1);
+  std::cerr << "Error reading " << path << std::endl;
+  exit(1);
 #endif
 }
 
@@ -135,18 +153,17 @@ SimconfType::skipLine(std::ifstream & sf)
   std::string s;
   if (!std::getline(sf, s))
   {
-    #ifdef MYTRIM_ENABLED
-      mooseError("Error reading file");
-    #else
-      std::cerr << "Error reading file" << std::endl;
-      exit(1);
-    #endif
+#ifdef MYTRIM_ENABLED
+    mooseError("Error reading file");
+#else
+    std::cerr << "Error reading file" << std::endl;
+    exit(1);
+#endif
   }
 }
 
-
-SimconfType::ScoefLine::ScoefLine() :
-    mm1(0.0),
+SimconfType::ScoefLine::ScoefLine()
+  : mm1(0.0),
     m1(0.0),
     mnat(0.0),
     rho(0.0),
@@ -165,9 +182,7 @@ void
 SimconfType::ScoefLine::read95A(std::ifstream & scoef95a)
 {
   int dummy;
-  scoef95a >> dummy
-           >> mm1 >> m1 >> mnat
-           >> rho >> atrho >> vfermi >> heat;
+  scoef95a >> dummy >> mm1 >> m1 >> mnat >> rho >> atrho >> vfermi >> heat;
 
   if (!scoef95a)
     SimconfType::fileReadError("contents of SCOEF.95A");

@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -28,7 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #include "element.h"
 #include "simconf.h"
 
-namespace MyTRIM_NS {
+namespace MyTRIM_NS
+{
 
 class MaterialBase
 {
@@ -40,11 +41,11 @@ public:
   void prepare();
 
   /// compute pka dependent averages
-  void average(const IonBase *pka);
-  Real getrstop(const IonBase *pka);
+  void average(const IonBase * pka);
+  Real getrstop(const IonBase * pka);
 
   /// derivative of the stopping power of pka w.r.t. component
-  Real getDrstopDcomp(const IonBase *pka, const Element & component);
+  Real getDrstopDcomp(const IonBase * pka, const Element & component);
 
   virtual const Element & getElement(unsigned int nn) { return _element[nn]; }
 
@@ -68,11 +69,10 @@ public:
 
 protected:
   Real rpstop(int z2, Real e);
-  Real rstop(const IonBase *ion, int z2);
+  Real rstop(const IonBase * ion, int z2);
 
   SimconfType * _simconf;
 };
-
 }
 
 #endif

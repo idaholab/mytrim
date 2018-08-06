@@ -1,3 +1,23 @@
+/*
+MyTRIM - a three dimensional binary collision Monte Carlo library.
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
+
+This library is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation; either version 2.1 of the
+License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301 USA
+*/
+
 #include "sample_layers.h"
 #include <cmath>
 
@@ -12,21 +32,21 @@ SampleLayers::lookupLayer(Point & pos)
   for (i = 0; i < layerThickness.size(); ++i)
   {
     d += layerThickness[i];
-    if (pos(0) < d) break;
+    if (pos(0) < d)
+      break;
   }
 
   if (i >= material.size())
-    i = material.size() - 1 ; // or 0, but we leave that to be determined by bc[] == CUT
+    i = material.size() - 1; // or 0, but we leave that to be determined by bc[] == CUT
 
   return i;
 }
 
-MaterialBase*
+MaterialBase *
 SampleLayers::lookupMaterial(Point & pos)
 {
   return material[lookupLayer(pos)];
 }
-
 
 Real
 SampleLayers::rangeMaterial(Point & pos, Point & dir)
@@ -37,7 +57,8 @@ SampleLayers::rangeMaterial(Point & pos, Point & dir)
   const Real unrestricted = 1.0e6;
 
   // parallel to layer interfaces
-  if (dir(0) == 0.0) return unrestricted;
+  if (dir(0) == 0.0)
+    return unrestricted;
 
   Real epsilon = std::abs(1.0e-10 / dir(0));
 
@@ -47,7 +68,7 @@ SampleLayers::rangeMaterial(Point & pos, Point & dir)
     if (dir(0) < 0.0)
       return unrestricted;
     else
-      return -pos(0)/dir(0) + epsilon;
+      return -pos(0) / dir(0) + epsilon;
   }
 
   // find layer
@@ -56,9 +77,9 @@ SampleLayers::rangeMaterial(Point & pos, Point & dir)
     if (pos(0) >= d && pos(0) < d + layerThickness[i])
     {
       if (dir(0) < 0)
-        return (d-pos(0))/dir(0) + epsilon;
+        return (d - pos(0)) / dir(0) + epsilon;
       else
-        return (d+layerThickness[i]-pos(0))/dir(0) + epsilon;
+        return (d + layerThickness[i] - pos(0)) / dir(0) + epsilon;
     }
     d += layerThickness[i];
   }
@@ -67,5 +88,5 @@ SampleLayers::rangeMaterial(Point & pos, Point & dir)
   if (dir(0) > 0.0)
     return unrestricted;
   else
-    return (d-pos(0))/dir(0) + epsilon;
+    return (d - pos(0)) / dir(0) + epsilon;
 }

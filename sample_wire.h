@@ -1,6 +1,6 @@
 /*
 MyTRIM - a three dimensional binary collision Monte Carlo library.
-Copyright (C) 2008-2015  Daniel Schwen <daniel@schwen.de>
+Copyright (C) 2008-2018  Daniel Schwen <daniel@schwen.de>
 
 This library is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as
@@ -23,16 +23,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 #include "sample.h"
 
-namespace MyTRIM_NS {
+namespace MyTRIM_NS
+{
 
 class SampleWire : public SampleBase
 {
 public:
   SampleWire(Real x = 10000.0, Real y = 10000.0, Real z = 10000.0);
 
-  virtual MaterialBase* lookupMaterial(Point & pos);
+  virtual MaterialBase * lookupMaterial(Point & pos);
 };
-
 }
 
 #endif

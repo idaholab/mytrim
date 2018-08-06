@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Schwen   *
+ *   Copyright (C) 2016 by Daniel Schwen   *
  *   daniel@schwen.de   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -50,14 +49,16 @@
 
 using namespace MyTRIM_NS;
 
-#define mytrimError(msg)                                 \
-  do {                                                   \
-    std::cerr << "ERROR: " << msg << '\n' << std::flush; \
-    return 1;                                            \
+#define mytrimError(msg)                                                                           \
+  do                                                                                               \
+  {                                                                                                \
+    std::cerr << "ERROR: " << msg << '\n' << std::flush;                                           \
+    return 1;                                                                                      \
   } while (0)
 
 // thread data
-struct ThreadData {
+struct ThreadData
+{
   SimconfType _simconf;
   SampleLayers * _sample;
   ThreadedTrimBase * _trim;
@@ -67,11 +68,12 @@ struct ThreadData {
 std::vector<ThreadData> thread_data;
 
 // MC loop threads
-void computeThread(int tid)
+void
+computeThread(int tid)
 {
   auto & td = thread_data[tid];
 
-  for (auto pka: td._pka)
+  for (auto pka : td._pka)
   {
     td._simconf.seed(pka->_seed);
     td._recoils.push(pka);
@@ -90,8 +92,8 @@ void computeThread(int tid)
   }
 }
 
-
-int main()
+int
+main()
 {
   // open the input
   Json::Value json_root;
@@ -106,8 +108,7 @@ int main()
     mytrimError("No 'mytrim' top level block found in input");
 
   // first look at the thread number option
-  if (json_root["options"].isObject() &&
-      json_root["options"]["threads"].isNumeric())
+  if (json_root["options"].isObject() && json_root["options"]["threads"].isNumeric())
   {
     nthreads = json_root["options"]["threads"].asInt();
     std::cerr << "Using " << nthreads << " threads\n";
@@ -115,7 +116,7 @@ int main()
 
   // set up thread data vector
   thread_data.resize(nthreads);
-  for (auto & td: thread_data)
+  for (auto & td : thread_data)
   {
     td._simconf.fullTraj = false;
     td._simconf.tmin = 0.2;
@@ -136,7 +137,7 @@ int main()
     else
     {
       // seed randomnumber generator from system entropy pool
-      FILE *urand = fopen("/dev/random", "r");
+      FILE * urand = fopen("/dev/random", "r");
       if (fread(&master_seed, sizeof(int), 1, urand) != 1)
         mytrimError("Unable to access /dev/random");
       fclose(urand);
@@ -147,7 +148,7 @@ int main()
     {
       scale = json_root["options"]["scale"].asDouble();
       std::cerr << "Using provided length scale " << scale << '\n';
-      for (auto & td: thread_data)
+      for (auto & td : thread_data)
         td._simconf.setLengthScale(scale);
     }
   }
@@ -175,7 +176,7 @@ int main()
       mytrimError("No 'thickness' found for layer " << i);
 
   // initialize sample structure
-  for (auto & td: thread_data)
+  for (auto & td : thread_data)
     td._sample = new SampleLayers(thickness, 100.0, 100.0);
 
   //
@@ -190,34 +191,33 @@ int main()
 
   // construct TRIM object according to output type
   if (output_type == "vaccount")
-    for (auto & td: thread_data)
+    for (auto & td : thread_data)
       td._trim = new TrimVacCount(&(td._simconf), td._sample);
   else if (output_type == "vacenergycount")
-    for (auto & td: thread_data)
+    for (auto & td : thread_data)
       td._trim = new TrimVacEnergyCount(&(td._simconf), td._sample);
   else if (output_type == "range")
-    for (auto & td: thread_data)
+    for (auto & td : thread_data)
       td._trim = new TrimRange(&(td._simconf), td._sample);
   else
     mytrimError("Unknown output type " << output_type);
 
   if (json_root["output"]["base"].isString())
-    for (auto & td: thread_data)
+    for (auto & td : thread_data)
       td._trim->setBaseName(json_root["output"]["base"].asString());
 
   if (json_root["output"]["primaries_only"].isBool())
-    for (auto & td: thread_data)
+    for (auto & td : thread_data)
       td._trim->_primaries_only = json_root["output"]["primaries_only"].asBool();
-
 
   MaterialBase * material;
   Element element;
-  for (auto & td: thread_data)
+  for (auto & td : thread_data)
     for (unsigned int i = 0; i < nlayers; ++i)
     {
       if (!json_layers[i]["rho"].isNumeric())
         mytrimError("Missing 'rho' in layer " << i);
-      Real lrho   = json_layers[i]["rho"].asDouble();
+      Real lrho = json_layers[i]["rho"].asDouble();
 
       if (!json_layers[i]["elements"].isArray())
         mytrimError("Missing 'elements' in layer " << i);
@@ -248,7 +248,7 @@ int main()
         material->_element.push_back(element);
       }
 
-      material->prepare(); // all elements added
+      material->prepare();                      // all elements added
       td._sample->material.push_back(material); // add material to sample
       td._sample->layerThickness.push_back(json_layers[i]["thickness"].asDouble());
     }
@@ -322,7 +322,8 @@ int main()
   thread_data[0]._trim->writeOutput();
 
   // summary
-  std::cerr << "Vacancies/ion: " << Real(thread_data[0]._simconf.vacancies_created) / Real(npka) << '\n';
+  std::cerr << "Vacancies/ion: " << Real(thread_data[0]._simconf.vacancies_created) / Real(npka)
+            << '\n';
 
   return EXIT_SUCCESS;
 }
