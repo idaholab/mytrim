@@ -24,50 +24,53 @@ Copyright (C) 2002-2016 Benjamin S. Kirk, John W. Peterson, Roy H. Stogner
 #ifndef MYTRIM_POW_H
 #define MYTRIM_POW_H
 
-namespace Utility {
-
-template <int N, typename T>
-struct do_pow {
-  static inline T apply (const T & x)
-  {
-    if (N%2) // odd exponent
-      return x * do_pow<N-1,T>::apply(x);
-
-    const T xNover2 = do_pow<N/2,T>::apply(x);
-
-    return xNover2*xNover2;
-  }
-};
-
-template <typename T>
-struct do_pow<6,T> {
-  static inline T apply (const T & x)
-  {
-    const T x2 = x*x,
-      x4 = x2*x2;
-
-    return x4*x2;
-  }
-};
-
-template <typename T>
-struct do_pow<1,T> {
-  static inline T apply (const T & x) { return x; }
-};
-
-template <typename T>
-struct do_pow<0,T> {
-  static inline T apply (const T &) { return 1; }
-};
-
-
-template <int N, typename T>
-inline
-T pow(const T & x)
+namespace Utility
 {
-  return do_pow<N,T>::apply(x);
+
+template <int N, typename T>
+struct do_pow
+{
+  static inline T apply(const T & x)
+  {
+    if (N % 2) // odd exponent
+      return x * do_pow<N - 1, T>::apply(x);
+
+    const T xNover2 = do_pow<N / 2, T>::apply(x);
+
+    return xNover2 * xNover2;
+  }
+};
+
+template <typename T>
+struct do_pow<6, T>
+{
+  static inline T apply(const T & x)
+  {
+    const T x2 = x * x, x4 = x2 * x2;
+
+    return x4 * x2;
+  }
+};
+
+template <typename T>
+struct do_pow<1, T>
+{
+  static inline T apply(const T & x) { return x; }
+};
+
+template <typename T>
+struct do_pow<0, T>
+{
+  static inline T apply(const T &) { return 1; }
+};
+
+template <int N, typename T>
+inline T
+pow(const T & x)
+{
+  return do_pow<N, T>::apply(x);
 }
 
 } // namespace Utility
 
-#endif //MYTRIM_POW_H
+#endif // MYTRIM_POW_H
