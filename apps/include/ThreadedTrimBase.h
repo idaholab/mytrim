@@ -11,7 +11,10 @@ public:
   ThreadedTrimBase(SimconfType * simconf, SampleBase * sample) :
     TrimBase(simconf, sample) {}
 
+  virtual bool followRecoil() { return !_primaries_only; }
   virtual void threadJoin(const ThreadedTrimBase &) = 0;
+
+  bool _primaries_only;
 };
 
 #endif //THREADEDTRIMBASE_H

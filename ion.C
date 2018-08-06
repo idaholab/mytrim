@@ -47,10 +47,9 @@ IonBase::setEf()
 void
 IonBase::parent(IonBase * parent)
 {
-  _Ef = 3.0; // final energy
-
   _gen = parent->_gen + 1;
   _pos = parent->_pos;
+  _Ef = parent->_Ef; // final energy
 }
 
 IonBase*

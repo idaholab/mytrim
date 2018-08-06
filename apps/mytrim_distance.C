@@ -51,6 +51,15 @@ int main(int argc, char *argv[])
   // initialize global parameter structure and read data tables from file
   SimconfType * simconf = new SimconfType;
 
+  if (argc != 4)
+  {
+    std::cerr << "syntax:\n" << argv[0] << " Epka Npka El\nEpka\tPKA energy in eV\nNpka\tNumber of PKA to simulate\nEl\tElement symbol for the PKA atom type\n";
+    return 1;
+  }
+  const Real Epka = atof(argv[1]);
+  const int Npka = atoi(argv[2]);
+  const std::string Elpka(argv[3]);
+
   // set seed
   int seed;
   char * seedenv = getenv("MYTRIM_SEED");
@@ -96,11 +105,28 @@ int main(int argc, char *argv[])
   // create a FIFO for recoils
   std::queue<IonBase*> recoils;
 
-  // Nev fission events
-  const int Nev = 1000;
+  // distance histogram
+  std::vector<int> hist;
+  const Real dr = 1.0;
+
+  // find projectile
+  Real Mpka = -1, Zpka;
+  for (unsigned int i = 0; i < simconf->scoef.size(); ++i)
+    if (simconf->scoef[i].sym == Elpka) {
+      Mpka = simconf->scoef[i].mm1;
+      Zpka = i + 1;
+      break;
+    }
+  if (Mpka < 0)
+  {
+    std::cerr << "Element not found\n";
+    return 1;
+  }
+  std::cerr << "Running " << Elpka << ' ' << Zpka << ' ' << Mpka << '\n';
+
   Real pos1[3];
   IonMDTag *projectile, *pka;
-  for (int n = 0; n < Nev; n++)
+  for (int n = 0; n < Npka; n++)
   {
     if (n % 10 == 0) std::cerr << "event #" << n+1 << "\n";
 
@@ -109,9 +135,9 @@ int main(int argc, char *argv[])
     projectile->_tag = -1;
     projectile->_md = 0;
 
-    projectile->_Z = 54;
-    projectile->_m = 131;
-    projectile->_E  = 50000;
+    projectile->_Z = Zpka;
+    projectile->_m = Mpka;
+    projectile->_E  = Epka;
 
     Real norm;
     do
@@ -141,16 +167,25 @@ int main(int argc, char *argv[])
 
       trim->trim(pka, recoils);
 
-      Real r2 = 0.0;
-      for (int i = 0; i < 3; ++i)
-        r2 += (pos1[i] - pka->_pos(i)) * (pos1[i] - pka->_pos(i));
+      if (pka->_Z == 29)
+      {
+        Real r2 = 0.0;
+        for (int i = 0; i < 3; ++i)
+          r2 += (pos1[i] - pka->_pos(i)) * (pos1[i] - pka->_pos(i));
+        const std::size_t bin = std::sqrt(r2) / dr;
+        if (bin >= hist.size())
+          hist.resize(bin + 1);
 
-      std::cout << pka->_Z << ' ' << std::sqrt(r2) << '\n';
+        hist[bin]++;
+      }
 
       // done with this recoil
       delete pka;
     }
   }
+
+  for (std::size_t i = 0; i < hist.size(); ++i)
+    std::cout << i * dr << ' ' << hist[i] / Npka << '\n';
 
   return EXIT_SUCCESS;
 }

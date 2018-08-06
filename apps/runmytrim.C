@@ -205,6 +205,10 @@ int main()
     for (auto & td: thread_data)
       td._trim->setBaseName(json_root["output"]["base"].asString());
 
+  if (json_root["output"]["primaries_only"].isBool())
+    for (auto & td: thread_data)
+      td._trim->_primaries_only = json_root["output"]["primaries_only"].asBool();
+
 
   MaterialBase * material;
   Element element;
@@ -273,6 +277,9 @@ int main()
     mytrimError("Missing 'number' in ion block");
   unsigned int npka = json_root["ion"]["number"].asInt();
 
+  if (json_root["ion"]["final_energy"].isNumeric())
+    pkaTemplate->_Ef = json_root["ion"]["final_energy"].asDouble();
+
   // use the rng in thread 0 to generate the pka seeds from the master seed
   thread_data[0]._simconf.seed(master_seed);
 
@@ -287,7 +294,7 @@ int main()
     Point start(0.0, td._sample->w[1] / 2.0, td._sample->w[2] / 2.0);
     pka->_pos = start;
 
-    pka->setEf();
+    // pka->setEf();
     pka->_seed = thread_data[0]._simconf.irand();
     td._pka.push_back(pka);
   }
