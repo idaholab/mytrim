@@ -98,8 +98,8 @@ main(int argc, char * argv[])
   const Real rho = m * amu_in_g / (site_volume * 1e-21);
   std::cerr << "Rho = " << rho << " g/cm^3\n";
 
-  material = new MaterialBase(simconf, 10.0); // rho
-  element._Z = 29;                            // Cu
+  material = new MaterialBase(simconf, rho); // rho
+  element._Z = 29;                           // Cu
   element._m = m;
   element._t = 1.0;
   material->_element.push_back(element);
