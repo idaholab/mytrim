@@ -8,6 +8,7 @@ compiler:
   - clang
 
 before_script:
+  - ./.travis_clang-format_test.sh
   - ./.travis_bootstrap.sh
   - mkdir build
   - cd build
