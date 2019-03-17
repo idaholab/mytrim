@@ -322,8 +322,9 @@ main()
   thread_data[0]._trim->writeOutput();
 
   // summary
-  std::cerr << "Vacancies/ion: " << Real(thread_data[0]._simconf.vacancies_created) / Real(npka)
-            << '\n';
+  std::cerr << "Vacancies/ion: " << Real(thread_data[0]._simconf.vacancies_created) / Real(npka) << '\n'
+  //        << "Nuclear energy loss/ion: " << thread_data[0]._simconf.EnucTotal / Real(npka)    << '\n'
+            << "Electronic energy loss/ion: " << thread_data[0]._simconf.EelTotal / Real(npka)  << '\n';
 
   return EXIT_SUCCESS;
 }
