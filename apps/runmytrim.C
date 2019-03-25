@@ -93,8 +93,12 @@ computeThread(int tid)
 }
 
 int
-main()
+main(int argc, char * argv[])
 {
+  // error out if any cli args have been passed in
+  if (argc > 1)
+    mytrimError("Please supply the input file via stdin (e.g. ./runmytrim < input.json`)");
+
   // open the input
   Json::Value json_root;
   std::cin >> json_root;
