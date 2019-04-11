@@ -60,6 +60,10 @@ endforeach(program)
 find_package(JsonCpp)
 
 if (JSONCPP_FOUND)
+message(" include json: ${JSONCPP_INCLUDE_DIRS}")
+message(" lib json: ${JSONCPP_LIBRARIES}")
+message(" prefix json: ${JSONCPP_INCLUDE_PREFIX}") 
+
   include_directories(${JSONCPP_INCLUDE_DIRS})
   add_executable(runmytrim apps/runmytrim.C
     apps/src/TrimRange.C
