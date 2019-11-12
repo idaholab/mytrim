@@ -47,6 +47,7 @@ Inverter::x(Real f1) const
 Real
 MassInverter::f(Real x) const
 {
+  // extracted from H.R. Faust, Eur. Phys. J. A 14 (2002) 459.
   return (100.088 + 0.112798 * erff(-5.56257 + 0.0471405 * x) +
           37.4781 * erff(-19.3772 + 0.137386 * x) + 37.4781 * erff(-13.0462 + 0.137386 * x) +
           12.5094 * erff(-30.8853 + 0.229537 * x) + 12.5094 * erff(-23.2853 + 0.229537 * x)) /
@@ -56,6 +57,7 @@ MassInverter::f(Real x) const
 Real
 EnergyInverter::f(Real x) const
 {
+  // extracted from H.R. Faust, Eur. Phys. J. A 14 (2002) 459.
   const Real x1 = x / (1.0 - _A / 234.0);
   return (-0.00014122 + (0.00014122 - 7.12299E-7 * x1) * std::exp(0.0886603 * x1)) / 127.216;
 }
