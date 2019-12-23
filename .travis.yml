@@ -7,6 +7,14 @@ compiler:
   - gcc
   - clang
 
+addons:
+  apt:
+    sources:
+    - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main'
+      key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+    packages:
+      - clang-format-9
+
 before_script:
   - ./.travis_clang-format_test.sh
   - ./.travis_bootstrap.sh
