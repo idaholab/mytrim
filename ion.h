@@ -113,6 +113,6 @@ public:
 
   Real _time;
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

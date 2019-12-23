@@ -38,6 +38,6 @@ public:
   virtual int lookupLayer(Point & pos);
   std::vector<Real> layerThickness;
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

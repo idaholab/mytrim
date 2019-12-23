@@ -224,6 +224,6 @@ protected:
   // dissipate lattice binding energy where recoil branches off
   virtual bool followRecoil();
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

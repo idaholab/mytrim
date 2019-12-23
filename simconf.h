@@ -126,6 +126,6 @@ private:
   Real _area_scale;
   Real _volume_scale;
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

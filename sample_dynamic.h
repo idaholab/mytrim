@@ -44,6 +44,6 @@ protected:
 
   SimconfType * _simconf;
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

@@ -33,6 +33,6 @@ public:
 
   virtual MaterialBase * lookupMaterial(Point & pos);
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

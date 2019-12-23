@@ -56,6 +56,6 @@ public:
   /// boundary conditions
   sampleBoundary bc[3];
 };
-}
+} // namespace MyTRIM_NS
 
 #endif
