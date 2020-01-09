@@ -78,6 +78,6 @@ protected:
 private:
   Real _A;
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

@@ -39,6 +39,6 @@ public:
   // calculated
   Real my, ec, ai, fi;
 };
-}
+} // namespace MyTRIM_NS
 
 #endif

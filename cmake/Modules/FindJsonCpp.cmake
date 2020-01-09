@@ -13,8 +13,9 @@
 # only look in default directories
 find_path(
 	JSONCPP_INCLUDE_DIR
-	NAMES jsoncpp/json/json.h json/json.h
+	NAMES json/json.h
 	DOC "jsoncpp include dir"
+	PATH_SUFFIXES jsoncpp
 )
 
 find_library(
@@ -38,19 +39,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
 	set(JSONCPP_LIBRARIES optimized ${JSONCPP_LIBRARIES} debug ${JSONCPP_LIBRARY_DEBUG})
 
-endif()
-
-# find JSONCPP_INCLUDE_PREFIX
-find_path(
-	JSONCPP_INCLUDE_PREFIX
-	NAMES json.h
-	PATH_SUFFIXES jsoncpp/json json
-)
-
-if (${JSONCPP_INCLUDE_PREFIX} MATCHES "jsoncpp")
-	set(JSONCPP_INCLUDE_PREFIX "jsoncpp/json")
-else()
-	set(JSONCPP_INCLUDE_PREFIX "json")
 endif()
 
 # handle the QUIETLY and REQUIRED arguments and set JSONCPP_FOUND to TRUE

@@ -51,6 +51,6 @@ protected:
   void clearSpatialHash();
   void reallocClusters(int n);
 };
-}
+} // namespace MyTRIM_NS
 
 #endif
